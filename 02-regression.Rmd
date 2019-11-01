@@ -1,0 +1,771 @@
+# Linear Regression
+
+```{r setup, include=FALSE}
+fig.process <- function(x) {
+  if (!grepl('[.]pdf$', x)) return(x) 
+  x2 = sub('pdf$', 'png', x)
+  magick::image_write(magick::image_read(x, density = 300), x2, format = 'png')
+  x2
+}
+
+knitr::opts_chunk$set(echo = TRUE, fig.process = fig.process)
+options(knitr.graphics.auto_pdf = TRUE)
+```
+
+
+```{r load_package, include=FALSE}
+library(GGally)
+library(ggfortify)
+library(gridExtra)
+library(ISLR)
+library(kableExtra)
+library(knitr)
+library(MASS)
+library(plotly)
+library(reshape2)
+library(tidyverse)
+library(tikzDevice)
+
+source('https://gist.githubusercontent.com/StevenGolovkine/55b9a2b6c849deadf86e051ed78ae149/raw/1452f33204a44c47b71bd22536594cce7e1e74e3/ggcustom.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/632632f470375390853529be54b9ebeb/raw/c07317788844d3d904aab7908e9cfe3d9df29931/summary_functions.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_df.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_summary_df.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/401f5c2edc8a04a294bfec38136adcb2f5f2e62d/print_summary_lm.R')
+```
+
+
+## Conceptual Exercises
+
+### Exercise 1.
+
+Recall the model for the `Advertising` data:
+
+$$sales = \beta_0 + \beta_1 \times TV + \beta_2 \times radio + \beta_3 \times newspaper + \epsilon$$
+
+After fitting the model, we found out this results:
+
+|             | Coefficient | Std. error | t-statistic |  p-value  |
+|:-----------:|:-----------:|:----------:|:-----------:|:---------:|
+|  Intercept  |   2.939     |   0.3119   |    9.42     |  < 0.001  |
+|  TV         |   0.046     |   0.0014   |   32.81     |  < 0.001  |
+|  radio      |   0.189     |   0.0086   |   21.89     |  < 0.001  |
+|  newspaper  |   -0.001    |   0.0059   |  -0.18      |   0.8599  |
+Table: Least square coefficient estimates of the linear model
+
+The null hypotheses to which the p-values given in the table correspond is 
+
+$$H_0 : \beta_0 = \beta_1 = \beta_2 = \beta_3 = 0$$
+
+versus
+
+$$H_1 : \beta_0 \neq 0, \beta_1 \neq 0, \beta_2 \neq 0 ~\text{and}~ \beta_3 \neq 0$$
+
+This p-values means that the two features _TV_ and _radio_ are significant for the `Advertising` data. However, the feature _newspaper_ is not statistically significant. So, this varible does not have an influence on the _sales_. 
+
+### Exercise 2.
+
+In both the $K$ nearest neighbors regression and classification, the beginning point is to identifies the $K$ points that are the closest to a given points $x_0$. Let call this set $\mathcal{N}_0$. But, the quantity of interest is to not same. In the regression setting, we are interested by the estimation of $\hat{f}(x_0)$. This is done by averaging the values of the $K$ closest points of $x_0$.
+$$\hat{f}(x_0) = \frac{1}{K}\sum_{x_i \in \mathcal{N}_0} y_i$$
+
+In the classification setting, we first aim to predict the probability of belonging to some class $j$. This is done by counting the proportion of the $K$ closest points of $x_0$ that belong to the class $j$.
+
+$$\mathbb{P}(Y = j \mid X = x_0) = \frac{1}{K}\sum_{x_i \in \mathcal{N}_0}\mathcal{1}(y_i = j)$$
+
+Finally, using the Bayes rules, we classify $x_0$ in the class with the largest probability.
+
+### Exercise 3.
+
+The linear model is:
+
+$$Y = \widehat{\beta}_0 + \sum_{i = 1}^{5}\widehat{\beta}_iX_i.$$
+
+* *Question (a)*
+
+For a fixed value of _IQ_ ($X_2$) and _GPA_ ($X_1$), females earn more on average than males because the coefficient of _Gender_ ($X_3$) is positive. However, for a fixed value of _IQ_ ($X_2$) and _GPA_ ($X_1$), males earn more on average than females provided that the _GPA_ is high enough (larger than 3.5) because the coefficient of the interaction between _GPA_ and _Gender_ ($X_5$) is negative.
+
+* *Question (b)*
+
+The salary of a woman with IQ of 110 and a GPA of 4.0 is (in thousands of dollars):
+
+$$Y = 50 + 20\times 4.0 + 0.07\times 110 + 35\times 1 + 0.01\times 4.0\times 110 - 10\times 4.0\times 1 = 137.1.$$
+
+* *Question (c)*
+
+With only the value of $\widehat{\beta}_4$, we can not conclude on the evidence of an GPA/IQ interaction effect on the starting salary after graduation even if this value is very small. To test that, we should compute the F-statistic and the corresponding p-value. If the p-value is very low (usually under 0.05), there is a clear evidence of the relationship between the GPA/IQ interaction and the salary. 
+
+### Exercise 4.
+
+* *Question (a) and (b)*
+
+The true relationship between $X$ and $Y$ is linear. So, the cubic regression model will overfit. For the training, we expect the RSS for the cubic model to be lower than the one of the linear model because it will follow the noise more closely. However, on the test set, it should be the opposite. 
+
+* *Question (c) and (d)*
+
+The true relationship between $X$ and $Y$ is not linear. As before, the cubic regression should have a lower train RSS because this model is more flexible than the linear model. However, we can not tell which one will be lower for the test set because it depends on "how far the data is from linear". If the true relationship is almost linear, the test RSS will be lower for the linear model and conversely, if the true relationship is closer to the cubic model, the test RSS will be lower for the cubic model. 
+
+### Exercise 5.
+
+$$ \widehat{y}_i = x_i\widehat{\beta} = x_i \frac{\sum_{j=1}^n x_jy_j}{\sum_{k=1}^n x^2_k} = \sum_{j=1}^n\frac{x_jx_i}{\sum_{k=1}^n x^2_k}y_j$$
+
+So, $a_j = \frac{x_jx_i}{\sum_{k=1}^n x^2_k}$. We interpret this result by saying that the fitted values from linear regression are linear combinations of the response values.
+
+### Exercise 6.
+
+The simple linear model is: $y_i = \beta_0 + \beta_1x_i$. The estimator of $\beta_0$ and $\beta_1$ are:
+
+$$\widehat{\beta_0} = \bar{y} - \widehat{\beta_1}\bar{x} \quad\text{and}\quad \widehat{\beta_1} = \frac{\sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y})}{\sum_{i=1}^n (x_i - \bar{x})^2}$$
+
+Let's predict the value of $y_i$ for $x_i = \bar{x}$.
+
+$$\widehat{\beta_0} + \widehat{\beta_1}\bar{x} = \bar{y} - \widehat{\beta_1}\bar{x} + \widehat{\beta_1}\bar{x} = \bar{y}$$
+
+So, the least squares line always passes through the point $(\bar{x}, \bar{y})$.
+
+### Exercise 7.
+
+Assume that $\bar{x} = \bar{y} = 0$. 
+
+$$R^2 = 1 - \frac{\sum(y_i - \widehat{y}_i)^2}{\sum y_i^2} = \frac{\sum y_i^2 - \sum y_i^2 + 2\sum y_i\widehat{y}_i - \sum\widehat{y}_i^2}{\sum y_i^2}$$
+
+We know that $\widehat{y}_i = x_i\widehat{\beta}$. So
+
+$$ R^2 = \frac{2\sum y_ix_i\widehat{\beta} - \sum x_i^2\widehat{\beta^2}}{\sum y_i^2} = \widehat{\beta}\frac{2\sum y_ix_i - \sum x_i^2\widehat{\beta}}{\sum y_i^2}$$
+
+Replace $\widehat{\beta}$ by $\frac{\sum y_ix_i}{\sum x_i^2}$, and $\sum x_i^2\widehat{\beta} = \sum x_iy_i$. Finally,
+
+$$R^2 = \frac{2(\sum x_iy_i)^2 - (\sum x_iy_i)^2}{\sum x_i^2\sum y_i^2} = \frac{(\sum x_iy_i)^2}{\sum x_i^2\sum y_i^2} = Corr^2$$
+
+In the case of simple linear regression of $Y$ onto $X$, the $R^2$ statistic is equal to the square of the correlation between $X$ and $Y$.
+
+
+## Applied Exercises
+
+### Exercise 8.
+
+This exercise is about fitting a simple linear model to the `Auto` dataset. It contains `r dim(Auto)[1]` observations of `r dim(Auto)[2]` variables about vehicles. For a description of the variables, please refer to **R** by typing `help(Auto)` after loading the package `ISLR`. 
+
+```{r ex8load, message=FALSE, warning=FALSE, include=FALSE, paged.print=TRUE}
+auto <- Auto
+```
+
+* *Question (a)*
+
+```{r ex8a, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm_model <- lm(mpg ~ horsepower, data = auto)
+lm_model %>% summary() %>% print_summary_lm()
+```
+
+We test the hypothesis $H_0: \beta_1 = 0$. We use the F-statistic to determine whether or not we should reject the null hypothesis. As the p-value associated with the the F-statistic is very low, there is a clear evidence of a relationship between _mpg_ and _horsepower_. There are two measures of model accuracy to characterize how strong is the relationship between the response and the variable, the RSE and the $R^2$. For the linear model, the RSE is `r round(sqrt(sum((auto$mpg - predict.lm(lm_model))**2) / (length(auto$mpg) - 2)), 2)` _mpg_. The mean value for _mpg_ is `r round(mean(auto$mpg), 2)`, it indicates a percentage error of roughly `r round(sqrt(sum((auto$mpg - predict.lm(lm_model))**2) / (length(auto$mpg) - 2)) * 100 / mean(auto$mpg), 0)`%. Then, the $R^2$ statistic is equal to `r round(summary(lm_model)$r.squared, 2)`. So, _horsepower_ explains roughly `r round(summary(lm_model)$r.squared*100, 0)`% of the variance in _mpg_. The variable _horsepower_ has a negative relationship with the response _mpg_ because $\beta_1 < 0$. The predicted value of _mpg_ for _horsepower_ = 98 is `r round(predict(lm_model, newdata = data.frame(horsepower = 98)), 2)`. The 95% confidence interval is (`r round(predict(lm_model, newdata = data.frame(horsepower = 98), interval = 'confidence')[1, 'lwr'], 2)`, `r round(predict(lm_model, newdata = data.frame(horsepower = 98), interval = 'confidence')[1, 'upr'], 2)`) and the 95% prediction interval is (`r round(predict(lm_model, newdata = data.frame(horsepower = 98), interval = 'prediction')[1, 'lwr'], 2)`, `r round(predict(lm_model, newdata = data.frame(horsepower = 98), interval = 'prediction')[1, 'upr'], 2)`).
+
+* *Question (b)*
+
+```{r ex8b, echo=FALSE, message=FALSE, cache=TRUE, warning=FALSE, dev='tikz', fig.width=10, fig.height=10, fig.cap='Least square regression plot for the *auto* dataset.', fig.align='center'}
+auto %>% ggplot() + 
+  geom_point(aes(x = horsepower, y = mpg), size = 6) + 
+  geom_abline(aes(intercept = lm_model$coefficients[1], slope = lm_model$coefficients[2]), col = 'red', size = 6) + 
+  theme_custom()
+```
+
+* *Question (c)*
+
+```{r ex8c, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.width=10, fig.height=10, fig.cap='Diagnostic plots of the least square regression fit.', fig.align='center'}
+lm_model %>% autoplot(label.size = 6, label.hjust = 0.1, label.vjust = 0.1) + theme_custom()
+```
+
+The plot of the fitted values agains the residuals shows a non-linear pattern in the data. So, non-linear transformation of the data, such as a quadratic transformation, could improve the fit. It does not seem to have another trouble with the fit, maybe one observation with a quite large Cook distance but that's all.
+
+### Exercise 9.
+
+This exercise is about fitting a multiple linear model to the `Auto` dataset. It contains `r dim(Auto)[1]` observations of `r dim(Auto)[2]` variables about vehicles. For a description of the variables, please refer to **R** by typing `help(Auto)` after loading the package `ISLR`. 
+
+```{r ex9load, message=FALSE, warning=FALSE, include=FALSE, paged.print=TRUE}
+auto <- Auto
+auto <- auto %>% select(-name)
+```
+
+* *Question (a)*
+
+```{r ex9a, echo=FALSE, message=FALSE, warning=FALSE, fig.width=15, fig.height=15, cache=TRUE, fig.cap='Scatterplot matrix.', fig.align='center'}
+auto %>% ggpairs(upper = list(continuous = wrap("cor", size = 9)),
+                    axisLabels = 'none') + 
+  theme_custom() + 
+  theme(strip.text.y = element_text(size = 16, angle = -90)) 
+```
+
+* *Question (b)*
+
+<center>
+```{r ex9b, echo=FALSE, message=FALSE, warning=FALSE, dev='tikz', fig.width=5, fig.height=5, cache=TRUE, fig.cap='Correlation plot.', fig.align='center'}
+auto %>% ggcorr(geom = "blank", label = TRUE, hjust = 0.75) +
+  geom_point(size = 6, aes(color = coefficient > 0, alpha = abs(coefficient) > 0.5)) +
+  scale_alpha_manual(values = c("TRUE" = 0.25, "FALSE" = 0)) +
+  guides(color = FALSE, alpha = FALSE) + 
+  theme_custom()
+```
+</center>
+
+* *Question (c)*
+
+```{r ex9c, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm_model <- lm(mpg ~ ., data = auto)
+lm_model %>% summary() %>% print_summary_lm()
+```
+
+We have fitted a multiple regression model of _mpg_ onto all the other variables in the `auto` dataset. In order to say that there is a relationship between the features and the response, we should test the hypothesis of all $\beta_i = 0$. For the model, the p-value associated with the F-statistic is less than $2\times 10^{-16}$. So, there is a clear evidence of a relationship between _mpg_ and the features. There are four variables that have a statistically significant relationship with the reponse (because they have a very low p-value). These variables are _displacement_, _weight_, _year_ and _origin_. The coefficient for the _year_ variable suggest that the _mpg_ grows with the year, so recent cars consume less than old cars.
+
+* *Question (d)*
+
+```{r ex9d, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE, fig.width=10, fig.height=10, fig.cap='Diagnotistic plots of the multiple least square regression fit.', fig.align='center'}
+lm_model %>% autoplot(label.size = 6, label.hjust = 0.1, label.vjust = 0.1) + theme_custom()
+```
+
+There is a little trend in the residuals, meaning that the linear model may not be the best model to fit on the data. Moreover, the variance of error terms seems to be non-constant. Based on this two observations, some transformation of the data could be a good idea. There is no outliers, but the point 14 appears to be a high leverage point.
+
+* *Question (e)*
+
+```{r ex9e, message=FALSE, warning=FALSE, results='asis'}
+# Recall that cylinders:year stands for the inclusion of the interaction term between 
+# cylinders and years in the regression. cylinders*year adds the cylinders, year and 
+# cylinders:year to the model. .:. adds all the interactions to the model and .*. adds 
+# all the variable and their interaction to the model.
+lm_model_int <- lm(mpg ~ .*., data = auto)
+lm_model_int %>% summary() %>% print_summary_lm()
+```
+
+Three interactions appears to be statistically significant, _displacement:year_, _acceleration:origin_ and _acceleration:year_ because they have p-value smaller than 0.05. 
+
+* *Question (f)*
+
+```{r ex9f, message=FALSE, warning=FALSE, results='asis'}
+lm_model_squ <- lm(mpg ~ . + I(horsepower^2), data = auto)
+lm_model_squ %>% summary() %>% print_summary_lm()
+```
+
+If we add the square transformation of the _horsepower_ variable to the model, the model seems to be significative (the p-value  of the F-statistic is still very low). The RSE is smaller for this model than for the linear model, however, it is still larger than the one of the model with all the interactions.
+
+### Exercise 10.
+
+This exercise is about fitting a multiple linear model to the `Carseats` dataset. It contains `r dim(Carseats)[1]` observations of `r dim(Carseats)[2]` variables about sales of child car seats at different stores. For a description of the variables, please refer to **R** by typing `help(Carseats)` after loading the package `ISLR`. 
+
+```{r ex10load, message=FALSE, warning=FALSE, include=FALSE, paged.print=TRUE}
+carseats <- Carseats
+```
+
+* *Question (a)*
+
+```{r ex10a, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm_model <- lm(Sales ~ Price + Urban + US, data = carseats)
+lm_model %>% summary() %>% print_summary_lm()
+```
+
+* *Question (b)*
+
+The variable _Price_ seems to be very significative (p-value very close to 0) and its coefficient is negative (`r lm_model$coefficients['Price']`). So, a \$100 increase in price company charges for car seats is associated with an average decrease in sales by around `r round(-1000*100*lm_model$coefficients['Price'], 0)` units. The p-value of the coefficient for the dummy variable _UrbanYes_ is very close to 1. So, this indicates that there is no statistical evidence of a difference in unit sales (in thousands) of child car seats between the stores that are in urban or rural location. Finally, the variable _USYes_ is also significative and its coefficient is positive (`r lm_model$coefficients['USYes']`). So, if the store is in the US will increase the sales by around `r round(1000*lm_model$coefficients['USYes'], 0)` units.
+
+* *Question (c)*
+
+The fitted model is:
+
+$$ y_i = \beta_0 + \beta_1x_{1, i} + \beta_2x_{2, i} + \beta_3x_{3, i} + \epsilon_i$$ 
+
+where
+
+* $y_i$ represents the _Sales_ (Unit sales in thousands at each location);
+
+* $x_{1, i}$ represents the _Price_ (Price company charges for seats at each site);
+
+* $x_{2, i} = 1$ if the store is in an urban location, $0$ is the store is in an rural location (_UrbanYes_);
+
+* $x_{3, i} = 1$ if the store is in the US, $0$ if not (_USYes_).
+
+* *Question (d)*
+
+We can reject the null hypothesis for the variable _Price_ and _USYes_ (cf. question (b)).
+
+* *Question (e)*
+
+```{r ex10e, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm_model2 <- lm(Sales ~ Price + US, data = carseats)
+lm_model2 %>% summary() %>% print_summary_lm()
+```
+
+* *Question (f)*
+
+The two models fit equally well on the data, they have the same $R^2$ (this is another argument for dropping the variable _Urban_). However, we can consider that the second model is better because it uses less features.
+
+* *Question (g)*
+
+```{r ex10g, echo=FALSE, results='asis'}
+lm_model2 %>% 
+  confint(level = 0.95) %>% 
+  kable(format = 'html', caption = '95% confidence intervals for the coefficients') %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+  print()
+```
+
+* *Question (h)*
+
+```{r ex10h, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE, dev='tikz', fig.width=10, fig.height=10, fig.cap='Diagnotistic plots of the multiple least square regression fit.', fig.align='center'}
+lm_model2 %>% autoplot(label.size = 6, label.hjust = 0.1, label.vjust = 0.1) + theme_custom()
+```
+
+After looking at the different diagnostic plots, there is no particular evidence of outliers or high leverage observations in the model. However, the linear model may not be the better model for this data.
+
+### Exercise 11.
+
+This exercise is about the t-statistic on models without intercept. For that, we will generate some data with the following "very" simple model:
+
+$$y = 2x + \epsilon \quad\text{where}\quad \epsilon \sim \mathcal{N}(0,1).$$
+
+```{r ex11data}
+set.seed(42)
+x <- rnorm(100)
+y <- 2*x + rnorm(100)
+```
+
+* *Question (a)*
+
+```{r ex11a, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm_model_no_inter <- lm(y ~ x + 0)
+lm_model_no_inter %>% summary() %>% print_summary_lm()
+```
+
+The p-value associated with the null hypothesis $\beta = 0$ is very close to 0, so there is a strong evidence that the coefficient is statistically different from 0. The estimation of $\beta$ is `r lm_model_no_inter$coefficient` which is very close to the true value.
+
+* *Question (b)*
+
+```{r ex11b, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm_model_no_inter2 <- lm(x ~ y + 0)
+lm_model_no_inter2 %>% summary() %>% print_summary_lm()
+```
+
+The value of the t-statistic is the same than for the previous model. So, we can reject the null hypothesis and the estimation of $\beta$ is, as before, quite close to the true value.
+
+* *Question (c)*
+
+We can write the model from the question (a) as $Y= \beta_1X + \epsilon$ and the one from the question (b) as $X = \beta_2Y + \epsilon$. The least square estimation of the parameters leads to $\widehat{\beta}_1 = (X^\top X)^{-1}X^\top Y$ and $\widehat{\beta}_2 = (Y^\top Y)^{-1}Y^\top X$. Moreover, we have that $X^\top Y = Y^\top X$. So, we have that:
+
+$$\widehat{\beta}_1 = (X^\top X)^{-1}X^\top Y = Y^\top X(X^\top X)^{-1} = (Y^\top Y)\widehat{\beta}_2(X^\top X)^{-1}.$$
+
+And finally, the relationship between $\widehat{\beta}_1$ and $\widehat{\beta}_2$ is:
+
+$$\frac{\widehat{\beta}_1}{\widehat{\beta}_2} = (Y^\top Y)(X^\top X)^{-1},$$
+
+which can be reduce to $\frac{Var(Y)}{Var(X)}$ in the univariate case.
+
+* *Question (d)*
+
+```{r ex11d, message=FALSE, warning=FALSE}
+t_stat <- (sqrt(100 - 1) * sum(x * y)) / (sqrt(sum(x * x)*sum(y * y) - sum(x * y)**2))
+```
+
+Numerically, we found out that the t-statistic is `r t_stat` which is coherent with the result given by the `lm` funtion.
+
+Algebraically, the derivations are pretty straightforward:
+\begin{align}
+\frac{\widehat{\beta}}{SE(\widehat{\beta})} &= \frac{\sum x_iy_i}{\sum x_i^2} \sqrt{\frac{(n-1)\sum x_i^2}{\sum (y_i - x_i\widehat{\beta})^2}} \\
+&= \frac{\sqrt{n-1}\sum x_iy_i}{\sqrt{x_i^2}\sqrt{\sum y_i^2 - 2\frac{\sum x_iy_i}{\sum x_i^2}\sum x_iy_i + \left(\frac{\sum x_iy_i}{\sum x_i^2}\right)^2\sum x_i^2}} \\
+&= \frac{\sqrt{n-1}\sum x_iy_i}{\sqrt{x_i^2}\sqrt{\sum y_i^2 - 2\frac{\left(\sum x_iy_i\right)^2}{\sum x_i^2} + \left(\frac{\sum x_iy_i}{\sum x_i^2}\right)^2\sum x_i^2}} \\
+&= \frac{\sqrt{n-1}\sum x_iy_i}{\sqrt{\sum x_i^2\sum y_i^2 - 2\left(\sum x_iy_i\right)^2 + \left(\sum x_iy_i\right)^2}} \\
+&= \frac{\sqrt{n-1}\sum x_iy_i}{\sqrt{\sum x_i^2\sum y_i^2 - \left(\sum x_iy_i\right)^2}}
+\end{align}
+
+* *Question (e)*
+
+We can exchange $X$ and $Y$ in the formula of the t-statistic given in (d) without changing the results (which is the t-statistic). So, the t-statistic for the regression of $Y$ onto $X$ is the same as the t-statistic for the regression of $X$ onto $Y$.
+
+* *Question (f)*
+
+```{r ex11f, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm_model <- lm(y ~ x)
+lm_model %>% summary() %>% print_summary_lm()
+```
+
+```{r ex11fb, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm_model2 <- lm(x ~ y)
+lm_model2 %>% summary() %>% print_summary_lm()
+```
+
+Considering the two tables, we can argue that the t-statistic for $H_0 : \beta_1 = 0$ is the same for both regressions.
+
+### Exercise 12.
+
+This exercise involves simple linear regression without an intercept.
+
+* *Question (a)*
+
+If we regress $Y$ onto $X$ without an intercept, we found that: $\widehat{\beta}_1 = \sum x_iy_i / \sum x_i^2$.
+
+If we regress $X$ onto $Y$ without an intercept, we found that: $\widehat{\beta}_2 = \sum x_iy_i / \sum y_i^2$.
+
+So, for $\widehat{\beta}_1$ to be equal to $\widehat{\beta}_2$, we should have $\sum x_i^2 = \sum y_i^2$.
+
+First, assume that $\mathbb{E}(X) = \mathbb{E}(Y)$. So, $\widehat{\beta}_1 = \widehat{\beta}_2 \iff \text{Var}(X) = \text{Var}(Y)$. If there is a linear relationship between $X$ and $Y$, it should exists $a \in \mathbb{R}$ such that $Y = aX$. And then
+\begin{align}
+\text{Var}(X) = \text{Var}(Y) &\iff \text{Var}(X) = \text{Var}(aX) \\
+&\iff \text{Var}(X) = a^2\text{Var}(X) \\
+&\iff a = 1 \text{ or } a = -1.
+\end{align}
+
+Second, remove the assumption. If $\sum x_i^2 = \sum y_i^2$, then 
+
+$$\text{Var}(X) + \mathbb{E}(X)^2 = \text{Var}(Y) + \mathbb{E}(Y)^2.$$ 
+
+Again, if we assume linear relationship between $X$ and $Y$, it should exists $a \in \mathbb{R}$ such that $Y = aX$. And then
+\begin{align}
+\text{Var}(X) + \mathbb{E}(X)^2 = \text{Var}(Y) + \mathbb{E}(Y)^2 &\iff \text{Var}(X) + \mathbb{E}(X)^2 = a^2\left(\text{Var}(X) + \mathbb{E}(X)^2\right)\\
+&\iff a = 1 \text{ or } a = -1.
+\end{align}
+
+Finally, if we do not assume a particular relationship between $X$ and $Y$, we can simulate two random variables that appears to be i.i.d. but if we regress one on each other, we found out the same coefficients estimate (see question (c)).
+
+* *Question (b)*
+
+See exercise 11.
+
+* *Question (c)*
+
+```{r ex12c}
+x <- rnorm(10000, 2, 2)
+y <- rnorm(10000, sqrt(6), sqrt(2))
+```
+
+```{r ex12c1, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm(y ~ x + 0) %>% summary() %>% print_summary_lm()
+```
+
+```{r ex12c2, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm(x ~ y + 0) %>% summary() %>% print_summary_lm()
+```
+
+### Exercise 13.
+
+* *Question (a)*
+
+```{r ex13a, message=FALSE, warning=FALSE, paged.print=FALSE}
+set.seed(42)
+x <- rnorm(n = 100, mean = 0, sd = 1)
+```
+
+* *Question (b)*
+
+```{r ex13b, message=FALSE, warning=FALSE, paged.print=FALSE}
+eps <- rnorm(n = 100, mean = 0, sd = sqrt(0.25))
+```
+
+* *Question (c)*
+
+```{r ex13c, message=FALSE, warning=FALSE, paged.print=FALSE}
+y <- -1 + 0.5*x + eps
+df <- tibble(x, y)
+```
+
+The length of the vector `y` is 100 (same as `x` and `eps`). The true value of $\beta_0$ is -1 and the one of $\beta_1$ is 0.5.
+
+* *Question (d)*
+
+```{r ex13d, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, cache=TRUE, dev='tikz', fig.width=10, fig.height=10, fig.cap='Scatterplot of y against x.', fig.align='center'}
+ggplot() + 
+  geom_point(aes(x = x, y = y), size = 6) +
+  theme_custom()
+```
+
+* *Question (e)*
+
+```{r ex13e, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm <- lm(y ~ x)
+lm %>% summary() %>% print_summary_lm()
+```
+
+The estimation of the coefficients are very closed to the true ones, and both are statistically significative. However, the $R^2$ is quite poor (around 0.5), which seems to mean that the model does not explain the data very well.
+
+* *Question (f)*
+
+```{r ex13f, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, cache=TRUE, dev='tikz', fig.width=10, fig.height=10, fig.cap='Results of the linear regression of y against x.', fig.align='center'}
+ggplot(df) + 
+  geom_point(aes(x = x, y = y), size = 6, show.legend = FALSE) +
+  geom_abline(aes(intercept = lm$coefficients[1], slope = lm$coefficients[2], color = '#E69F00'), size = 6, show.legend = TRUE) +
+  geom_abline(aes(intercept = -1, slope = 0.5, color = '#009E73'), size = 6, show.legend = TRUE) +
+  scale_colour_manual(name = " ",
+                      labels = c("Regression Line", "True Line"), 
+                      values=c("#E69F00", "#009E73")) +
+  theme_custom() +
+  theme(legend.position = c(0.8, 0.1))
+```
+
+* *Question (g)*
+
+```{r ex13g, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm_square <- lm(y ~ x + I(x^2))
+lm_square %>% summary() %>% print_summary_lm()
+```
+
+Based on the table, there is no evidence that the quadratic term improves the model fit. In particular, the p-value for the coefficient of the quadratic term is very high, and thus this term is not statistically significative. Moreover, the $R^2$ does not increase a lot when we add the quadratic term.
+
+* *Question (h), (i) and (j)*
+
+```{r ex13h, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+set.seed(42)
+variance_noise <- seq(0, 1, by = 0.05)
+r_squared = numeric(length(variance_noise))
+adj_r_squared = numeric(length(variance_noise))
+rse = numeric(length(variance_noise))
+beta_0 = numeric(length(variance_noise))
+beta_0_2.5 = numeric(length(variance_noise))
+beta_0_97.5 = numeric(length(variance_noise))
+beta_1 = numeric(length(variance_noise))
+beta_1_2.5 = numeric(length(variance_noise))
+beta_1_97.5 = numeric(length(variance_noise))
+
+for(i in 1:length(variance_noise)){
+  x <- rnorm(n = 100, mean = 0, sd = 1)
+  eps <- rnorm(n = 100, mean = 0, sd = sqrt(variance_noise[i]))
+  y <- -1 + 0.5*x + eps
+  lm <- lm(y ~ x)
+  lm_summary <- lm %>% summary()
+  coef_confint <- lm %>% confint()
+  
+  r_squared[i] = lm_summary$r.squared
+  adj_r_squared[i] = lm_summary$adj.r.squared
+  rse[i] = lm_summary$sigma
+  beta_0[i] = lm_summary[["coefficients"]]['(Intercept)', 'Estimate']
+  beta_0_2.5[i] = coef_confint[1, 1]
+  beta_0_97.5[i] = coef_confint[1, 2]
+  beta_1[i] = lm_summary[["coefficients"]]['x', 'Estimate']
+  beta_1_2.5[i] = coef_confint[2, 1]
+  beta_1_97.5[i] = coef_confint[2, 2]
+}
+df <- tibble(variance_noise, r_squared, adj_r_squared, rse, 
+             beta_0, beta_0_2.5, beta_0_97.5, 
+             beta_1, beta_1_2.5, beta_1_97.5)
+```
+
+```{r ex13hi, dev='tikz', echo=FALSE, cache=TRUE, fig.cap='Different results for the $R^2$, the adjusted $R^2$ and the RSE', fig.height=10, fig.width=10, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center'}
+ggplot(df) +
+  geom_line(aes(x = variance_noise, y = r_squared, colour = '#E69F00'), size = 4) +
+  geom_line(aes(x = variance_noise, y = adj_r_squared, col = '#009E73'), size = 4) +
+  geom_line(aes(x = variance_noise, y = rse, col = '#0072B2'), size = 4) +
+  xlab("$\\sigma^2$") +
+  ylab("") +
+  scale_colour_manual(name = " ",
+                      labels = c("RSE", "Adjusted $R^2$", "$R^2$"),
+                      values = c("#0072B2", "#009E73", "#E69F00")) +
+  theme_custom() +
+  theme(legend.position = c(0.8, 0.1))
+```
+
+As we see on the graph, the $R^2$ and the adjusted $R^2$ will decresase when the variance of the noise increase, and conversely for the residual standard errors. This phenomena could be predicted because the more noise we add the less we can recover the true underlying function.
+
+```{r ex13j, echo=FALSE, dev='tikz', cache=TRUE, fig.cap='Confidence intervals for the estimated coefficients', fig.height=10, fig.width=10, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center'}
+grid.arrange(
+ggplot(df) +
+  geom_line(aes(x = variance_noise, y = beta_0, colour = "#E69F00"), size = 4) +
+  geom_line(aes(x = variance_noise, y = beta_0_2.5, colour = "#009E73"), size = 4) +
+  geom_line(aes(x = variance_noise, y = beta_0_97.5, colour = "#0072B2"), size = 4) +
+  xlab("$\\sigma^2$") +
+  ylab("") +
+  scale_colour_manual(name = " ",
+                      labels = c("Upper bound (97.5\\%)", "Lower bound (2.5\\%)", "$\\widehat{\\beta}_0$"),
+                      values = c("#0072B2", "#009E73", "#E69F00")) +
+  theme_custom() +
+  theme(legend.position = c(0.4, 0.1), legend.title = element_blank()),
+
+ggplot(df) +
+  geom_line(aes(x = variance_noise, y = beta_1, colour = "#E69F00"), size = 4) +
+  geom_line(aes(x = variance_noise, y = beta_1_2.5, colour = "#009E73"), size = 4) +
+  geom_line(aes(x = variance_noise, y = beta_1_97.5, colour = "#0072B2"), size = 4) +
+  xlab("$\\sigma^2$") +
+  ylab("") +
+  scale_colour_manual(name = " ",
+                      labels = c("Upper bound (97.5\\%)", "Lower bound (2.5\\%)", "$\\widehat{\\beta}_1$"),
+                      values = c("#0072B2", "#009E73", "#E69F00")) +
+  theme_custom() +
+  theme(legend.position = c(0.35, 0.9), legend.title = element_blank()),
+ncol = 2, nrow = 1)
+```
+
+The confidence intervals for the two coefficients show the same phenomena than the $R^2$, the adjusted $R^2$ and the residual standard errors. The more the variance of the noise increases, the more difficult it is to estimate the coefficients, and to have a good confidence interval on it. In fact, the confidence interval is larger for large noise and the coefficient can be further from the true one.
+
+### Exercise 14.
+
+This exercise is about the problem of collinearity in the features.
+
+* *Question (a)*
+
+```{r ex14a, message=FALSE, warning=FALSE, paged.print=FALSE}
+set.seed(42)
+x1 <- runif(100)
+x2 <- 0.5*x1 + rnorm(100)/10
+y <- 2 + 2*x1 + 0.3*x2 + rnorm(100)
+```
+
+The linear model is the following:
+
+$$ Y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \epsilon \text{ where } \beta_0 = 2,~ \beta_1 = 2,~ \beta_2 = 0.3 \text{ and } \epsilon \sim \mathcal{N}(0, 1).$$
+
+* *Question (b)*
+
+```{r ex14b, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', paged.print=FALSE, fig.width=15, fig.height=15, fig.cap='Scatterplot of $X_1$ against $X_2$.', fig.align='center'}
+ggplot() + 
+  geom_point(aes(x = x1, y = x2), size = 6) +
+  annotate("text", x = 0.1, y = 0.6, label = paste('Correlation:', round(cor(x1, x2), 2)), size = 8, col = 'red') +
+  xlab("$X_1$") +
+  ylab("$X_2$") +
+  theme_custom()
+```
+
+* *Question (c)*
+
+```{r ex14c, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm <- lm(y ~ x1 + x2)
+lm %>% summary() %>% print_summary_lm()
+```
+
+The value of $\widehat{\beta}_0$ is `r coefficients(lm)['(Intercept)']` which is quite close to the true value of $\beta_0$. However, both the value of $\widehat{\beta}_1$ (`r coefficients(lm)['x1']`) and $\widehat{\beta}_2$ (`r coefficients(lm)['x2']`) appear to be quite far from their true value even if we obviously know that the true relationship between $Y$, $X_1$ and $X_2$ is linear. Thanks to the p-value, we can reject the null hypothesis only for $\beta_1$, and so $\beta_2$ does not seem to be statistically significant. Finaly, the $R^2$ is not very good.
+
+* *Question (d)*
+
+```{r ex14d, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm_1 <- lm(y ~ x1)
+lm_1 %>% summary() %>% print_summary_lm()
+```
+
+The estimated coefficients are both statistically significant. The residual standard error and the $R^2$ are the same than for the model with $X_2$. We can reject the null hypothesis.
+
+* *Question (e)*
+
+```{r ex14e, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm_2 <- lm(y ~ x2)
+lm_2 %>% summary() %>% print_summary_lm()
+```
+
+The estimated coefficients are both statistically significant. The residual standard error and the $R^2$ are a little smaller than for the model with $X_1$. We can reject the null hypothesis.
+
+* *Question (f)*
+
+At a first sight, the different results can contradict each other, because it result to very different coefficients estimation and statistical significance. But, if we look at the true model, we see that $X_1$ and $X_2$ are very correlated. So, they explained the same variance in the data. In the complete model, they more or less share the explication of the variance but as they can explain the same amount of variance, the model with only $X_1$ or $X_2$ will lead to the same results. Another problem that can arrive in this case is that the matrix $X^\prime X$ may not be invertible.
+
+* *Question (g)*
+
+```{r ex14g}
+x1 <- c(x1, 0.1)
+x2 <- c(x2, 0.8)
+y <- c(y, 6)
+```
+
+* *Question (h)*
+
+```{r ex14gii, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm <- lm(y ~ x1 + x2)
+lm %>% summary() %>% print_summary_lm()
+```
+
+The new point changes the significance of the coefficient for this model. Now, $\beta_1$ is not significant anymore, while $\beta_2$ is. The other values do not seem to change. We do not have an increasing of the RSE, so the new point is not an outlier. The leverage statistic of the new point is `r round(1/length(y) + ((0.1 - mean(x1))**2/sum((x1 - mean(x1))**2)) + ((0.8 - mean(x2))**2/sum((x2 - mean(x2))**2)), 2)` while the average leverage is `r round(3/length(y), 2)`. So, the new point is a high-leverage point.
+
+```{r ex14giii, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+# Fit the model with only X_1
+lm_1 <- lm(y ~ x1)
+lm_1 %>% summary() %>% print_summary_lm()
+```
+
+The new point changes a lot the RSE and the $R^2$. So, it should be consider as an outlier in this case. The leverage statistic of the new point is `r round(1/length(y) + ((0.1 - mean(x1))**2/sum((x1 - mean(x1))**2)), 2)` while the average leverage is `r round(2/length(y), 2)`. So, the new point is a high-leverage point.
+
+```{r ex14giv, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+# Fit the model with only X_2
+lm_2 <- lm(y ~ x2)
+lm_2 %>% summary() %>% print_summary_lm()
+```
+
+The new point improve this model. So, this point is not an outlier. The leverage statistic of the new point is `r round(1/length(y) + ((0.1 - mean(x2))**2/sum((x2 - mean(x2))**2)), 2)` while the average leverage is `r round(2/length(y), 2)`. So, the new point is not a high-leverage point.
+
+### Exercise 15.
+
+This exercise is about the `Boston` dataset. We would like to predict per capita crime rate based on the other features. It contains `r dim(Boston)[1]` observations of `r dim(Boston)[2]` variables of suburbs in Boston. For a description of the variables, please refer to **R** by typing `help(Boston)` after loading the pacakge `MASS`.
+
+```{r loaddata, message=FALSE, warning=FALSE, paged.print=FALSE}
+boston <- as_tibble(Boston)
+variable <- c("zn", "indus", "chas", "nox", "rm", "age", "dis", "rad", "tax", "ptratio", "black", "lstat", "medv")
+```
+
+* *Question (a)*
+
+```{r ex15a, message=FALSE, warning=FALSE}
+lm_list <- vector("list", length = length(boston)-1)
+for(i in seq(1, length(boston)-1)){
+  name <- variable[i]
+  lm_list[[i]] <- lm(boston$crim ~ boston[[name]])
+}
+names(lm_list) <- variable
+```
+
+```{r ex15ai, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+for(i in seq_along(lm_list)){
+  cat(glue::glue("<details><summary>Variable `{variable[i]}`</summary><p>"))
+  lm_list[[i]] %>% summary() %>% print_summary_lm()
+  cat(glue::glue("</p></details>"))
+}
+```
+
+If we look at the results of the different fitted linear model, we can see that almost every variable is statistically significative (except the variable `chas`). However, We can split up the other ones into three categories based on the $R^2$. The variable with a large $R^2$ ($> 0.3$) have a larger contribution to the variance explication (`rad` and `tax`). Then, there are variables with a moderate contribution to the variance: `indus`, `nox`, `age`, `dis`, `black`, `lstat` and `medv` (between $0.1$ and $0.2$). Finally, some of them have a $R^2$ very close to $0$ (`zn`, `rm` and `ptratio`).
+
+* *Question (b)*
+
+```{r ex15b, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+lm <- lm(crim ~ ., data = boston)
+lm %>% summary() %>% print_summary_lm()
+```
+
+The multiple linear regression appears to be quite good on these data. The model is significative and the $R^2$ is better than the one for every univariate linear model. We can reject the null hypothesis for the features `zn`, `dis`, `rad`, `black` and `medv`. The significative variable are not the same than the one for the univariate models. This may be the result of some colinearity problems.
+
+* *Question (c)*
+
+```{r ex15c}
+coefs <- tibble(variable = names(lm$coefficients), beta_multi = lm$coefficients) %>% slice(-1)
+coefs$beta_uni <- lm_list %>% map(~ .x$coefficients[-1]) %>% unlist()
+```
+
+```{r ex15ci, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.width=15, fig.height=10, fig.cap='Plot of the coefficients from the univariate models against the multivariate model.', fig.align='center'}
+p <- coefs %>% filter(variable != 'nox') %>%
+  ggplot() +
+  geom_point(aes(x = beta_uni, y = beta_multi), size = 6) +
+  geom_text(aes(x = beta_uni, y = beta_multi, label = variable), size = 6, check_overlap = TRUE, vjust = 0, nudge_y = -0.13) +
+  xlab("") +
+  ylab("") +
+  theme_custom()
+
+ggplot(coefs) +
+  geom_point(aes(x = beta_uni, y = beta_multi), size = 6) +
+  geom_text(aes(x = beta_uni, y = beta_multi, label = variable), size = 6, check_overlap = TRUE, vjust = 0, nudge_y = 0.5) +
+  annotation_custom(ggplotGrob(p), xmin = 15, ymin = -6.5, xmax = 30, ymax = 3.5) +
+  geom_rect(aes(xmin = -3, xmax = 1.5, ymin = -1.5, ymax = 1.5), col = 'red', alpha = 0) +
+  geom_rect(aes(xmin = 15, xmax = 30, ymin = -5.5, ymax = 3.5), col = 'red', alpha = 0) +
+  geom_segment(aes(x = 1.5, y = -0, xend = 15, yend = 1), colour='red', size = 1, arrow = arrow(length = unit(0.5, "cm"))) +
+  annotate('text', x = 7.5, y = 0, label = 'Zoom', size = 6) +
+  xlab("$\\beta$ from univariate models") +
+  ylab("$\\beta$ from multivariate model") +
+  theme_custom()
+```
+
+As we see, the estimated coefficients are very different if we fit a multivariate model or multiple univariate models.
+
+* *Question (d)*
+
+```{r ex15d, message=FALSE, warning=FALSE}
+lm_list <- vector("list", length = length(boston)-1)
+for(i in seq(1, length(boston)-1)){
+  name <- variable[i]
+  lm_list[[i]] <- lm(boston$crim ~ boston[[name]] + I(boston[[name]]^2) + I(boston[[name]]^3))
+}
+names(lm_list) <- variable
+```
+
+```{r ex15di, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+for(i in seq_along(lm_list)){
+  cat(glue::glue("<details><summary>Variable `{variable[i]}`</summary><p>"))
+  lm_list[[i]] %>% summary() %>% print_summary_lm()
+  cat(glue::glue("</p></details>"))
+}
+```
+
+Some variable are statistically significative until their cubic version (`indus`, `nox`, `dis`, `ptratio` and `medv`). So, we can conclude to some non linear relationship between the response and some of the predictors. However, we should also take a look at the colinearity between the predictors because of them seem to be very correlated, and that can change a lot the results.
+

@@ -1,0 +1,383 @@
+# An Overview of Statistical Learning {#overview}
+
+```{r setup, include=FALSE}
+fig.process <- function(x) {
+  if (!grepl('[.]pdf$', x)) return(x) 
+  x2 = sub('pdf$', 'png', x)
+  magick::image_write(magick::image_read(x, density = 300), x2, format = 'png')
+  x2
+}
+
+knitr::opts_chunk$set(echo = TRUE, fig.process = fig.process)
+options(knitr.graphics.auto_pdf = TRUE)
+```
+
+
+```{r load_package, include=FALSE}
+library(GGally)
+library(gridExtra)
+library(ISLR)
+library(kableExtra)
+library(knitr)
+library(MASS)
+library(plotly)
+library(reshape2)
+library(tidyverse)
+
+source('https://gist.githubusercontent.com/StevenGolovkine/55b9a2b6c849deadf86e051ed78ae149/raw/1452f33204a44c47b71bd22536594cce7e1e74e3/ggcustom.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/632632f470375390853529be54b9ebeb/raw/c07317788844d3d904aab7908e9cfe3d9df29931/summary_functions.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_df.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_summary_df.R')
+```
+
+
+## Conceptual Exercises
+
+### Exercise 1.
+
+This exercise is about *flexible* and *inflexible* statistical learning methods. First, let's recall what are the differences between these methods. The aim of statistical learning is to estimate a function $f$ such that $f$ is a link between the input $X$ and the output $Y$. A *flexible* model means that we do not assume a particular form for $f$. So, an advantage of such models is to generally provide a better fit to the data (however, be careful with the overfitting) but the number of parameters to estimate is usually large. At the contrary, an *inflexible* model has less parameters but we have to prespecified a particular form for the data (for example linear), even if it poorly fits the data.
+
+* *Question (a)*
+
+The case of sample size $n$ extremely large and number of predictors $p$ small is the ideal case in statistical learning. A flexible method should perform very well in this case. The flexible method will tend to reduce the bias and won't be too sensitive to the noise thanks to the large size of the sample. 
+
+* *Question (b)*
+
+The case of sample size $n$ small and number of predictors $p$ very large refers to the high dimensional settings. An inflexible method should show better performance than a flexible one in this case. Here, the trade-off between bias and variance is very important. We allow some bias by using an inflexible model with the hope to reduce a lot the noise in the data.
+
+* *Question (c)*
+
+In the case of highly non-linear relationship between predictors and reponse, a flexible model will perform better than an inflexible one. In case of inflexible model, we set a particular form for $f$ and we usually can not specified a function for $f$ if $f$ is highly non-linear.
+
+* *Question (d)*
+
+If the variance of the error terms is extremely high, an inflexible model will perform better than a flexible one. Because, if we set a flexible method, the function $f$ will tend to follow the error and thus will overfit.
+
+### Exercise 2.
+
+This exercise is about the difference between *regression* and *classification* problems and the *inference* or *prediction* purposes. Let's recall what these different terms mean. A *regression* task is done when we try to infer or predict an output which takes continuous values. A *classification* task is done when we try to infer or predict an output which takes discrete values. An *inference* purpose consists in the understanding of how the features have an influence on the response, whereas a *prediction* purpose is to find a value of the output variable based on a new realisation of the dependant variables and the knowledge of some features and outputs.  
+
+* *Question (a)*
+
+This is a regression problem because the CEO salary is a continuous variable. We aim to do inference here (*understanding which factors*). $n$ is equal to 500 (top 500 firms in the US), $p$ equals to 3 (profit, number of employees and industry) and the output is the CEO salary.
+
+* *Question (b)*
+
+This is a classification problem because the output varible is discrete (*success* or *failure*). We aim to do prediction (*launching a new product and wish to know whether it will be a success or a failure*). $n$ is equal to 20, $p$ equals to 13 (price charged for the product, marketing budget, competition price, and ten other variables) and the output variable is *success or failure*.
+
+* *Question (c)*
+
+This is a regression problem because the % change in the US dollar is continuous. We aim to do prediction (*We are interesting in predicting*). $n$ is equal to 52 (number of week in 2012), $p$ equals to 3 (the % change in the US market, the % change in the British market, and the % change in the German market) and the output variable is the % change in the dollar.
+
+### Exercise 3.
+
+This exercise is about the bias-variance decomposition of the mean square error. 
+
+Consider the following model: $y = f(x) + \epsilon$. We denote by $\widehat{y}$ and $\widehat{f}$ the estimation of $y$ and $f$. The mean square error is:
+
+
+\[MSE = \mathbb{E}\left[(\widehat{y} - y)^2\right].\]
+
+
+As a more complex model leads to a better estimation of the function $f$, the training error decreases as the model complexity increases. The MSE can be decomposed into three terms: variance, squared bias and irreducible error. "Variance refers to the amount by which $\widehat{f}$ would change if we estimated it using a different training data set." So, the variance increases with the model complexity because a complex model is very flexible and gives a different function for each training data set. Conversely, the bias decreases with the model complexity because such a model will fit perfectly the data. The irreducible error is equal to $Var(\epsilon)$. The test error has a U-shape because it is the sum of the three previous curves. 
+
+```{r ex3, echo=FALSE, cache=TRUE, dev='tikz', fig.height=5, fig.width=10, fig.align = 'center', message=TRUE, warning=TRUE, fig.cap='Model complexity.'}
+df <- tibble(x = seq(-1, 1.5, 0.1), 
+             Variance = exp(seq(-1, 1.5, by = 0.1)),
+             'Squared Bias' = exp(-seq(-1, 1.5, by = 0.1)) + 0.2*(seq(-1, 1.5, by = 0.1) - 3),
+             'Train Error' = exp(-seq(-1, 1.5, by = 0.1)),
+             'Test Error' = seq(-1, 1.5, by = 0.1)**2 + 3,
+             'Irreducible Error' = 2.8)
+df <- melt(df, id = c('x'))
+ggplot(df) +
+  geom_line(aes(x = x, y = value, colour = variable)) +
+  annotate("text", x = -1, y = -0.5, label = "Low", size = 6) +
+  annotate("text", x = 1.5, y = -0.5, label = "High", size = 6) +
+  xlab('Model Complexity') +
+  ylab('') +
+  theme_custom() +
+  theme(axis.text.y = element_blank(), 
+        axis.text.x = element_blank(), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 16))
+```
+
+### Exercise 4.
+
+This exercise is about giving examples of real-life applications of statistical learning.
+
+<div class="figure"><span id="fig:ml_appli"></span>
+<img src="https://res.cloudinary.com/golovkine/image/upload/v1560169346/machine-learning1.png" alt="Application of Machine Learning" width="1000" />
+<p class="caption">
+From Armando Arroyo GeekStyle on <a href="https://www.linkedin.com//pulse/business-intelligence-its-relationship-big-data-geekstyle">Linkedin</a>.
+</p>
+</div>
+
+### Exercise 5.
+
+This exercise is about the difference between flexible and non-flexible statistical learning methods. 
+
+A very flexible method has for main advantage over a less flexible methods the large number of functional forms that it can take. It shows two majors drawbacks: the first one is the number of parameters to fit (usually, way more larger than the non-flexible methods) and the second one, its propension to overfit the data. Moreover, they can exhibit less interpretability. 
+
+We can prefer a less flexible approach when we want to do inference of the dataset because of the interpretability of such models. However, when the goal is prediction, we may use very flexible methods in order to (hopefully) have better results. The choice of between a very flexible and a less flexible method refers closely with the bias-variance tradeoff. In general, a very flexible one will lead to small bias, large variance and a less flexible one to large bias, small variance. 
+
+### Exercise 6.
+
+This exercise is about the difference between parametric and non-parametric approaches.
+
+Consider the following model: $Y = f(X) + \epsilon$. We aim to estimate the function $f$. For the parametric approaches, we assume a particular form for $f$, linear for example, and then, estimate some parameters. However, if the form we assume is not the right one, our estimate won't be very accurate. At the opposite, non-parametric approaches do not assume a particular form for $f$. So, the estimate of $f$ will be close to the true functional form of $f$. But, we need a lot of data (compare to parametric approches) to obtain an accurate estimate of $f$.
+
+### Exercise 7.
+
+This exercise is an application of $K$-nearest neighbors.
+
+| Obs | $X_1$ | $X_2$ | $X_3$ |  $Y$  |
+|:---:|:-----:|:-----:|:-----:|:-----:|
+|  1  |   0   |   3   |   0   |  Red  |
+|  2  |   2   |   0   |   0   |  Red  |
+|  3  |   0   |   1   |   3   |  Red  |
+|  4  |   0   |   1   |   2   | Green |
+|  5  |   -1  |   0   |   1   | Green |
+|  6  |   1   |   1   |   1   |  Red  |
+Table: Data
+
+```{r set_data, message=FALSE, warning=FALSE, include=FALSE}
+data <- tribble(
+  ~Obs , ~X_1  , ~X_2  , ~X_3  ,  ~Y   ,
+    0  ,   0   ,   0   ,   0   , 'Black' ,
+    1  ,   0   ,   3   ,   0   ,  'Red'  ,
+    2  ,   2   ,   0   ,   0   ,  'Red'  ,
+    3  ,   0   ,   1   ,   3   ,  'Red'  ,
+    4  ,   0   ,   1   ,   2   , 'Green' ,
+    5  ,   -1  ,   0   ,   1   , 'Green' ,
+    6  ,   1   ,   1   ,   1   ,  'Red'  
+  )
+data$Y <- as.factor(data$Y)
+```
+
+
+* *Question (a)*
+
+The euclidean distance between to two $n$-dimensional vectors $X$ and $Y$ is defined by
+$$ d(X, Y) = \sqrt{\sum_{i = 1}^n (X_i - Y_i)^2}$$
+
+|    Obs   | 1 | 2 |      3      |     4      |     5      |     6      |
+|:--------:|:-:|:-:|:-----------:|:----------:|:----------:|:----------:|
+| $d(0/i)$ | 3 | 2 | $\sqrt{10}$ | $\sqrt{5}$ | $\sqrt{2}$ | $\sqrt{3}$ |
+
+* *Question (b)*
+
+For $K = 1$, we classify the test point where the closest observation is. The closest point is the point 5, so the test point will be _Green_.
+
+* *Question (c)*
+
+For $K = 3$, we classify the test point where the three closest observation are. The three closest points are the 2, 5 and 6. Two points are red and one is green, so the test point will be _Red_.
+
+* *Question (d)*
+
+If the Bayes decision boundary in this problem is highly non-linear, we would expect the best value for K to be small because the smaller $K$ is, the more flexible the model is. So, if the model is very flexible, it will adapt to highly non-linear problem.
+
+
+## Applied Exercises
+
+### Exercise 8.
+
+This exercise is about the `College` dataset. It contains `r dim(College)[1]` observations of `r dim(College)[2]` variables about the universities and colleges in the United States. For a description of the variables, please refer to the page 54 of the book or in **R** by typing `help(College)` after loading the package `ISLR`. 
+
+* *Question (a) and (b)*
+
+```{r load_data_college}
+College <- as_tibble(College, rownames = NA)
+```
+
+* *Question (c) i* 
+
+```{r ex8c, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+College %>% summary_df() %>% print_summary_df()
+```
+
+* *Question (c) ii*
+
+```{r ex8cii, echo=FALSE, message=FALSE, warning=FALSE, fig.width=15, fig.height=15, cache=TRUE, fig.cap='Pair plots.', fig.align='center'}
+College %>% ggpairs(columns = 2:11, 
+                    upper = list(continuous = wrap("cor", size = 9)),
+                    axisLabels = 'none') + 
+  theme_custom() + 
+  theme(strip.text.y = element_text(size = 16, angle = -90)) 
+```
+
+* *Question (c) iii*
+
+```{r ex8ciii, echo=FALSE, fig.height=3, fig.width=15, message=FALSE, warning=FALSE, fig.cap='Boxplots of the variable Outstate by Private.', fig.align='center'}
+College %>% ggplot(aes(x = Private, y = Outstate)) + 
+  geom_boxplot(outlier.colour = 'red', outlier.size = 5, fill = "#56B4E9") +
+  coord_flip() + 
+  theme_custom()
+```
+
+* *Question (c) iv*
+
+```{r ex8civ, message=FALSE, warning=FALSE}
+College <- College %>% mutate(Elite = factor(Top10perc > 50))
+```
+
+```{r ex8civ2, message=FALSE, warning=FALSE, results='asis'}
+College %>% select(Elite) %>% summary_df() %>% print_summary_df()
+```
+
+```{r ex8civ3, echo=FALSE, message=FALSE, warning=FALSE, fig.height=3, fig.width=15, fig.cap='Boxplots of the variable Outstate vs Elite.', fig.align='center'}
+College %>% ggplot(aes(x = Elite, y = Outstate)) + 
+  geom_boxplot(outlier.colour = 'red', outlier.size = 5, fill = "#56B4E9") +
+  coord_flip() + 
+  theme_custom()
+```
+
+* *Question (c) v*
+
+<center>
+```{r ex8cv, message=FALSE, echo=FALSE, warning=FALSE, cache=TRUE, fig.width=10, fig.height=10, fig.cap='Histograms of the variable Apps for different binwidth.', fig.align='center'}
+grid.arrange(
+College %>% ggplot(aes(x = Apps)) +
+  geom_histogram(binwidth = 500, fill = "#56B4E9") +
+  ylab('Count') +
+  theme_custom(),
+
+College %>% ggplot(aes(x = Apps)) +
+  geom_histogram(binwidth = 1000, fill = "#56B4E9") +
+  ylab('Count') +
+  theme_custom(),
+
+College %>% ggplot(aes(x = Apps)) +
+  geom_histogram(binwidth = 2500, fill = "#56B4E9") +
+  ylab('Count') +
+  theme_custom(),
+
+College %>% ggplot(aes(x = Apps)) +
+  geom_histogram(binwidth = 5000, fill = "#56B4E9") +
+  ylab('Count') +
+  theme_custom(),
+ncol = 2, nrow = 2)
+```
+</center>
+
+* *Question (c) vi*
+
+As a brief summary, we found that there is a huge correlation between the number of full-time undergraduates and the number of applications received, accepted and students enrolled. The price to be enrolled in a private university is in mean twice as the price for a public one. But the variance of the price for the private colleges is very important. Moreover, the maximum value of the price for public universities is almost equal to the mean of the private ones (except outliers). Finally, the elite universities (the ones with new students from top 10\% of high school class) are usually more expensive than the other ones.
+
+### Exercise 9.
+
+This exercise is about the `Auto` dataset. It contains `r dim(Auto)[1]` observations of `r dim(Auto)[2]` variables about vehicles. For a description of the variables, please refer to **R** by typing `help(Auto)` after loading the package `ISLR`. 
+
+```{r load_data_auto}
+Auto <- as_tibble(Auto, rownames = NA)
+Auto <- Auto %>% select(-name) %>% 
+  mutate(cylinders = as.factor(cylinders), year = as.factor(year), origin = as.factor(origin))
+```
+
+* *Question (a), (b) and (c)*
+
+```{r ex9abc, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+Auto %>% summary_df() %>% print_summary_df()
+```
+
+* *Question (d)*
+```{r ex9d, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+Auto %>% slice(-c(10:85)) %>% summary_df() %>% print_summary_df()
+```
+
+* *Question (e)*
+
+```{r ex9e, message=FALSE, echo=FALSE, warning=FALSE, cache=TRUE, fig.width=15, fig.height=15, cache=TRUE, fig.cap='Pairs plot', fig.align='center'}
+Auto %>% ggpairs(lower = list(combo = wrap("facethist", size = 9, binwidth = 0.8)),
+                    axisLabels = 'none') + 
+  theme_custom() + 
+  theme(strip.text.y = element_text(size = 16, angle = -90)) 
+```
+
+* *Question (f)*
+
+The variables _displacement_, _weight_ and _origin_ have a huge correlation with the variable to predict, _mpg_. So, this ones could particularly useful for the prediction. The relation between these variables does not seem to be linear but instead in $\exp(-x)$. Moreover, the miles per gallon look very different depending on the origin of the car. 
+
+### Exercise 10.
+
+This exercise is about the `Boston` dataset.
+
+* *Question (a)*
+
+```{r load_data_boston}
+Boston <- as_tibble(Boston, rownames = NA)
+Boston <- Boston %>% mutate(chas = as.logical(chas), rad = as.factor(rad))
+```
+
+It contains `r dim(Boston)[1]` observations of `r dim(Boston)[2]` variables about housing values in suburbs of Boston. Each of the observation represents a suburb of Boston. For a description of the variables, please refer to **R** by typing `help(Boston)` after loading the package `MASS`. 
+
+* *Question (b)*
+
+```{r ex10b, message=FALSE, echo=FALSE, warning=FALSE, cache=TRUE, fig.width=15, fig.height=15, cache=TRUE, fig.cap='Pairs plot', fig.align='center'}
+Boston %>% ggpairs(lower = list(combo = wrap("facethist", size = 9, binwidth = 0.8)),
+                    axisLabels = 'none') + 
+  theme_custom() + 
+  theme(strip.text.y = element_text(size = 16, angle = -90)) 
+```
+
+We can see some interesting correlations in this dataset. For exemple, the mean distances to five Boston employement has a correlation of `r round(cor(Boston$dis, Boston$nox), 2)` with the nitrogen oxides concentration. Or, the lower status of the population are related to the average number of rooms per dwelling (`r round(cor(Boston$lstat, Boston$rm), 2)` for correlation). The variable that are the most related with the crime rate by town is the full-value property-tax rate per \$10,000.
+
+* *Question (c)*
+
+The variable _crim_ seems to be associated with the variables _tax_, _lstat_ and _nox_ because they have quite a large correlation with the variable of interest (cf. previous question).
+
+* *Question (d)*
+
+```{r ex10d, message=FALSE, echo=FALSE, warning=FALSE, fig.height=5, fig.width=15, fig.cap='Boxplots of some variables.', fig.align='center'}
+grid.arrange(
+Boston %>% ggplot(aes(y = crim)) + 
+  geom_boxplot(outlier.colour = 'red', outlier.size = 5, fill = "#56B4E9") +
+  coord_flip() +
+  ylab('Per capita crime rate by town') +
+  theme_custom() +
+  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank()),
+
+Boston %>% ggplot(aes(y = tax)) + 
+  geom_boxplot(outlier.colour = 'red', outlier.size = 5, fill = "#56B4E9") +
+  coord_flip() +
+  ylab('Full-value property-tax rate per $10,000') + 
+  theme_custom() +
+  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank()),
+
+Boston %>% ggplot(aes(y = ptratio)) + 
+  geom_boxplot(outlier.colour = 'red', outlier.size = 5, fill = "#56B4E9") +
+  coord_flip() + 
+  ylab('Pupil-teacher ratio by town') +
+  theme_custom() +
+  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank()),
+ncol = 1, nrow = 3)
+```
+
+Half of the suburbs have less than 10% of crime rates, but for three of them, this rate is greater than 70%. The range for this variable is very important. The tax rates do not seem to have outliers but the range is also very important. Indeed, the tax can go from under \$200,000 to above \$700,000. Finally, there are some suburbs in Boston that have a very low pupil-teacher ratio compare to the others. However, the range is not very wide.
+
+* *Question (e)*
+
+There are `r sum(Boston$chas)` suburbs that bound the Charles river.
+
+* *Question (f)*
+
+The median pupil-teacher ratio among the towns of Boston is `r median(Boston$ptratio)`%.
+
+* *Question (g)*
+
+```{r ex10g, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+Boston[which(Boston$medv == min(Boston$medv)),] %>% print_df() 
+```
+
+Two suburbs share the lowest median value of owner-occupied homes in \$1000s. They have pretty the same values for the other predictors (except maybe for the crime rate). 
+
+* *Question (h)*
+
+There are `r sum(Boston$rm > 7)` suburbs with an average of number of rooms per dwelling larger than 7 and  `r sum(Boston$rm > 8)` with more than 8.
+
+```{r ex10hbis, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+Boston[which(Boston$rm > 8),] %>% print_df()
+```
+
