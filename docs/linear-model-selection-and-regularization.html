@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 6 Linear Model Selection and Regularization | An Introduction to Statistical Learning</title>
+  <meta name="description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
+  <meta name="generator" content="bookdown 0.14 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 6 Linear Model Selection and Regularization | An Introduction to Statistical Learning" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 6 Linear Model Selection and Regularization | An Introduction to Statistical Learning" />
+  
+  <meta name="twitter:description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
+  
+
+<meta name="author" content="Steven Golovkine" />
+
+
+<meta name="date" content="2019-11-18" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="resampling-methods.html"/>
+<link rel="next" href="references.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Introduction to Statistical Learning</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="overview.html"><a href="overview.html"><i class="fa fa-check"></i><b>2</b> An Overview of Statistical Learning</a><ul>
+<li class="chapter" data-level="2.1" data-path="overview.html"><a href="overview.html#conceptual-exercises"><i class="fa fa-check"></i><b>2.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="overview.html"><a href="overview.html#exercise-1."><i class="fa fa-check"></i><b>2.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="2.1.2" data-path="overview.html"><a href="overview.html#exercise-2."><i class="fa fa-check"></i><b>2.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="2.1.3" data-path="overview.html"><a href="overview.html#exercise-3."><i class="fa fa-check"></i><b>2.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="2.1.4" data-path="overview.html"><a href="overview.html#exercise-4."><i class="fa fa-check"></i><b>2.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="2.1.5" data-path="overview.html"><a href="overview.html#exercise-5."><i class="fa fa-check"></i><b>2.1.5</b> Exercise 5.</a></li>
+<li class="chapter" data-level="2.1.6" data-path="overview.html"><a href="overview.html#exercise-6."><i class="fa fa-check"></i><b>2.1.6</b> Exercise 6.</a></li>
+<li class="chapter" data-level="2.1.7" data-path="overview.html"><a href="overview.html#exercise-7."><i class="fa fa-check"></i><b>2.1.7</b> Exercise 7.</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="overview.html"><a href="overview.html#applied-exercises"><i class="fa fa-check"></i><b>2.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="overview.html"><a href="overview.html#exercise-8."><i class="fa fa-check"></i><b>2.2.1</b> Exercise 8.</a></li>
+<li class="chapter" data-level="2.2.2" data-path="overview.html"><a href="overview.html#exercise-9."><i class="fa fa-check"></i><b>2.2.2</b> Exercise 9.</a></li>
+<li class="chapter" data-level="2.2.3" data-path="overview.html"><a href="overview.html#exercise-10."><i class="fa fa-check"></i><b>2.2.3</b> Exercise 10.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="linear-regression.html"><a href="linear-regression.html"><i class="fa fa-check"></i><b>3</b> Linear Regression</a><ul>
+<li class="chapter" data-level="3.1" data-path="linear-regression.html"><a href="linear-regression.html#conceptual-exercises-1"><i class="fa fa-check"></i><b>3.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="linear-regression.html"><a href="linear-regression.html#exercise-1.-1"><i class="fa fa-check"></i><b>3.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="3.1.2" data-path="linear-regression.html"><a href="linear-regression.html#exercise-2.-1"><i class="fa fa-check"></i><b>3.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="3.1.3" data-path="linear-regression.html"><a href="linear-regression.html#exercise-3.-1"><i class="fa fa-check"></i><b>3.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="3.1.4" data-path="linear-regression.html"><a href="linear-regression.html#exercise-4.-1"><i class="fa fa-check"></i><b>3.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="3.1.5" data-path="linear-regression.html"><a href="linear-regression.html#exercise-5.-1"><i class="fa fa-check"></i><b>3.1.5</b> Exercise 5.</a></li>
+<li class="chapter" data-level="3.1.6" data-path="linear-regression.html"><a href="linear-regression.html#exercise-6.-1"><i class="fa fa-check"></i><b>3.1.6</b> Exercise 6.</a></li>
+<li class="chapter" data-level="3.1.7" data-path="linear-regression.html"><a href="linear-regression.html#exercise-7.-1"><i class="fa fa-check"></i><b>3.1.7</b> Exercise 7.</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="linear-regression.html"><a href="linear-regression.html#applied-exercises-1"><i class="fa fa-check"></i><b>3.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="linear-regression.html"><a href="linear-regression.html#exercise-8.-1"><i class="fa fa-check"></i><b>3.2.1</b> Exercise 8.</a></li>
+<li class="chapter" data-level="3.2.2" data-path="linear-regression.html"><a href="linear-regression.html#exercise-9.-1"><i class="fa fa-check"></i><b>3.2.2</b> Exercise 9.</a></li>
+<li class="chapter" data-level="3.2.3" data-path="linear-regression.html"><a href="linear-regression.html#exercise-10.-1"><i class="fa fa-check"></i><b>3.2.3</b> Exercise 10.</a></li>
+<li class="chapter" data-level="3.2.4" data-path="linear-regression.html"><a href="linear-regression.html#exercise-11."><i class="fa fa-check"></i><b>3.2.4</b> Exercise 11.</a></li>
+<li class="chapter" data-level="3.2.5" data-path="linear-regression.html"><a href="linear-regression.html#exercise-12."><i class="fa fa-check"></i><b>3.2.5</b> Exercise 12.</a></li>
+<li class="chapter" data-level="3.2.6" data-path="linear-regression.html"><a href="linear-regression.html#exercise-13."><i class="fa fa-check"></i><b>3.2.6</b> Exercise 13.</a></li>
+<li class="chapter" data-level="3.2.7" data-path="linear-regression.html"><a href="linear-regression.html#exercise-14."><i class="fa fa-check"></i><b>3.2.7</b> Exercise 14.</a></li>
+<li class="chapter" data-level="3.2.8" data-path="linear-regression.html"><a href="linear-regression.html#exercise-15."><i class="fa fa-check"></i><b>3.2.8</b> Exercise 15.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="classification.html"><a href="classification.html"><i class="fa fa-check"></i><b>4</b> Classification</a><ul>
+<li class="chapter" data-level="4.1" data-path="classification.html"><a href="classification.html#conceptual-exercises-2"><i class="fa fa-check"></i><b>4.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="classification.html"><a href="classification.html#exercise-1.-2"><i class="fa fa-check"></i><b>4.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="4.1.2" data-path="classification.html"><a href="classification.html#exercise-2.-2"><i class="fa fa-check"></i><b>4.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="4.1.3" data-path="classification.html"><a href="classification.html#exercise-3.-2"><i class="fa fa-check"></i><b>4.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="4.1.4" data-path="classification.html"><a href="classification.html#exercise-4.-2"><i class="fa fa-check"></i><b>4.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="4.1.5" data-path="classification.html"><a href="classification.html#exercise-5.-2"><i class="fa fa-check"></i><b>4.1.5</b> Exercise 5.</a></li>
+<li class="chapter" data-level="4.1.6" data-path="classification.html"><a href="classification.html#exercise-6.-2"><i class="fa fa-check"></i><b>4.1.6</b> Exercise 6.</a></li>
+<li class="chapter" data-level="4.1.7" data-path="classification.html"><a href="classification.html#exercise-7.-2"><i class="fa fa-check"></i><b>4.1.7</b> Exercise 7.</a></li>
+<li class="chapter" data-level="4.1.8" data-path="classification.html"><a href="classification.html#exercise-8.-2"><i class="fa fa-check"></i><b>4.1.8</b> Exercise 8.</a></li>
+<li class="chapter" data-level="4.1.9" data-path="classification.html"><a href="classification.html#exercise-9.-2"><i class="fa fa-check"></i><b>4.1.9</b> Exercise 9.</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="classification.html"><a href="classification.html#applied-exercises-2"><i class="fa fa-check"></i><b>4.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="classification.html"><a href="classification.html#exercise-10.-2"><i class="fa fa-check"></i><b>4.2.1</b> Exercise 10.</a></li>
+<li class="chapter" data-level="4.2.2" data-path="classification.html"><a href="classification.html#exercise-11.-1"><i class="fa fa-check"></i><b>4.2.2</b> Exercise 11.</a></li>
+<li class="chapter" data-level="4.2.3" data-path="classification.html"><a href="classification.html#exercise-12.-1"><i class="fa fa-check"></i><b>4.2.3</b> Exercise 12.</a></li>
+<li class="chapter" data-level="4.2.4" data-path="classification.html"><a href="classification.html#exercise-13.-1"><i class="fa fa-check"></i><b>4.2.4</b> Exercise 13.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="resampling-methods.html"><a href="resampling-methods.html"><i class="fa fa-check"></i><b>5</b> Resampling Methods</a><ul>
+<li class="chapter" data-level="5.1" data-path="resampling-methods.html"><a href="resampling-methods.html#conceptual-exercises-3"><i class="fa fa-check"></i><b>5.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-1.-3"><i class="fa fa-check"></i><b>5.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="5.1.2" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-2.-3"><i class="fa fa-check"></i><b>5.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="5.1.3" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-3.-3"><i class="fa fa-check"></i><b>5.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="5.1.4" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-4.-3"><i class="fa fa-check"></i><b>5.1.4</b> Exercise 4.</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="resampling-methods.html"><a href="resampling-methods.html#applied-exercises-3"><i class="fa fa-check"></i><b>5.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-5.-3"><i class="fa fa-check"></i><b>5.2.1</b> Exercise 5.</a></li>
+<li class="chapter" data-level="5.2.2" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-6.-3"><i class="fa fa-check"></i><b>5.2.2</b> Exercise 6.</a></li>
+<li class="chapter" data-level="5.2.3" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-7.-3"><i class="fa fa-check"></i><b>5.2.3</b> Exercise 7.</a></li>
+<li class="chapter" data-level="5.2.4" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-8.-3"><i class="fa fa-check"></i><b>5.2.4</b> Exercise 8.</a></li>
+<li class="chapter" data-level="5.2.5" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-9.-3"><i class="fa fa-check"></i><b>5.2.5</b> Exercise 9.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html"><i class="fa fa-check"></i><b>6</b> Linear Model Selection and Regularization</a><ul>
+<li class="chapter" data-level="6.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#conceptual-exercises-4"><i class="fa fa-check"></i><b>6.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-1.-4"><i class="fa fa-check"></i><b>6.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="6.1.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-2.-4"><i class="fa fa-check"></i><b>6.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="6.1.3" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-3.-4"><i class="fa fa-check"></i><b>6.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="6.1.4" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-4.-4"><i class="fa fa-check"></i><b>6.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="6.1.5" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-5.-4"><i class="fa fa-check"></i><b>6.1.5</b> Exercise 5.</a></li>
+<li class="chapter" data-level="6.1.6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-6.-4"><i class="fa fa-check"></i><b>6.1.6</b> Exercise 6.</a></li>
+<li class="chapter" data-level="6.1.7" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-7.-4"><i class="fa fa-check"></i><b>6.1.7</b> Exercise 7.</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#applied-exercises-4"><i class="fa fa-check"></i><b>6.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-8.-4"><i class="fa fa-check"></i><b>6.2.1</b> Exercise 8.</a></li>
+<li class="chapter" data-level="6.2.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-9.-4"><i class="fa fa-check"></i><b>6.2.2</b> Exercise 9.</a></li>
+<li class="chapter" data-level="6.2.3" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-10.-3"><i class="fa fa-check"></i><b>6.2.3</b> Exercise 10.</a></li>
+<li class="chapter" data-level="6.2.4" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-11.-2"><i class="fa fa-check"></i><b>6.2.4</b> Exercise 11.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">An Introduction to Statistical Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="linear-model-selection-and-regularization" class="section level1">
+<h1><span class="header-section-number">Chapter 6</span> Linear Model Selection and Regularization</h1>
+<div id="conceptual-exercises-4" class="section level2">
+<h2><span class="header-section-number">6.1</span> Conceptual Exercises</h2>
+<div id="exercise-1.-4" class="section level3">
+<h3><span class="header-section-number">6.1.1</span> Exercise 1.</h3>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>The model with <span class="math inline">\(k\)</span> predictors which has the smallest training RSS should be the best subset model because this model contains the <span class="math inline">\(k\)</span> predictors which give the smallest training RSS after trying all of the models with <span class="math inline">\(k\)</span> predictors. However, by luck, the model with <span class="math inline">\(k\)</span> predictors selected with forward stepwise or backward stepwise procdedure can be the same than the one from the best subset selection.</p>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>We can not say which model with <span class="math inline">\(k\)</span> predictors has the smallest test RSS because the best subset selection can overfit (it looks god on training data) and forward and backaward selection might not lead to the same model with <span class="math inline">\(k\)</span> predictors.</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>The predictors in the <span class="math inline">\(k\)</span>-variable model identified by forward and backward stepwise are a subset of the predictors in the <span class="math inline">\((k+1)\)</span>-variable model identified by forward and backward stepwise selection by definition of the forward and backward stepwise selection procedure (it is the step 2.a of both algorithms). The predictors in the <span class="math inline">\(k\)</span>-variable model identified by backward (resp. forward) stepwise are <em>not</em> a subset of the predictors in the <span class="math inline">\((k+1)\)</span>-variable model identified by forward (resp. backward) stepwise selection because these two procdedure are different. The predictors in the <span class="math inline">\(k\)</span>-variable model identified by best subset are <em>not</em> necessarily a subset of the predictors in the <span class="math inline">\((k+1)\)</span>-variable model identified by best subset selection because for any particular <span class="math inline">\(k\)</span>, the best subset selection considers all the models with <span class="math inline">\(k\)</span> predictors, so these model can be very different for two differents <span class="math inline">\(k\)</span>.</p>
+</div>
+<div id="exercise-2.-4" class="section level3">
+<h3><span class="header-section-number">6.1.2</span> Exercise 2.</h3>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>The lasso, relative to least squares, is less flexible (because we add a constraint) and hence will give improved prediction accuracy when its increase in bias is less than its decrease in variance bacause the variance of the lasso estimator will substantially decrease and the bias will slightly increase has the <span class="math inline">\(\lambda\)</span> increase.</p>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>The ridge regression has the same properties relative to least squares than the lasso (but different constraints).</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>Non-linear methods, relative to least squares, are more flexible and hence will give improved prediction accuracy when its increase in variance is less than its decrease in bias because non-linear methods tends to have large variance and low bias.</p>
+</div>
+<div id="exercise-3.-4" class="section level3">
+<h3><span class="header-section-number">6.1.3</span> Exercise 3.</h3>
+<p>Suppose we estimate the regression coefficients in a linear regression model by minimizing</p>
+<p><span class="math display">\[ \mid\mid Y - X\beta \mid\mid^2 \quad\text{subject to}\quad \mid\mid \beta \mid\mid_1 \leq s\]</span></p>
+<p>for a particular value of <span class="math inline">\(s\)</span>. This minimization corresponds to the Lasso regression.</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>When <span class="math inline">\(s\)</span> increases from <span class="math inline">\(0\)</span>, we increase the flexibility of the model. So, there is less constraint with large <span class="math inline">\(s\)</span>. And, the training RSS steadily decreases with an increasing of <span class="math inline">\(s\)</span>.</p>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>The test RSS will decrease at the beginning when <span class="math inline">\(s\)</span> starts to increase from 0. And then, it will reach a minimum point and finally, restart to increase when the model overfits.</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>The fewer the constraints the larger the variance. The variance steadily increases with <span class="math inline">\(s\)</span>.</p>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>As the opposite, the fewer the constraints the smaller the bias. The bias steadily decreases with <span class="math inline">\(s\)</span>.</p>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<p>By definition, the irreducible error is irreducible. So, it will remain constant along the change of <span class="math inline">\(s\)</span>.</p>
+</div>
+<div id="exercise-4.-4" class="section level3">
+<h3><span class="header-section-number">6.1.4</span> Exercise 4.</h3>
+<p>Suppose we estimate the regression coefficients in a linear regression model by minimizing</p>
+<p><span class="math display">\[ \mid\mid Y - X\beta \mid\mid^2 + \lambda\mid\mid \beta \mid\mid_2^2\]</span></p>
+<p>for a particular value of <span class="math inline">\(s\)</span>. This minimization corresponds to the Ridge regression.</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>When <span class="math inline">\(\lambda\)</span> increases from <span class="math inline">\(0\)</span>, we decrease the flexibility of the model. So, there is more constraint with large <span class="math inline">\(\lambda\)</span>. And, the training RSS steadily increases with an increasing of <span class="math inline">\(\lambda\)</span>.</p>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>The test RSS will decrease at the beginning when <span class="math inline">\(\lambda\)</span> starts to increase from 0. And then, it will reach a minimum point and finally, restart to increase when the model overfits.</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>The harder the constraints the smaller the variance. The variance steadily decreases with <span class="math inline">\(\lambda\)</span>.</p>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>As the opposite, the harder the constraints the larger the bias. The bias steadily increases with <span class="math inline">\(\lambda\)</span>.</p>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<p>By definition, the irreducible error is irreducible. So, it will remain constant along the change of <span class="math inline">\(\lambda\)</span>.</p>
+</div>
+<div id="exercise-5.-4" class="section level3">
+<h3><span class="header-section-number">6.1.5</span> Exercise 5.</h3>
+<p>It is well-known that ridge regression tends to give similar coefficient values to correlated variables, whereas the lasso may give quite different coefficient values to correlated variables. We will now explore this property in a very simple setting.</p>
+<p>Suppose that <span class="math inline">\(n = 2\)</span>, <span class="math inline">\(p = 2\)</span>, <span class="math inline">\(x_{11} = x_{12}\)</span>, <span class="math inline">\(x_{21} = x_{22}\)</span>. Furthermore, suppose that <span class="math inline">\(y_1 + y_2 = 0\)</span> and <span class="math inline">\(x_{11} + x_{21} = 0\)</span> and <span class="math inline">\(x_{12} + x_{22} = 0\)</span>, so that the estimate for the intercept in a least squares, ridge regression, or lasso model is zero: <span class="math inline">\(\widehat{β}_0 = 0\)</span>.</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>The ridge regression optimization problem is written:</p>
+<p><span class="math display">\[ \arg \min_{\beta_1, \beta_2} \mathcal{L}(\beta_1, \beta_2) = \arg \min_{\beta_1, \beta_2} \left(y_1 - \beta_1x_{11} - \beta_2x_{12}\right)^2 + \left(y_2 - \beta_1x_{21} - \beta_2x_{22}\right)^2 + \lambda\left(\beta_1^2 + \beta_2^2\right)\]</span></p>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>By taking the partial derivatives to <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> and setting to <span class="math inline">\(0\)</span>.</p>
+<p><span class="math display">\[\frac{\partial \mathcal{L}(\beta_1, \beta_2)}{\partial\beta_1} = 0 \Leftrightarrow -2x_{11}\left(y_1 - \beta_1x_{11} - \beta_2x_{12}\right) - 2x_{21}\left(y_2 - \beta_1x_{21} - \beta_2x_{22}\right) + 2\lambda\beta_1 = 0\]</span></p>
+<p><span class="math display">\[\frac{\partial \mathcal{L}(\beta_1, \beta_2)}{\partial\beta_2} = 0 \Leftrightarrow -2x_{12}\left(y_1 - \beta_1x_{11} - \beta_2x_{12}\right) - 2x_{22}\left(y_2 - \beta_1x_{21} - \beta_2x_{22}\right) + 2\lambda\beta_2 = 0\]</span></p>
+<p>Using <span class="math inline">\(x_{11} = x_{12}\)</span> and <span class="math inline">\(x_{22} = x_{21}\)</span>, we found</p>
+<p><span class="math display">\[(\beta_1 + \beta_2)(x_{11} + x_{21}) + \lambda\beta_1 = x_{11}y_1 + x_{21}y_2\]</span></p>
+<p>and</p>
+<p><span class="math display">\[(\beta_1 + \beta_2)(x_{12} + x_{22}) + \lambda\beta_2 = x_{11}y_1 + x_{21}y_2\]</span></p>
+<p>Then, using <span class="math inline">\(x_{11} + x_{21} = 0\)</span> and <span class="math inline">\(x_{12} + x_{22} = 0\)</span>, we arrive to</p>
+<p><span class="math display">\[\left\{
+\begin{array}{r c l}
+\lambda\beta_1 &amp;=&amp; x_{11}y_1 + x_{21}y_2\\
+\lambda\beta_2 &amp;=&amp; x_{11}y_1 + x_{21}y_2
+\end{array}
+\right. \Leftrightarrow \beta_1 = \beta_2\]</span></p>
+<p>So, the ridge coefficient estimates satisfy <span class="math inline">\(\widehat{\beta_1} = \widehat{\beta_2}\)</span>.</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>The lasso regression optimization problem is written:</p>
+<p><span class="math display">\[ \arg \min_{\beta_1, \beta_2} \mathcal{L}(\beta_1, \beta_2) = \arg \min_{\beta_1, \beta_2} \left(y_1 - \beta_1x_{11} - \beta_2x_{12}\right)^2 + \left(y_2 - \beta_1x_{21} - \beta_2x_{22}\right)^2 + \lambda\left(\mid\beta_1\mid + \mid\beta_2\mid\right)\]</span></p>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>By taking the partial derivatives to <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> and setting to <span class="math inline">\(0\)</span>.</p>
+<p><span class="math display">\[\frac{\partial \mathcal{L}(\beta_1, \beta_2)}{\partial\beta_1} = 0 \Leftrightarrow -2x_{11}\left(y_1 - \beta_1x_{11} - \beta_2x_{12}\right) - 2x_{21}\left(y_2 - \beta_1x_{21} - \beta_2x_{22}\right) + \lambda\frac{\mid\beta_1\mid}{\beta_1} = 0\]</span></p>
+<p><span class="math display">\[\frac{\partial \mathcal{L}(\beta_1, \beta_2)}{\partial\beta_2} = 0 \Leftrightarrow -2x_{12}\left(y_1 - \beta_1x_{11} - \beta_2x_{12}\right) - 2x_{22}\left(y_2 - \beta_1x_{21} - \beta_2x_{22}\right) + \lambda\frac{\mid\beta_2\mid}{\beta_2} = 0\]</span></p>
+<p>Using <span class="math inline">\(x_{11} = x_{12}\)</span> and <span class="math inline">\(x_{22} = x_{21}\)</span>, we found</p>
+<p><span class="math display">\[(\beta_1 + \beta_2)(x_{11} + x_{21}) + \lambda\frac{\mid\beta_1\mid}{2\beta_1} = x_{11}y_1 + x_{21}y_2\]</span></p>
+<p>and</p>
+<p><span class="math display">\[(\beta_1 + \beta_2)(x_{12} + x_{22}) + \lambda\frac{\mid\beta_2\mid}{2\beta_2} = x_{11}y_1 + x_{21}y_2\]</span></p>
+<p>Then, using <span class="math inline">\(x_{11} + x_{21} = 0\)</span> and <span class="math inline">\(x_{12} + x_{22} = 0\)</span>, we arrive to</p>
+<p><span class="math display">\[\left\{
+\begin{array}{r c l}
+\lambda\frac{\mid\beta_1\mid}{2\beta_1} &amp;=&amp; x_{11}y_1 + x_{21}y_2\\
+\lambda\frac{\mid\beta_2\mid}{2\beta_2} &amp;=&amp; x_{11}y_1 + x_{21}y_2
+\end{array}
+\right. \Leftrightarrow \frac{\mid\beta_1\mid}{\beta_1} = \frac{\mid\beta_2\mid}{\beta_2}\]</span></p>
+<p>So, the ridge coefficient estimates satisfy <span class="math inline">\(\frac{\mid\beta_1\mid}{\beta_1} = \frac{\mid\beta_2\mid}{\beta_2}\)</span>. So, there are an infinite number of solutions for this equation. The only constraint is that <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> must have the same sign (and different of <span class="math inline">\(0\)</span>).</p>
+</div>
+<div id="exercise-6.-4" class="section level3">
+<h3><span class="header-section-number">6.1.6</span> Exercise 6.</h3>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>The equation (6.12) with <span class="math inline">\(p = 1\)</span> is written:</p>
+<p><span class="math display">\[L = \left(y_1 - \beta_1\right)^2 + \lambda\beta_1^2\]</span></p>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="linear-model-selection-and-regularization.html#cb101-1"></a>y &lt;-<span class="st"> </span><span class="dv">2</span>; lambda &lt;-<span class="st"> </span><span class="dv">10</span></span>
+<span id="cb101-2"><a href="linear-model-selection-and-regularization.html#cb101-2"></a>beta &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="op">-</span><span class="dv">10</span>, <span class="dv">10</span>, <span class="fl">0.1</span>)</span>
+<span id="cb101-3"><a href="linear-model-selection-and-regularization.html#cb101-3"></a>ridge &lt;-<span class="st"> </span><span class="cf">function</span>(beta, y, lambda) <span class="kw">return</span>((y <span class="op">-</span><span class="st"> </span>beta)<span class="op">**</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>lambda<span class="op">*</span>beta<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb101-4"><a href="linear-model-selection-and-regularization.html#cb101-4"></a>df &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">beta =</span> beta, <span class="dt">L =</span> <span class="kw">ridge</span>(beta, y, lambda))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex6aii"></span>
+<img src="05-regularization_files/figure-html/ex6aii-1.png" alt="The ridge regression optimization problem is solved by (6.14)" width="960" />
+<p class="caption">
+Figure 6.1: The ridge regression optimization problem is solved by (6.14)
+</p>
+</div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>The equation (6.13) with <span class="math inline">\(p = 1\)</span> is written:</p>
+<p><span class="math display">\[L = \left(y_1 - \beta_1\right)^2 + \lambda\mid\beta_1\mid\]</span></p>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="linear-model-selection-and-regularization.html#cb102-1"></a>y &lt;-<span class="st"> </span><span class="dv">2</span>; lambda &lt;-<span class="st"> </span><span class="dv">10</span></span>
+<span id="cb102-2"><a href="linear-model-selection-and-regularization.html#cb102-2"></a>beta &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="op">-</span><span class="dv">10</span>, <span class="dv">10</span>, <span class="fl">0.1</span>)</span>
+<span id="cb102-3"><a href="linear-model-selection-and-regularization.html#cb102-3"></a>ridge &lt;-<span class="st"> </span><span class="cf">function</span>(beta, y, lambda) <span class="kw">return</span>((y <span class="op">-</span><span class="st"> </span>beta)<span class="op">**</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>lambda<span class="op">*</span><span class="kw">abs</span>(beta))</span>
+<span id="cb102-4"><a href="linear-model-selection-and-regularization.html#cb102-4"></a>df &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">beta =</span> beta, <span class="dt">L =</span> <span class="kw">ridge</span>(beta, y, lambda))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex6bii"></span>
+<img src="05-regularization_files/figure-html/ex6bii-1.png" alt="The lasso regression optimization problem is solved by (6.15)" width="960" />
+<p class="caption">
+Figure 6.2: The lasso regression optimization problem is solved by (6.15)
+</p>
+</div>
+</div>
+<div id="exercise-7.-4" class="section level3">
+<h3><span class="header-section-number">6.1.7</span> Exercise 7.</h3>
+<p>We will now derive the Bayesian connection to the lasso and ridge regression.</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>Suppose the regression model: <span class="math inline">\(Y = X\beta + \epsilon\)</span>, where <span class="math inline">\(\epsilon \sim \mathcal{N}(0, \sigma^2I_n)\)</span>.</p>
+<p>The likelihood of the data can be written as:</p>
+<p><span class="math display">\[\begin{align*}
+f(Y \mid X, \beta) &amp;= \prod_{i = 1}^{n} \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{1}{2\sigma^2}\left(y_i - x_i\beta\right)^2\right)\\ 
+  &amp;= \left(\frac{1}{2\pi\sigma^2}\right)^{n / 2}\exp\left(-\frac{1}{2\sigma^2}\sum_{i = 1}^n \left(y_i - x_i\beta\right)^2\right)
+\end{align*}\]</span></p>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>We have the following prior on <span class="math inline">\(\beta\)</span>: <span class="math inline">\(p(\beta) = \frac{1}{2b}\exp(-\mid\beta\mid / b)\)</span>.</p>
+<p>So, the posterior distribution for <span class="math inline">\(\beta\)</span> is:
+<span class="math display">\[\begin{align*}
+p(\beta \mid Y, X) &amp;\propto f(Y \mid X, \beta)p(\beta) \\
+                   &amp;\propto \left(\frac{1}{2\pi\sigma^2}\right)^{n / 2}\exp\left(-\frac{1}{2\sigma^2}\sum_{i = 1}^n \left(y_i - x_i\beta\right)^2\right)\frac{1}{2b}\exp(-\mid\beta\mid / b) \\
+                   &amp;\propto \frac{1}{2b}\left(\frac{1}{2\pi\sigma^2}\right)^{n / 2}\exp\left(-\frac{1}{2\sigma^2}\sum_{i = 1}^n \left(y_i - x_i\beta\right)^2 - \frac{\mid\beta\mid}{b} \right)
+\end{align*}\]</span></p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>The mode for <span class="math inline">\(\beta\)</span> under this posterior distribution is the maximum of <span class="math inline">\(p(\beta \mid, Y, X)\)</span>:</p>
+<p><span class="math display">\[\begin{align*}
+\max_\beta p(\beta \mid Y, X) &amp;= \min_\beta \frac{1}{2\sigma^2}\sum_{i = 1}^n \left(y_i - x_i\beta\right)^2 + \frac{\mid\beta\mid}{b} \\
+                              &amp;= \min_\beta \sum_{i = 1}^n \left(y_i - x_i\beta\right)^2 + \frac{2\sigma^2}{b}\mid\beta\mid
+\end{align*}\]</span></p>
+<p>which is equivalent to the lasso regression optimization function. So, the lasso estimate if the mode for <span class="math inline">\(\beta\)</span> under this posterior distribution.</p>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>We have the following prior on <span class="math inline">\(\beta\)</span>: <span class="math inline">\(p(\beta) = \prod_{i = 1}^p \frac{1}{\sqrt{2\pi c}}\exp(- \beta_i / 2c)\)</span>.</p>
+<p>So, the posterior distriubtion for <span class="math inline">\(\beta\)</span> is:</p>
+<p><span class="math display">\[\begin{align*}
+p(\beta \mid Y, X) &amp;\propto f(Y \mid X, \beta)p(\beta) \\
+                   &amp;\propto \left(\frac{1}{2\pi\sigma^2}\right)^{n / 2}\exp\left(-\frac{1}{2\sigma^2}\sum_{i = 1}^n \left(y_i - x_i\beta\right)^2\right)\left(\frac{1}{2\pi c}\right)^{p/2}\exp\left(- \frac{1}{2c}\sum_{i = 1}^p \beta_i^2\right) \\
+                   &amp;\propto \left(\frac{1}{2\pi c}\right)^{p/2}\left(\frac{1}{2\pi\sigma^2}\right)^{n / 2}\exp\left(-\frac{1}{2\sigma^2}\sum_{i = 1}^n \left(y_i - x_i\beta\right)^2 - \frac{1}{2c}\sum_{i = 1}^p \beta_i^2\right)
+\end{align*}\]</span></p>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<p>The mode for <span class="math inline">\(\beta\)</span> under this posterior distribution is the maximum of <span class="math inline">\(p(\beta \mid, Y, X)\)</span>:</p>
+<p><span class="math display">\[\begin{align*}
+\max_\beta p(\beta \mid Y, X) &amp;= \min_\beta \frac{1}{2\sigma^2}\sum_{i = 1}^n \left(y_i - x_i\beta\right)^2 + \frac{1}{2c}\sum_{i = 1}^p \beta_i^2 \\
+                              &amp;= \min_\beta \sum_{i = 1}^n \left(y_i - x_i\beta\right)^2 + \frac{\sigma^2}{b}\sum_{i = 1}^p  \beta_i^2
+\end{align*}\]</span></p>
+<p>which is equivalent to the ridge regression optimization function. As the posterior distribution is also gaussian, we know that the mode is also the mean.</p>
+</div>
+</div>
+<div id="applied-exercises-4" class="section level2">
+<h2><span class="header-section-number">6.2</span> Applied Exercises</h2>
+<div id="exercise-8.-4" class="section level3">
+<h3><span class="header-section-number">6.2.1</span> Exercise 8.</h3>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="linear-model-selection-and-regularization.html#cb103-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb103-2"><a href="linear-model-selection-and-regularization.html#cb103-2"></a>n &lt;-<span class="st"> </span><span class="dv">100</span></span>
+<span id="cb103-3"><a href="linear-model-selection-and-regularization.html#cb103-3"></a>X &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb103-4"><a href="linear-model-selection-and-regularization.html#cb103-4"></a>eps &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dv">0</span>, <span class="dv">1</span>)</span></code></pre></div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="linear-model-selection-and-regularization.html#cb104-1"></a>Y &lt;-<span class="st"> </span><span class="dv">5</span> <span class="op">+</span><span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span><span class="fl">0.4</span> <span class="op">*</span><span class="st"> </span>X<span class="op">**</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>X<span class="op">**</span><span class="dv">3</span> <span class="op">+</span><span class="st"> </span>eps</span></code></pre></div>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="linear-model-selection-and-regularization.html#cb105-1"></a>X &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(<span class="kw">poly</span>(X, <span class="dt">degree =</span> <span class="dv">10</span>, <span class="dt">raw =</span> <span class="ot">TRUE</span>))</span>
+<span id="cb105-2"><a href="linear-model-selection-and-regularization.html#cb105-2"></a><span class="kw">colnames</span>(X) &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;$X_{&quot;</span>, <span class="kw">colnames</span>(X), <span class="st">&quot;}$&quot;</span>)</span>
+<span id="cb105-3"><a href="linear-model-selection-and-regularization.html#cb105-3"></a>df &lt;-<span class="st"> </span>X <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">add_column</span>(Y, <span class="dt">.before =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p>First, we perform best subset selection in order to choose the best model containing the predictors <span class="math inline">\(X\)</span>, <span class="math inline">\(X^2, \dots, X^{10}\)</span>.</p>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="linear-model-selection-and-regularization.html#cb106-1"></a>reg_subset &lt;-<span class="st"> </span><span class="kw">regsubsets</span>(Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> df, <span class="dt">nvmax =</span> <span class="dv">10</span>)</span>
+<span id="cb106-2"><a href="linear-model-selection-and-regularization.html#cb106-2"></a>reg_subset<span class="op">$</span>xnames &lt;-<span class="st"> </span><span class="kw">str_sub</span>(reg_subset<span class="op">$</span>xnames, <span class="dv">2</span>, <span class="dv">-2</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex8cii"></span>
+<img src="05-regularization_files/figure-html/ex8cii-1.png" alt="Selected variables for each criteria for best subset selection." width="1440" />
+<p class="caption">
+Figure 2.2: Selected variables for each criteria for best subset selection.
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:ex8ciii"></span>
+<img src="05-regularization_files/figure-html/ex8ciii-1.png" alt="Best models according to $C_p$, $BIC$ and adjusted $R^2$ for best subset selection." width="960" />
+<p class="caption">
+Figure 2.3: Best models according to <span class="math inline">\(C_p\)</span>, <span class="math inline">\(BIC\)</span> and adjusted <span class="math inline">\(R^2\)</span> for best subset selection.
+</p>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex8civ">Table 6.1: </span>Coefficients for the best model according to <span class="math inline">\(BIC\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Intercept
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{1}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{2}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{7}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{9}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+5.00352
+</td>
+<td style="text-align:right;">
+3.05965
+</td>
+<td style="text-align:right;">
+0.25633
+</td>
+<td style="text-align:right;">
+0.81479
+</td>
+<td style="text-align:right;">
+-0.17204
+</td>
+<td style="text-align:right;">
+0.01039
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex8cv">Table 6.2: </span>Coefficients for the best model according to <span class="math inline">\(C_p\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Intercept
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{1}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{2}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{6}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{7}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{8}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{9}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+4.86923
+</td>
+<td style="text-align:right;">
+3.01089
+</td>
+<td style="text-align:right;">
+0.65315
+</td>
+<td style="text-align:right;">
+0.89162
+</td>
+<td style="text-align:right;">
+-0.09081
+</td>
+<td style="text-align:right;">
+-0.21299
+</td>
+<td style="text-align:right;">
+0.01459
+</td>
+<td style="text-align:right;">
+0.01568
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex8cvi">Table 6.3: </span>Coefficients for the best model according to Adjusted <span class="math inline">\(R^2\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Intercept
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{1}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{2}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{6}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{7}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{8}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{9}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+4.86923
+</td>
+<td style="text-align:right;">
+3.01089
+</td>
+<td style="text-align:right;">
+0.65315
+</td>
+<td style="text-align:right;">
+0.89162
+</td>
+<td style="text-align:right;">
+-0.09081
+</td>
+<td style="text-align:right;">
+-0.21299
+</td>
+<td style="text-align:right;">
+0.01459
+</td>
+<td style="text-align:right;">
+0.01568
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="linear-model-selection-and-regularization.html#cb107-1"></a>reg_subset &lt;-<span class="st"> </span><span class="kw">regsubsets</span>(Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> df, <span class="dt">nvmax =</span> <span class="dv">10</span>, <span class="dt">method =</span> <span class="st">&#39;forward&#39;</span>)</span>
+<span id="cb107-2"><a href="linear-model-selection-and-regularization.html#cb107-2"></a>reg_subset<span class="op">$</span>xnames &lt;-<span class="st"> </span><span class="kw">str_sub</span>(reg_subset<span class="op">$</span>xnames, <span class="dv">2</span>, <span class="dv">-2</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex8di"></span>
+<img src="05-regularization_files/figure-html/ex8di-1.png" alt="Selected variables for each criteria for forward selection." width="1440" />
+<p class="caption">
+Figure 6.3: Selected variables for each criteria for forward selection.
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:ex8dii"></span>
+<img src="05-regularization_files/figure-html/ex8dii-1.png" alt="Best models according to $C_p$, $BIC$ and adjusted $R^2$ for forward selection." width="960" />
+<p class="caption">
+Figure 6.4: Best models according to <span class="math inline">\(C_p\)</span>, <span class="math inline">\(BIC\)</span> and adjusted <span class="math inline">\(R^2\)</span> for forward selection.
+</p>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex8diii">Table 6.4: </span>Coefficients for the best model according to <span class="math inline">\(BIC\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Intercept
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{1}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{2}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{3}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{7}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{9}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+5.00245
+</td>
+<td style="text-align:right;">
+2.95906
+</td>
+<td style="text-align:right;">
+0.25966
+</td>
+<td style="text-align:right;">
+0.19189
+</td>
+<td style="text-align:right;">
+0.72191
+</td>
+<td style="text-align:right;">
+-0.15637
+</td>
+<td style="text-align:right;">
+0.00955
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex8div">Table 6.5: </span>Coefficients for the best model according to <span class="math inline">\(C_p\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Intercept
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{1}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{2}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{3}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{7}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{9}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+5.00245
+</td>
+<td style="text-align:right;">
+2.95906
+</td>
+<td style="text-align:right;">
+0.25966
+</td>
+<td style="text-align:right;">
+0.19189
+</td>
+<td style="text-align:right;">
+0.72191
+</td>
+<td style="text-align:right;">
+-0.15637
+</td>
+<td style="text-align:right;">
+0.00955
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex8dv">Table 6.6: </span>Coefficients for the best model according to Adjusted <span class="math inline">\(R^2\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Intercept
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{1}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{2}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{3}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{4}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{7}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{9}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{10}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+4.85097
+</td>
+<td style="text-align:right;">
+3.02558
+</td>
+<td style="text-align:right;">
+0.81393
+</td>
+<td style="text-align:right;">
+-0.04738
+</td>
+<td style="text-align:right;">
+-0.21319
+</td>
+<td style="text-align:right;">
+0.92544
+</td>
+<td style="text-align:right;">
+-0.2203
+</td>
+<td style="text-align:right;">
+0.01611
+</td>
+<td style="text-align:right;">
+0.00076
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="linear-model-selection-and-regularization.html#cb108-1"></a>reg_subset &lt;-<span class="st"> </span><span class="kw">regsubsets</span>(Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> df, <span class="dt">nvmax =</span> <span class="dv">10</span>, <span class="dt">method =</span> <span class="st">&#39;backward&#39;</span>)</span>
+<span id="cb108-2"><a href="linear-model-selection-and-regularization.html#cb108-2"></a>reg_subset<span class="op">$</span>xnames &lt;-<span class="st"> </span><span class="kw">str_sub</span>(reg_subset<span class="op">$</span>xnames, <span class="dv">2</span>, <span class="dv">-2</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex8dvii"></span>
+<img src="05-regularization_files/figure-html/ex8dvii-1.png" alt="Selected variables for each criteria for backward selection." width="1440" />
+<p class="caption">
+Figure 6.5: Selected variables for each criteria for backward selection.
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:ex8dviii"></span>
+<img src="05-regularization_files/figure-html/ex8dviii-1.png" alt="Best models according to $C_p$, $BIC$ and adjusted $R^2$ for backward selection." width="960" />
+<p class="caption">
+Figure 6.6: Best models according to <span class="math inline">\(C_p\)</span>, <span class="math inline">\(BIC\)</span> and adjusted <span class="math inline">\(R^2\)</span> for backward selection.
+</p>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex8dix">Table 6.7: </span>Coefficients for the best model according to <span class="math inline">\(BIC\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Intercept
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{1}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{4}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{7}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{9}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+5.13379
+</td>
+<td style="text-align:right;">
+3.07276
+</td>
+<td style="text-align:right;">
+0.04595
+</td>
+<td style="text-align:right;">
+0.8142
+</td>
+<td style="text-align:right;">
+-0.17212
+</td>
+<td style="text-align:right;">
+0.01048
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex8dx">Table 6.8: </span>Coefficients for the best model according to <span class="math inline">\(C_p\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Intercept
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{1}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{4}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{6}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{7}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{8}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{9}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+4.98423
+</td>
+<td style="text-align:right;">
+2.96772
+</td>
+<td style="text-align:right;">
+0.5976
+</td>
+<td style="text-align:right;">
+0.96214
+</td>
+<td style="text-align:right;">
+-0.2685
+</td>
+<td style="text-align:right;">
+-0.24729
+</td>
+<td style="text-align:right;">
+0.03118
+</td>
+<td style="text-align:right;">
+0.01974
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex8dxi">Table 6.9: </span>Coefficients for the best model according to Adjusted <span class="math inline">\(R^2\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Intercept
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{1}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{4}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{6}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{7}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{8}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{9}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+4.98423
+</td>
+<td style="text-align:right;">
+2.96772
+</td>
+<td style="text-align:right;">
+0.5976
+</td>
+<td style="text-align:right;">
+0.96214
+</td>
+<td style="text-align:right;">
+-0.2685
+</td>
+<td style="text-align:right;">
+-0.24729
+</td>
+<td style="text-align:right;">
+0.03118
+</td>
+<td style="text-align:right;">
+0.01974
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="linear-model-selection-and-regularization.html#cb109-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb109-2"><a href="linear-model-selection-and-regularization.html#cb109-2"></a>lasso_cv &lt;-<span class="st"> </span><span class="kw">cv.glmnet</span>(<span class="kw">as.matrix</span>(df[<span class="op">-</span><span class="dv">1</span>]), df<span class="op">$</span>Y, <span class="dt">alpha =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex8ei"></span>
+<img src="05-regularization_files/figure-html/ex8ei-1.png" alt="Cross validation error as a function of $\lambda$." width="960" />
+<p class="caption">
+Figure 6.7: Cross validation error as a function of <span class="math inline">\(\lambda\)</span>.
+</p>
+</div>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="linear-model-selection-and-regularization.html#cb110-1"></a>lasso_model &lt;-<span class="st"> </span><span class="kw">glmnet</span>(<span class="kw">as.matrix</span>(df[<span class="op">-</span><span class="dv">1</span>]), df<span class="op">$</span>Y, <span class="dt">alpha =</span> <span class="dv">1</span>)</span>
+<span id="cb110-2"><a href="linear-model-selection-and-regularization.html#cb110-2"></a>lasso_coef &lt;-<span class="st"> </span><span class="kw">predict</span>(lasso_model, <span class="dt">type =</span> <span class="st">&#39;coefficients&#39;</span>, <span class="dt">s =</span> lasso_cv<span class="op">$</span>lambda.min)</span></code></pre></div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex8eiii">Table 6.10: </span>Coefficients for the model fitted by lasso.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+(Intercept)
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{1}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{2}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{3}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{4}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{6}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{7}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{8}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{9}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{10}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+5.10693
+</td>
+<td style="text-align:right;">
+3.06612
+</td>
+<td style="text-align:right;">
+0.18405
+</td>
+<td style="text-align:right;">
+0.91642
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The lasso gives good coefficients estimation (and set to 0 all the coefficient that are not significant in the model). We can do model selection using the lasso.</p>
+<ul>
+<li><em>Question (f)</em></li>
+</ul>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="linear-model-selection-and-regularization.html#cb111-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb111-2"><a href="linear-model-selection-and-regularization.html#cb111-2"></a>Y &lt;-<span class="st"> </span><span class="dv">5</span> <span class="op">+</span><span class="st"> </span><span class="fl">0.2</span> <span class="op">*</span><span class="st"> </span><span class="kw">pull</span>(X, <span class="dv">7</span>) <span class="op">+</span><span class="st"> </span>eps</span>
+<span id="cb111-3"><a href="linear-model-selection-and-regularization.html#cb111-3"></a>df &lt;-<span class="st"> </span>X <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">add_column</span>(Y, <span class="dt">.before =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p>First, we perform best subset selection for the <span class="math inline">\(Y\)</span> vector with the <span class="math inline">\(X\)</span> matrix as features.</p>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="linear-model-selection-and-regularization.html#cb112-1"></a>reg_subset &lt;-<span class="st"> </span><span class="kw">regsubsets</span>(Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> df, <span class="dt">nvmax =</span> <span class="dv">10</span>)</span>
+<span id="cb112-2"><a href="linear-model-selection-and-regularization.html#cb112-2"></a>reg_subset<span class="op">$</span>xnames &lt;-<span class="st"> </span><span class="kw">str_sub</span>(reg_subset<span class="op">$</span>xnames, <span class="dv">2</span>, <span class="dv">-2</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex8fii"></span>
+<img src="05-regularization_files/figure-html/ex8fii-1.png" alt="Selected variables for each criteria for best subset selection." width="1440" />
+<p class="caption">
+Figure 6.8: Selected variables for each criteria for best subset selection.
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:ex8fiii"></span>
+<img src="05-regularization_files/figure-html/ex8fiii-1.png" alt="Best models according to $C_p$, $BIC$ and adjusted $R^2$ for best subset selection." width="960" />
+<p class="caption">
+Figure 6.9: Best models according to <span class="math inline">\(C_p\)</span>, <span class="math inline">\(BIC\)</span> and adjusted <span class="math inline">\(R^2\)</span> for best subset selection.
+</p>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex8fiv">Table 6.11: </span>Coefficients for the best model according to <span class="math inline">\(BIC\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Intercept
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{3}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{4}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{9}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+4.95872
+</td>
+<td style="text-align:right;">
+-1.1237
+</td>
+<td style="text-align:right;">
+-0.03994
+</td>
+<td style="text-align:right;">
+0.9405
+</td>
+<td style="text-align:right;">
+0.01203
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex8fv">Table 6.12: </span>Coefficients for the best model according to <span class="math inline">\(C_p\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Intercept
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{3}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{6}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{9}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{10}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+4.96071
+</td>
+<td style="text-align:right;">
+-0.90561
+</td>
+<td style="text-align:right;">
+0.8318
+</td>
+<td style="text-align:right;">
+-0.02629
+</td>
+<td style="text-align:right;">
+0.0146
+</td>
+<td style="text-align:right;">
+0.00078
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex8fvi">Table 6.13: </span>Coefficients for the best model according to Adjusted <span class="math inline">\(R^2\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Intercept
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{2}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{3}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{6}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{8}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{9}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+4.87656
+</td>
+<td style="text-align:right;">
+0.22826
+</td>
+<td style="text-align:right;">
+-0.91874
+</td>
+<td style="text-align:right;">
+0.83297
+</td>
+<td style="text-align:right;">
+-0.085
+</td>
+<td style="text-align:right;">
+0.01372
+</td>
+<td style="text-align:right;">
+0.01476
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>And now, we fit the lasso model on the data.</p>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="linear-model-selection-and-regularization.html#cb113-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb113-2"><a href="linear-model-selection-and-regularization.html#cb113-2"></a>lasso_cv &lt;-<span class="st"> </span><span class="kw">cv.glmnet</span>(<span class="kw">as.matrix</span>(df[<span class="op">-</span><span class="dv">1</span>]), df<span class="op">$</span>Y, <span class="dt">alpha =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex8fviii"></span>
+<img src="05-regularization_files/figure-html/ex8fviii-1.png" alt="Cross validation error as a function of $\lambda$." width="960" />
+<p class="caption">
+Figure 6.10: Cross validation error as a function of <span class="math inline">\(\lambda\)</span>.
+</p>
+</div>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="linear-model-selection-and-regularization.html#cb114-1"></a>lasso_model &lt;-<span class="st"> </span><span class="kw">glmnet</span>(<span class="kw">as.matrix</span>(df[<span class="op">-</span><span class="dv">1</span>]), df<span class="op">$</span>Y, <span class="dt">alpha =</span> <span class="dv">1</span>)</span>
+<span id="cb114-2"><a href="linear-model-selection-and-regularization.html#cb114-2"></a>lasso_coef &lt;-<span class="st"> </span><span class="kw">predict</span>(lasso_model, <span class="dt">type =</span> <span class="st">&#39;coefficients&#39;</span>, <span class="dt">s =</span> lasso_cv<span class="op">$</span>lambda.min)</span></code></pre></div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex8fx">Table 6.14: </span>Coefficients for the model fitted by lasso.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+(Intercept)
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{1}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{2}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{3}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{4}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{5}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{6}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{7}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{8}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{9}\)</span>
+</th>
+<th style="text-align:right;">
+<span class="math inline">\(X_{10}\)</span>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+4.73572
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.00427
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.19456
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The results obtained with the best subset selection are very poor compared to the ones obtained with the lasso. Indeed, we can not recover the true underlying model using the best subset selection. At the opposite, the model fit with the lasso is almost perfect. A large part of the coefficients is set to <span class="math inline">\(0\)</span> except the one of interest <span class="math inline">\(\beta_7\)</span> (and another <span class="math inline">\(\beta_5\)</span>, but very close to <span class="math inline">\(0\)</span>).</p>
+</div>
+<div id="exercise-9.-4" class="section level3">
+<h3><span class="header-section-number">6.2.2</span> Exercise 9.</h3>
+<p>In this exercise, we will predict the number of applications received (<code>Apps</code> variable) using the other variables in the <code>College</code> dataset.</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="linear-model-selection-and-regularization.html#cb115-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb115-2"><a href="linear-model-selection-and-regularization.html#cb115-2"></a>df &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(College[<span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb115-3"><a href="linear-model-selection-and-regularization.html#cb115-3"></a>idx &lt;-<span class="st"> </span>df<span class="op">$</span>Apps <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">createDataPartition</span>(<span class="dt">p =</span> <span class="fl">0.7</span>, <span class="dt">list =</span> <span class="ot">FALSE</span>, <span class="dt">times =</span> <span class="dv">1</span>)</span>
+<span id="cb115-4"><a href="linear-model-selection-and-regularization.html#cb115-4"></a>train &lt;-<span class="st"> </span><span class="kw">slice</span>(df, idx); Y_train &lt;-<span class="st"> </span><span class="kw">as.vector</span>(train<span class="op">$</span>Apps); X_train &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">select</span>(train, <span class="op">-</span>Apps))</span>
+<span id="cb115-5"><a href="linear-model-selection-and-regularization.html#cb115-5"></a>test &lt;-<span class="st"> </span><span class="kw">slice</span>(df, <span class="op">-</span>idx); Y_test &lt;-<span class="st"> </span><span class="kw">as.vector</span>(test<span class="op">$</span>Apps); X_test &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">select</span>(test, <span class="op">-</span>Apps))</span></code></pre></div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="linear-model-selection-and-regularization.html#cb116-1"></a>lm_model &lt;-<span class="st"> </span><span class="kw">lm</span>(Apps <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train)</span>
+<span id="cb116-2"><a href="linear-model-selection-and-regularization.html#cb116-2"></a>pred_lm &lt;-<span class="st"> </span><span class="kw">predict.lm</span>(lm_model, <span class="dt">newdata =</span> test)</span></code></pre></div>
+<p>The mean squared error obtained using the linear model is <span class="math inline">\(1.4251116\times 10^{6}\)</span>.</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="linear-model-selection-and-regularization.html#cb117-1"></a>cv.out &lt;-<span class="st"> </span><span class="kw">cv.glmnet</span>(X_train, Y_train, <span class="dt">alpha =</span> <span class="dv">0</span>)</span>
+<span id="cb117-2"><a href="linear-model-selection-and-regularization.html#cb117-2"></a>ridge_mod &lt;-<span class="st"> </span><span class="kw">glmnet</span>(X_train, Y_train, <span class="dt">alpha =</span> <span class="dv">0</span>, <span class="dt">lambda =</span> cv.out<span class="op">$</span>lambda.min)</span>
+<span id="cb117-3"><a href="linear-model-selection-and-regularization.html#cb117-3"></a>pred_ridge &lt;-<span class="st"> </span><span class="kw">predict</span>(ridge_mod, <span class="dt">newx =</span> X_test)</span></code></pre></div>
+<p>The mean squared error obtained using the ridge regression model is <span class="math inline">\(1.3541858\times 10^{6}\)</span>.</p>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="linear-model-selection-and-regularization.html#cb118-1"></a>cv.out &lt;-<span class="st"> </span><span class="kw">cv.glmnet</span>(X_train, Y_train, <span class="dt">alpha =</span> <span class="dv">1</span>)</span>
+<span id="cb118-2"><a href="linear-model-selection-and-regularization.html#cb118-2"></a>lasso_mod &lt;-<span class="st"> </span><span class="kw">glmnet</span>(X_train, Y_train, <span class="dt">alpha =</span> <span class="dv">1</span>, <span class="dt">lambda =</span> cv.out<span class="op">$</span>lambda.min)</span>
+<span id="cb118-3"><a href="linear-model-selection-and-regularization.html#cb118-3"></a>pred_lasso &lt;-<span class="st"> </span><span class="kw">predict</span>(lasso_mod, <span class="dt">newx =</span> X_test)</span></code></pre></div>
+<p>The mean squared error obtained using the ridge regression model is <span class="math inline">\(1.4228908\times 10^{6}\)</span>. The number of non-zero coefficients is 14.</p>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="linear-model-selection-and-regularization.html#cb119-1"></a>pcr_mod &lt;-<span class="st"> </span><span class="kw">pcr</span>(Apps <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train, <span class="dt">scale =</span> <span class="ot">TRUE</span>, <span class="dt">validation =</span> <span class="st">&#39;CV&#39;</span>)</span>
+<span id="cb119-2"><a href="linear-model-selection-and-regularization.html#cb119-2"></a>pred_pcr &lt;-<span class="st"> </span><span class="kw">predict</span>(pcr_mod, test, <span class="dt">ncomp =</span> <span class="kw">which.min</span>(pcr_mod<span class="op">$</span>validation<span class="op">$</span>adj))</span></code></pre></div>
+<p>The mean squared error obtained using the PCR model is <span class="math inline">\(1.4251116\times 10^{6}\)</span>. The number of components <span class="math inline">\(M\)</span> selected with cross-validation is 16.</p>
+<ul>
+<li><em>Question (f)</em></li>
+</ul>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="linear-model-selection-and-regularization.html#cb120-1"></a>pls_mod &lt;-<span class="st"> </span><span class="kw">plsr</span>(Apps <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train, <span class="dt">scale =</span> <span class="ot">TRUE</span>, <span class="dt">validation =</span> <span class="st">&#39;CV&#39;</span>)</span>
+<span id="cb120-2"><a href="linear-model-selection-and-regularization.html#cb120-2"></a>pred_pls &lt;-<span class="st"> </span><span class="kw">predict</span>(pls_mod, test, <span class="dt">ncomp =</span> <span class="kw">which.min</span>(pls_mod<span class="op">$</span>validation<span class="op">$</span>adj))</span></code></pre></div>
+<p>The mean squared error obtained using the PCR model is <span class="math inline">\(1.4230893\times 10^{6}\)</span>. The number of components <span class="math inline">\(M\)</span> selected with cross-validation is 13.</p>
+<ul>
+<li><em>Question (g)</em></li>
+</ul>
+<p>Let’s compute the <span class="math inline">\(R^2\)</span> for each model in order to compare them.</p>
+<div style="overflow-x:auto;">
+<table>
+<caption><span class="math inline">\(R^2\)</span> for all the models</caption>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th align="center"><span class="math inline">\(R^2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Linear</td>
+<td align="center">0.8984327</td>
+</tr>
+<tr class="even">
+<td>Ridge</td>
+<td align="center">0.9034876</td>
+</tr>
+<tr class="odd">
+<td>Lasso</td>
+<td align="center">0.898591</td>
+</tr>
+<tr class="even">
+<td>PCR</td>
+<td align="center">0.8984327</td>
+</tr>
+<tr class="odd">
+<td>PLS</td>
+<td align="center">0.8985768</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>So, all the model are quite comparable with a <span class="math inline">\(R^2\)</span> around <span class="math inline">\(0.9\)</span>. None of them performs really better than the others. And as the <span class="math inline">\(R^2\)</span> is quite high, all of them are quite accurate in this case and fit the data pretty well. All the tests arrors are very similar.</p>
+</div>
+<div id="exercise-10.-3" class="section level3">
+<h3><span class="header-section-number">6.2.3</span> Exercise 10.</h3>
+<p>We have seen that as the number of features used in a model increases, the training error will necessarily decrease, but the test error may not. We will now explore this in a simulated dataset.</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="linear-model-selection-and-regularization.html#cb121-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb121-2"><a href="linear-model-selection-and-regularization.html#cb121-2"></a>n &lt;-<span class="st"> </span><span class="dv">1000</span>; p &lt;-<span class="st"> </span><span class="dv">20</span></span>
+<span id="cb121-3"><a href="linear-model-selection-and-regularization.html#cb121-3"></a>X &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(<span class="kw">matrix</span>(<span class="kw">rnorm</span>(n <span class="op">*</span><span class="st"> </span>p), <span class="dt">nrow =</span> n))</span>
+<span id="cb121-4"><a href="linear-model-selection-and-regularization.html#cb121-4"></a>beta &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">20</span>, <span class="dt">min =</span> <span class="fl">0.5</span>, <span class="dt">max =</span> <span class="dv">1</span>)</span>
+<span id="cb121-5"><a href="linear-model-selection-and-regularization.html#cb121-5"></a>beta[<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(beta), <span class="dv">5</span>)] &lt;-<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb121-6"><a href="linear-model-selection-and-regularization.html#cb121-6"></a>Y &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(X) <span class="op">%*%</span><span class="st"> </span>beta <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n)</span>
+<span id="cb121-7"><a href="linear-model-selection-and-regularization.html#cb121-7"></a>df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(Y, X)</span></code></pre></div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="linear-model-selection-and-regularization.html#cb122-1"></a>idx &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(Y), <span class="dt">size =</span> <span class="dv">100</span>)</span>
+<span id="cb122-2"><a href="linear-model-selection-and-regularization.html#cb122-2"></a>train &lt;-<span class="st"> </span>df[idx,]</span>
+<span id="cb122-3"><a href="linear-model-selection-and-regularization.html#cb122-3"></a>test &lt;-<span class="st"> </span>df[<span class="op">-</span>idx,]</span></code></pre></div>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>Let’s perform best subset selection on the train set.</p>
+<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="linear-model-selection-and-regularization.html#cb123-1"></a>regfit_subset &lt;-<span class="st"> </span><span class="kw">regsubsets</span>(Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train, <span class="dt">nvmax =</span> <span class="dv">20</span>)</span>
+<span id="cb123-2"><a href="linear-model-selection-and-regularization.html#cb123-2"></a>model_matrix &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train)</span>
+<span id="cb123-3"><a href="linear-model-selection-and-regularization.html#cb123-3"></a>val_errors_train &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, <span class="dv">20</span>)</span>
+<span id="cb123-4"><a href="linear-model-selection-and-regularization.html#cb123-4"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">20</span>) {</span>
+<span id="cb123-5"><a href="linear-model-selection-and-regularization.html#cb123-5"></a>  coefi &lt;-<span class="st"> </span><span class="kw">coef</span>(regfit_subset, <span class="dt">id =</span> i)</span>
+<span id="cb123-6"><a href="linear-model-selection-and-regularization.html#cb123-6"></a>  pred &lt;-<span class="st"> </span>model_matrix[, <span class="kw">names</span>(coefi)] <span class="op">%*%</span><span class="st"> </span>coefi</span>
+<span id="cb123-7"><a href="linear-model-selection-and-regularization.html#cb123-7"></a>  val_errors_train[i] &lt;-<span class="st"> </span><span class="kw">mean</span>((train<span class="op">$</span>Y <span class="op">-</span><span class="st"> </span>pred)<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb123-8"><a href="linear-model-selection-and-regularization.html#cb123-8"></a>}</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex10cii"></span>
+<img src="05-regularization_files/figure-html/ex10cii-1.png" alt="Train MSE associated with the best model of each size." width="960" />
+<p class="caption">
+Figure 6.11: Train MSE associated with the best model of each size.
+</p>
+</div>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>Let’s do the same thing on the test set.</p>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="linear-model-selection-and-regularization.html#cb124-1"></a>regfit_subset &lt;-<span class="st"> </span><span class="kw">regsubsets</span>(Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train, <span class="dt">nvmax =</span> <span class="dv">20</span>)</span>
+<span id="cb124-2"><a href="linear-model-selection-and-regularization.html#cb124-2"></a>model_matrix &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> test)</span>
+<span id="cb124-3"><a href="linear-model-selection-and-regularization.html#cb124-3"></a>val_errors_test &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, <span class="dv">20</span>)</span>
+<span id="cb124-4"><a href="linear-model-selection-and-regularization.html#cb124-4"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">20</span>) {</span>
+<span id="cb124-5"><a href="linear-model-selection-and-regularization.html#cb124-5"></a>  coefi &lt;-<span class="st"> </span><span class="kw">coef</span>(regfit_subset, <span class="dt">id =</span> i)</span>
+<span id="cb124-6"><a href="linear-model-selection-and-regularization.html#cb124-6"></a>  pred &lt;-<span class="st"> </span>model_matrix[, <span class="kw">names</span>(coefi)] <span class="op">%*%</span><span class="st"> </span>coefi</span>
+<span id="cb124-7"><a href="linear-model-selection-and-regularization.html#cb124-7"></a>  val_errors_test[i] &lt;-<span class="st"> </span><span class="kw">mean</span>((test<span class="op">$</span>Y <span class="op">-</span><span class="st"> </span>pred)<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb124-8"><a href="linear-model-selection-and-regularization.html#cb124-8"></a>}</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex10dii"></span>
+<img src="05-regularization_files/figure-html/ex10dii-1.png" alt="Test MSE associated with the best model of each size." width="960" />
+<p class="caption">
+Figure 6.12: Test MSE associated with the best model of each size.
+</p>
+</div>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<p>The minimum value of the test MSE is 1.2052158. This minimum is reach for a model of size 15.</p>
+<ul>
+<li><em>Question (f)</em></li>
+</ul>
+<p>The model at which the test set MSE is minimized as the same number of coefficients than the true model. Moreover, all the coefficients that are set to <span class="math inline">\(0\)</span> in the generating process are equal to <span class="math inline">\(0\)</span> in the model with the minimum test MSE. But, the coefficients are not to close to true ones (but this is probably due to the generating process).</p>
+<ul>
+<li><em>Question (g)</em></li>
+</ul>
+<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="linear-model-selection-and-regularization.html#cb125-1"></a>beta &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, beta)</span>
+<span id="cb125-2"><a href="linear-model-selection-and-regularization.html#cb125-2"></a><span class="kw">names</span>(beta) &lt;-<span class="st"> </span><span class="kw">names</span>(<span class="kw">coef</span>(regfit_subset, <span class="dt">id =</span> <span class="dv">20</span>))</span>
+<span id="cb125-3"><a href="linear-model-selection-and-regularization.html#cb125-3"></a>beta_errors &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, <span class="dv">20</span>)</span>
+<span id="cb125-4"><a href="linear-model-selection-and-regularization.html#cb125-4"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">20</span>) {</span>
+<span id="cb125-5"><a href="linear-model-selection-and-regularization.html#cb125-5"></a>  coefi &lt;-<span class="st"> </span><span class="kw">coef</span>(regfit_subset, <span class="dt">id =</span> i)</span>
+<span id="cb125-6"><a href="linear-model-selection-and-regularization.html#cb125-6"></a>  b &lt;-<span class="st"> </span><span class="kw">merge</span>(<span class="kw">data.frame</span>(<span class="dt">beta=</span><span class="kw">names</span>(beta), beta), <span class="kw">data.frame</span>(<span class="dt">beta=</span><span class="kw">names</span>(coefi),coefi), <span class="dt">all.x =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb125-7"><a href="linear-model-selection-and-regularization.html#cb125-7"></a>  b[<span class="kw">is.na</span>(b)] &lt;-<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb125-8"><a href="linear-model-selection-and-regularization.html#cb125-8"></a>  beta_errors[i] &lt;-<span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">sum</span>((b[,<span class="dv">2</span>] <span class="op">-</span><span class="st"> </span>b[,<span class="dv">3</span>])<span class="op">**</span><span class="dv">2</span>))</span>
+<span id="cb125-9"><a href="linear-model-selection-and-regularization.html#cb125-9"></a>}</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex10giii"></span>
+<img src="05-regularization_files/figure-html/ex10giii-1.png" alt="Errors on the coefficients compared to the size of the model." width="960" />
+<p class="caption">
+Figure 6.13: Errors on the coefficients compared to the size of the model.
+</p>
+</div>
+<p>The <span class="math inline">\(\sqrt{\sum_{j=1}^p (\beta_j - \hat{\beta}_j^r)^2}\)</span> curve looks quite the same than the test MSE. However, the minimum is not reach to the same model size.</p>
+</div>
+<div id="exercise-11.-2" class="section level3">
+<h3><span class="header-section-number">6.2.4</span> Exercise 11.</h3>
+<p>We will now try to predict per capita crime rate in the <code>Boston</code>data set.</p>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="linear-model-selection-and-regularization.html#cb126-1"></a><span class="co"># Load data</span></span>
+<span id="cb126-2"><a href="linear-model-selection-and-regularization.html#cb126-2"></a>df &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(Boston)</span>
+<span id="cb126-3"><a href="linear-model-selection-and-regularization.html#cb126-3"></a><span class="co"># Split intot train and test set</span></span>
+<span id="cb126-4"><a href="linear-model-selection-and-regularization.html#cb126-4"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb126-5"><a href="linear-model-selection-and-regularization.html#cb126-5"></a>idx &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(df), <span class="dt">size =</span> <span class="dv">100</span>)</span>
+<span id="cb126-6"><a href="linear-model-selection-and-regularization.html#cb126-6"></a>train &lt;-<span class="st"> </span>df[idx,]; model_train &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(crim <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train)</span>
+<span id="cb126-7"><a href="linear-model-selection-and-regularization.html#cb126-7"></a>test &lt;-<span class="st"> </span>df[<span class="op">-</span>idx,]; model_test &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(crim <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> test)</span></code></pre></div>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>Let’s start by best subset selection.</p>
+<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb127-1"><a href="linear-model-selection-and-regularization.html#cb127-1"></a>regfit_subset &lt;-<span class="st"> </span><span class="kw">regsubsets</span>(crim <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train, <span class="dt">nvmax =</span> <span class="kw">ncol</span>(train) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex11aii"></span>
+<img src="05-regularization_files/figure-html/ex11aii-1.png" alt="Best models according to $BIC$ for best subset selection." width="960" />
+<p class="caption">
+Figure 6.14: Best models according to <span class="math inline">\(BIC\)</span> for best subset selection.
+</p>
+</div>
+<p>So, it appears that the best model according to the best subset selection model has two variables.</p>
+<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="linear-model-selection-and-regularization.html#cb128-1"></a>best_coeff &lt;-<span class="st"> </span><span class="kw">coef</span>(regfit_subset, <span class="dt">id =</span> <span class="dv">2</span>)</span>
+<span id="cb128-2"><a href="linear-model-selection-and-regularization.html#cb128-2"></a>pred_best &lt;-<span class="st"> </span>model_test[, <span class="kw">names</span>(best_coeff)] <span class="op">%*%</span><span class="st"> </span>best_coeff</span></code></pre></div>
+<p>Then, let’s perform lasso regression.</p>
+<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="linear-model-selection-and-regularization.html#cb129-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb129-2"><a href="linear-model-selection-and-regularization.html#cb129-2"></a>lasso_cv &lt;-<span class="st"> </span><span class="kw">cv.glmnet</span>(<span class="dt">x =</span> <span class="kw">as.matrix</span>(train[,<span class="dv">2</span><span class="op">:</span><span class="kw">ncol</span>(train)]), <span class="dt">y =</span> train[[<span class="st">&#39;crim&#39;</span>]], <span class="dt">alpha =</span> <span class="dv">1</span>)</span>
+<span id="cb129-3"><a href="linear-model-selection-and-regularization.html#cb129-3"></a>lasso_mod &lt;-<span class="st"> </span><span class="kw">glmnet</span>(<span class="kw">as.matrix</span>(train[,<span class="dv">2</span><span class="op">:</span><span class="kw">ncol</span>(train)]), train[[<span class="st">&#39;crim&#39;</span>]], <span class="dt">alpha =</span> <span class="dv">1</span>, <span class="dt">lambda =</span> lasso_cv<span class="op">$</span>lambda.min)</span>
+<span id="cb129-4"><a href="linear-model-selection-and-regularization.html#cb129-4"></a>pred_lasso &lt;-<span class="st"> </span><span class="kw">predict</span>(lasso_mod, <span class="dt">newx =</span> <span class="kw">as.matrix</span>(test[,<span class="dv">2</span><span class="op">:</span><span class="kw">ncol</span>(test)]))</span></code></pre></div>
+<p>Another one is the ridge regression.</p>
+<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="linear-model-selection-and-regularization.html#cb130-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb130-2"><a href="linear-model-selection-and-regularization.html#cb130-2"></a>ridge_cv &lt;-<span class="st"> </span><span class="kw">cv.glmnet</span>(<span class="dt">x =</span> <span class="kw">as.matrix</span>(train[,<span class="dv">2</span><span class="op">:</span><span class="kw">ncol</span>(train)]), <span class="dt">y =</span> train[[<span class="st">&#39;crim&#39;</span>]], <span class="dt">alpha =</span> <span class="dv">0</span>)</span>
+<span id="cb130-3"><a href="linear-model-selection-and-regularization.html#cb130-3"></a>ridge_mod &lt;-<span class="st"> </span><span class="kw">glmnet</span>(<span class="kw">as.matrix</span>(train[,<span class="dv">2</span><span class="op">:</span><span class="kw">ncol</span>(train)]), train[[<span class="st">&#39;crim&#39;</span>]], <span class="dt">alpha =</span> <span class="dv">0</span>, <span class="dt">lambda =</span> ridge_cv<span class="op">$</span>lambda.min)</span>
+<span id="cb130-4"><a href="linear-model-selection-and-regularization.html#cb130-4"></a>pred_ridge &lt;-<span class="st"> </span><span class="kw">predict</span>(ridge_mod, <span class="dt">newx =</span> <span class="kw">as.matrix</span>(test[,<span class="dv">2</span><span class="op">:</span><span class="kw">ncol</span>(test)]))</span></code></pre></div>
+<p>And finally, the PCR model.</p>
+<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="linear-model-selection-and-regularization.html#cb131-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb131-2"><a href="linear-model-selection-and-regularization.html#cb131-2"></a>pcr_mod &lt;-<span class="st"> </span><span class="kw">pcr</span>(crim <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train, <span class="dt">scale =</span> <span class="ot">TRUE</span>, <span class="dt">validation =</span> <span class="st">&#39;CV&#39;</span>)</span>
+<span id="cb131-3"><a href="linear-model-selection-and-regularization.html#cb131-3"></a>pred_pcr &lt;-<span class="st"> </span><span class="kw">predict</span>(pcr_mod, test[,<span class="dv">2</span><span class="op">:</span><span class="kw">ncol</span>(test)], <span class="dt">ncomp =</span> <span class="dv">7</span>)</span></code></pre></div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>We are going to compare the different models using the MSE on the test set.</p>
+<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="linear-model-selection-and-regularization.html#cb132-1"></a>mse_best &lt;-<span class="st"> </span><span class="kw">mean</span>((pred_best <span class="op">-</span><span class="st"> </span>test<span class="op">$</span>crim)<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb132-2"><a href="linear-model-selection-and-regularization.html#cb132-2"></a>mse_lasso &lt;-<span class="st"> </span><span class="kw">mean</span>((pred_lasso <span class="op">-</span><span class="st"> </span>test<span class="op">$</span>crim)<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb132-3"><a href="linear-model-selection-and-regularization.html#cb132-3"></a>mse_ridge &lt;-<span class="st"> </span><span class="kw">mean</span>((pred_ridge <span class="op">-</span><span class="st"> </span>test<span class="op">$</span>crim)<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb132-4"><a href="linear-model-selection-and-regularization.html#cb132-4"></a>mse_pcr &lt;-<span class="st"> </span><span class="kw">mean</span>((pred_pcr <span class="op">-</span><span class="st"> </span>test<span class="op">$</span>crim)<span class="op">**</span><span class="dv">2</span>)</span></code></pre></div>
+<div style="overflow-x:auto;">
+<table>
+<caption>MSE for all the models</caption>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th align="center">MSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Best subset</td>
+<td align="center">41.8357193</td>
+</tr>
+<tr class="even">
+<td>Ridge</td>
+<td align="center">42.4799642</td>
+</tr>
+<tr class="odd">
+<td>Lasso</td>
+<td align="center">40.5281645</td>
+</tr>
+<tr class="even">
+<td>PCR</td>
+<td align="center">45.7516391</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>So, it appears that the lasso has the smallest MSE on the test set. Thus, we choose the lasso model as the final model.</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>Our model does not involve all the features because the lasso model shrinks some coefficients towards 0.</p>
+<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="linear-model-selection-and-regularization.html#cb133-1"></a><span class="kw">predict</span>(lasso_mod, <span class="dt">type =</span> <span class="st">&#39;coefficient&#39;</span>)</span></code></pre></div>
+<pre><code>## 14 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                      s0
+## (Intercept) -2.57705466
+## zn           .         
+## indus        .         
+## chas         .         
+## nox          .         
+## rm           .         
+## age          .         
+## dis          .         
+## rad          0.46978606
+## tax          .         
+## ptratio      .         
+## black        .         
+## lstat        0.25150257
+## medv        -0.06290058</code></pre>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="resampling-methods.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

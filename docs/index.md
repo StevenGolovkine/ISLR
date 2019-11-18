@@ -1,7 +1,7 @@
 --- 
 title: "An Introduction to Statistical Learning"
 author: "Steven Golovkine"
-date: "2019-11-02"
+date: "2019-11-18"
 site: bookdown::bookdown_site
 documentclass: book
 bibliography: [book.bib, packages.bib]

@@ -96,7 +96,7 @@ store <- rep(NA, 1000)
 for(i in 1:1000) store[i] <- sum(sample(1:100, replace = TRUE) == 4) > 0
 ```
 
-This piece of code repeatedly create bootstrap samples, and each time we record whether or not the fourth observation is contained in the bootstrap sample. In mean, we found that the fourth observation is contain in 65.9% of the samples. So, we retrieve the observation that gave at the previous question.
+This piece of code repeatedly create bootstrap samples, and each time we record whether or not the fourth observation is contained in the bootstrap sample. In mean, we found that the fourth observation is contain in 63% of the samples. So, we retrieve the observation that gave at the previous question.
 
 Mathematically, we can be prove like that:
 \begin{align}

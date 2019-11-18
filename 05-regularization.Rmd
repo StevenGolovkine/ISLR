@@ -1,0 +1,853 @@
+# Linear Model Selection and Regularization
+
+
+```{r setup, include=FALSE}
+fig.process <- function(x) {
+  if (!grepl('[.]pdf$', x)) return(x) 
+  x2 = sub('pdf$', 'png', x)
+  magick::image_write(magick::image_read(x, density = 300), x2, format = 'png')
+  x2
+}
+
+knitr::opts_chunk$set(echo = TRUE, fig.process = fig.process)
+options(knitr.graphics.auto_pdf = TRUE)
+```
+
+```{r load_package, include=FALSE}
+library(boot)
+library(caret)
+library(class)
+library(GGally)
+library(ggfortify)
+library(glmnet)
+library(gridExtra)
+library(ISLR)
+library(kableExtra)
+library(knitr)
+library(latex2exp)
+library(leaps)
+library(MASS)
+library(plotly)
+library(pls)
+library(reshape2)
+library(tidyverse)
+
+source('https://gist.githubusercontent.com/StevenGolovkine/55b9a2b6c849deadf86e051ed78ae149/raw/1452f33204a44c47b71bd22536594cce7e1e74e3/ggcustom.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/632632f470375390853529be54b9ebeb/raw/c07317788844d3d904aab7908e9cfe3d9df29931/summary_functions.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_df.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_summary_df.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/401f5c2edc8a04a294bfec38136adcb2f5f2e62d/print_summary_lm.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/c9a50e250666422da513db7da0fbb2eb007e9cc7/print_summary_glm.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggcriteria.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggcv.glmnet.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggregsubsets.R')
+```
+
+## Conceptual Exercises
+
+### Exercise 1.
+
+* *Question (a)*
+
+The model with $k$ predictors which has the smallest training RSS should be the best subset model because this model contains the $k$ predictors which give the smallest training RSS after trying all of the models with $k$ predictors. However, by luck, the model with $k$ predictors selected with forward stepwise or backward stepwise procdedure can be the same than the one from the best subset selection.
+
+* *Question (b)*
+
+We can not say which model with $k$ predictors has the smallest test RSS because the best subset selection can overfit (it looks god on training data) and forward and backaward selection might not lead to the same model with $k$ predictors.
+
+* *Question (c)*
+
+The predictors in the $k$-variable model identified by forward and backward stepwise are a subset of the predictors in the $(k+1)$-variable model identified by forward and backward stepwise selection by definition of the forward and backward stepwise selection procedure (it is the step 2.a of both algorithms). The predictors in the $k$-variable model identified by backward (resp. forward) stepwise are *not* a subset of the predictors in the $(k+1)$-variable model identified by forward (resp. backward) stepwise selection because these two procdedure are different. The predictors in the $k$-variable model identified by best subset are *not* necessarily a subset of the predictors in the $(k+1)$-variable model identified by best subset selection because for any particular $k$, the best subset selection considers all the models with $k$ predictors, so these model can be very different for two differents $k$.
+
+### Exercise 2.
+
+* *Question (a)*
+
+The lasso, relative to least squares, is less flexible (because we add a constraint) and hence will give improved prediction accuracy when its increase in bias is less than its decrease in variance bacause the variance of the lasso estimator will substantially decrease and the bias will slightly increase has the $\lambda$ increase. 
+
+* *Question (b)*
+
+The ridge regression has the same properties relative to least squares than the lasso (but different constraints).
+
+* *Question (c)*
+
+Non-linear methods, relative to least squares, are more flexible and hence will give improved prediction accuracy when its increase in variance is less than its decrease in bias because non-linear methods tends to have large variance and low bias.
+
+### Exercise 3.
+
+Suppose we estimate the regression coefficients in a linear regression model by minimizing 
+
+$$ \mid\mid Y - X\beta \mid\mid^2 \quad\text{subject to}\quad \mid\mid \beta \mid\mid_1 \leq s$$
+
+for a particular value of $s$. This minimization corresponds to the Lasso regression.
+
+* *Question (a)*
+
+When $s$ increases from $0$, we increase the flexibility of the model. So, there is less constraint with large $s$. And, the training RSS steadily decreases with an increasing of $s$.
+
+* *Question (b)*
+
+The test RSS will decrease at the beginning when $s$ starts to increase from 0. And then, it will reach a minimum point and finally, restart to increase when the model overfits. 
+
+* *Question (c)*
+
+The fewer the constraints the larger the variance. The variance steadily increases with $s$.
+
+* *Question (d)*
+
+As the opposite, the fewer the constraints the smaller the bias. The bias steadily decreases with $s$.
+
+* *Question (e)*
+
+By definition, the irreducible error is irreducible. So, it will remain constant along the change of $s$.
+
+### Exercise 4.
+
+Suppose we estimate the regression coefficients in a linear regression model by minimizing 
+
+$$ \mid\mid Y - X\beta \mid\mid^2 + \lambda\mid\mid \beta \mid\mid_2^2$$
+
+for a particular value of $s$. This minimization corresponds to the Ridge regression.
+
+* *Question (a)*
+
+When $\lambda$ increases from $0$, we decrease the flexibility of the model. So, there is more constraint with large $\lambda$. And, the training RSS steadily increases with an increasing of $\lambda$.
+
+* *Question (b)*
+
+The test RSS will decrease at the beginning when $\lambda$ starts to increase from 0. And then, it will reach a minimum point and finally, restart to increase when the model overfits. 
+
+* *Question (c)*
+
+The harder the constraints the smaller the variance. The variance steadily decreases with $\lambda$.
+
+* *Question (d)*
+
+As the opposite, the harder the constraints the larger the bias. The bias steadily increases with $\lambda$.
+
+* *Question (e)*
+
+By definition, the irreducible error is irreducible. So, it will remain constant along the change of $\lambda$.
+
+### Exercise 5.
+
+It is well-known that ridge regression tends to give similar coefficient values to correlated variables, whereas the lasso may give quite different coefficient values to correlated variables. We will now explore this property in a very simple setting.
+
+Suppose that $n = 2$, $p = 2$, $x_{11} = x_{12}$, $x_{21} = x_{22}$. Furthermore, suppose that $y_1 + y_2 = 0$ and $x_{11} + x_{21} = 0$ and $x_{12} + x_{22} = 0$, so that the estimate for the intercept in a least squares, ridge regression, or lasso model is zero: $\widehat{β}_0 = 0$.
+
+* *Question (a)*
+
+The ridge regression optimization problem is written:
+
+$$ \arg \min_{\beta_1, \beta_2} \mathcal{L}(\beta_1, \beta_2) = \arg \min_{\beta_1, \beta_2} \left(y_1 - \beta_1x_{11} - \beta_2x_{12}\right)^2 + \left(y_2 - \beta_1x_{21} - \beta_2x_{22}\right)^2 + \lambda\left(\beta_1^2 + \beta_2^2\right)$$
+
+* *Question (b)*
+
+By taking the partial derivatives to $\beta_1$ and $\beta_2$ and setting to $0$.
+
+$$\frac{\partial \mathcal{L}(\beta_1, \beta_2)}{\partial\beta_1} = 0 \Leftrightarrow -2x_{11}\left(y_1 - \beta_1x_{11} - \beta_2x_{12}\right) - 2x_{21}\left(y_2 - \beta_1x_{21} - \beta_2x_{22}\right) + 2\lambda\beta_1 = 0$$
+
+$$\frac{\partial \mathcal{L}(\beta_1, \beta_2)}{\partial\beta_2} = 0 \Leftrightarrow -2x_{12}\left(y_1 - \beta_1x_{11} - \beta_2x_{12}\right) - 2x_{22}\left(y_2 - \beta_1x_{21} - \beta_2x_{22}\right) + 2\lambda\beta_2 = 0$$
+
+Using $x_{11} = x_{12}$ and $x_{22} = x_{21}$, we found
+
+$$(\beta_1 + \beta_2)(x_{11} + x_{21}) + \lambda\beta_1 = x_{11}y_1 + x_{21}y_2$$
+
+and
+
+$$(\beta_1 + \beta_2)(x_{12} + x_{22}) + \lambda\beta_2 = x_{11}y_1 + x_{21}y_2$$
+
+Then, using $x_{11} + x_{21} = 0$ and $x_{12} + x_{22} = 0$, we arrive to
+
+$$\left\{
+\begin{array}{r c l}
+\lambda\beta_1 &=& x_{11}y_1 + x_{21}y_2\\
+\lambda\beta_2 &=& x_{11}y_1 + x_{21}y_2
+\end{array}
+\right. \Leftrightarrow \beta_1 = \beta_2$$
+
+So, the ridge coefficient estimates satisfy $\widehat{\beta_1} = \widehat{\beta_2}$.
+
+* *Question (c)*
+
+The lasso regression optimization problem is written:
+
+$$ \arg \min_{\beta_1, \beta_2} \mathcal{L}(\beta_1, \beta_2) = \arg \min_{\beta_1, \beta_2} \left(y_1 - \beta_1x_{11} - \beta_2x_{12}\right)^2 + \left(y_2 - \beta_1x_{21} - \beta_2x_{22}\right)^2 + \lambda\left(\mid\beta_1\mid + \mid\beta_2\mid\right)$$
+
+* *Question (d)*
+
+By taking the partial derivatives to $\beta_1$ and $\beta_2$ and setting to $0$.
+
+$$\frac{\partial \mathcal{L}(\beta_1, \beta_2)}{\partial\beta_1} = 0 \Leftrightarrow -2x_{11}\left(y_1 - \beta_1x_{11} - \beta_2x_{12}\right) - 2x_{21}\left(y_2 - \beta_1x_{21} - \beta_2x_{22}\right) + \lambda\frac{\mid\beta_1\mid}{\beta_1} = 0$$
+
+$$\frac{\partial \mathcal{L}(\beta_1, \beta_2)}{\partial\beta_2} = 0 \Leftrightarrow -2x_{12}\left(y_1 - \beta_1x_{11} - \beta_2x_{12}\right) - 2x_{22}\left(y_2 - \beta_1x_{21} - \beta_2x_{22}\right) + \lambda\frac{\mid\beta_2\mid}{\beta_2} = 0$$
+
+Using $x_{11} = x_{12}$ and $x_{22} = x_{21}$, we found
+
+$$(\beta_1 + \beta_2)(x_{11} + x_{21}) + \lambda\frac{\mid\beta_1\mid}{2\beta_1} = x_{11}y_1 + x_{21}y_2$$
+
+and
+
+$$(\beta_1 + \beta_2)(x_{12} + x_{22}) + \lambda\frac{\mid\beta_2\mid}{2\beta_2} = x_{11}y_1 + x_{21}y_2$$
+
+Then, using $x_{11} + x_{21} = 0$ and $x_{12} + x_{22} = 0$, we arrive to
+
+$$\left\{
+\begin{array}{r c l}
+\lambda\frac{\mid\beta_1\mid}{2\beta_1} &=& x_{11}y_1 + x_{21}y_2\\
+\lambda\frac{\mid\beta_2\mid}{2\beta_2} &=& x_{11}y_1 + x_{21}y_2
+\end{array}
+\right. \Leftrightarrow \frac{\mid\beta_1\mid}{\beta_1} = \frac{\mid\beta_2\mid}{\beta_2}$$
+
+So, the ridge coefficient estimates satisfy $\frac{\mid\beta_1\mid}{\beta_1} = \frac{\mid\beta_2\mid}{\beta_2}$. So, there are an infinite number of solutions for this equation. The only constraint is that $\beta_1$ and $\beta_2$ must have the same sign (and different of $0$).
+
+### Exercise 6.
+
+* *Question (a)*
+
+The equation (6.12) with $p = 1$ is written:
+
+$$L = \left(y_1 - \beta_1\right)^2 + \lambda\beta_1^2$$
+
+```{r ex6ai, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+y <- 2; lambda <- 10
+beta <- seq(-10, 10, 0.1)
+ridge <- function(beta, y, lambda) return((y - beta)**2 + lambda*beta**2)
+df <- tibble(beta = beta, L = ridge(beta, y, lambda))
+```
+
+```{r ex6aii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='The ridge regression optimization problem is solved by (6.14)', fig.align='center'}
+ggplot(df) +
+  geom_point(aes(x = beta, y = L)) +
+  geom_point(aes(x = (y / (1 + lambda)), y = ridge((y / (1 + lambda)), y, lambda)), color = 'red', lwd = 5) +
+  xlab('$\\beta$') +
+  ylab('$L$') +
+  theme_custom()
+```
+
+* *Question (b)*
+
+The equation (6.13) with $p = 1$ is written:
+
+$$L = \left(y_1 - \beta_1\right)^2 + \lambda\mid\beta_1\mid$$
+
+```{r ex6bi, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+y <- 2; lambda <- 10
+beta <- seq(-10, 10, 0.1)
+ridge <- function(beta, y, lambda) return((y - beta)**2 + lambda*abs(beta))
+df <- tibble(beta = beta, L = ridge(beta, y, lambda))
+```
+
+```{r ex6bii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='The lasso regression optimization problem is solved by (6.15)', fig.align='center'}
+ggplot(df) +
+  geom_point(aes(x = beta, y = L)) +
+  geom_point(aes(x = 0), y = ridge(0, y, lambda), color = 'red', lwd = 5) +
+  xlab('$\\beta$') +
+  ylab('$L$') +
+  theme_custom()
+```
+
+### Exercise 7. 
+
+We will now derive the Bayesian connection to the lasso and ridge regression.
+
+* *Question (a)*
+
+Suppose the regression model: $Y = X\beta + \epsilon$, where $\epsilon \sim \mathcal{N}(0, \sigma^2I_n)$.
+
+The likelihood of the data can be written as:
+
+\begin{align*}
+f(Y \mid X, \beta) &= \prod_{i = 1}^{n} \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{1}{2\sigma^2}\left(y_i - x_i\beta\right)^2\right)\\ 
+  &= \left(\frac{1}{2\pi\sigma^2}\right)^{n / 2}\exp\left(-\frac{1}{2\sigma^2}\sum_{i = 1}^n \left(y_i - x_i\beta\right)^2\right)
+\end{align*}
+
+* *Question (b)*
+
+We have the following prior on $\beta$: $p(\beta) = \frac{1}{2b}\exp(-\mid\beta\mid / b)$.
+
+So, the posterior distribution for $\beta$ is:
+\begin{align*}
+p(\beta \mid Y, X) &\propto f(Y \mid X, \beta)p(\beta) \\
+                   &\propto \left(\frac{1}{2\pi\sigma^2}\right)^{n / 2}\exp\left(-\frac{1}{2\sigma^2}\sum_{i = 1}^n \left(y_i - x_i\beta\right)^2\right)\frac{1}{2b}\exp(-\mid\beta\mid / b) \\
+                   &\propto \frac{1}{2b}\left(\frac{1}{2\pi\sigma^2}\right)^{n / 2}\exp\left(-\frac{1}{2\sigma^2}\sum_{i = 1}^n \left(y_i - x_i\beta\right)^2 - \frac{\mid\beta\mid}{b} \right)
+\end{align*}
+
+* *Question (c)*
+
+The mode for $\beta$ under this posterior distribution is the maximum of $p(\beta \mid, Y, X)$:
+
+\begin{align*}
+\max_\beta p(\beta \mid Y, X) &= \min_\beta \frac{1}{2\sigma^2}\sum_{i = 1}^n \left(y_i - x_i\beta\right)^2 + \frac{\mid\beta\mid}{b} \\
+                              &= \min_\beta \sum_{i = 1}^n \left(y_i - x_i\beta\right)^2 + \frac{2\sigma^2}{b}\mid\beta\mid
+\end{align*}
+
+which is equivalent to the lasso regression optimization function. So, the lasso estimate if the mode for $\beta$ under this posterior distribution.
+
+* *Question (d)*
+
+We have the following prior on $\beta$: $p(\beta) = \prod_{i = 1}^p \frac{1}{\sqrt{2\pi c}}\exp(- \beta_i / 2c)$.
+
+So, the posterior distriubtion for $\beta$ is:
+
+\begin{align*}
+p(\beta \mid Y, X) &\propto f(Y \mid X, \beta)p(\beta) \\
+                   &\propto \left(\frac{1}{2\pi\sigma^2}\right)^{n / 2}\exp\left(-\frac{1}{2\sigma^2}\sum_{i = 1}^n \left(y_i - x_i\beta\right)^2\right)\left(\frac{1}{2\pi c}\right)^{p/2}\exp\left(- \frac{1}{2c}\sum_{i = 1}^p \beta_i^2\right) \\
+                   &\propto \left(\frac{1}{2\pi c}\right)^{p/2}\left(\frac{1}{2\pi\sigma^2}\right)^{n / 2}\exp\left(-\frac{1}{2\sigma^2}\sum_{i = 1}^n \left(y_i - x_i\beta\right)^2 - \frac{1}{2c}\sum_{i = 1}^p \beta_i^2\right)
+\end{align*}
+
+* *Question (e)*
+
+The mode for $\beta$ under this posterior distribution is the maximum of $p(\beta \mid, Y, X)$:
+
+\begin{align*}
+\max_\beta p(\beta \mid Y, X) &= \min_\beta \frac{1}{2\sigma^2}\sum_{i = 1}^n \left(y_i - x_i\beta\right)^2 + \frac{1}{2c}\sum_{i = 1}^p \beta_i^2 \\
+                              &= \min_\beta \sum_{i = 1}^n \left(y_i - x_i\beta\right)^2 + \frac{\sigma^2}{b}\sum_{i = 1}^p  \beta_i^2
+\end{align*}
+
+which is equivalent to the ridge regression optimization function. As the posterior distribution is also gaussian, we know that the mode is also the mean.
+
+
+## Applied Exercises
+
+### Exercise 8.
+
+* *Question (a)*
+
+```{r ex8a, message=FALSE, warning=FALSE}
+set.seed(42)
+n <- 100
+X <- rnorm(n, 0, 1)
+eps <- rnorm(n, 0, 1)
+```
+
+* *Question (b)*
+
+```{r ex8b, message=FALSE, warning=FALSE}
+Y <- 5 + 3 * X + 0.4 * X**2 + X**3 + eps
+```
+
+* *Question (c)*
+
+```{r ex8c, message=FALSE, warning=FALSE}
+X <- as_tibble(poly(X, degree = 10, raw = TRUE))
+colnames(X) <- paste0("$X_{", colnames(X), "}$")
+df <- X %>% add_column(Y, .before = 1)
+```
+
+First, we perform best subset selection in order to choose the best model containing the predictors $X$, $X^2, \dots, X^{10}$.
+
+```{r ex8ci, message=FALSE, warning=FALSE}
+reg_subset <- regsubsets(Y ~ ., data = df, nvmax = 10)
+reg_subset$xnames <- str_sub(reg_subset$xnames, 2, -2)
+```
+
+```{r ex8cii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 5), fig.cap='Selected variables for each criteria for best subset selection.', fig.align='center'}
+ggregsubsets(reg_subset, criterion = c('adjr2', 'cp', 'bic')) + theme_custom()
+```
+
+```{r ex8ciii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Best models according to $C_p$, $BIC$ and adjusted $R^2$ for best subset selection.', fig.align='center'}
+p1 <- ggcriteria(reg_subset, criterion = 'bic') + theme_custom()
+p2 <- ggcriteria(reg_subset, criterion = 'cp') + theme_custom()
+p3 <- ggcriteria(reg_subset, criterion = 'adjr2') + theme_custom()
+grid.arrange(p1, p2, p3, layout_matrix = matrix(c(1, 2, 3), ncol = 3))
+```
+
+<div style="overflow-x:auto;">
+```{r ex8civ, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.min(summary(reg_subset)$bic)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to $BIC$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+<div style="overflow-x:auto;">
+```{r ex8cv, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.min(summary(reg_subset)$cp)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to $C_p$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+<div style="overflow-x:auto;">
+```{r ex8cvi, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.max(summary(reg_subset)$adjr2)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to Adjusted $R^2$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+* *Question (d)*
+
+```{r ex8d, message=FALSE, warning=FALSE}
+reg_subset <- regsubsets(Y ~ ., data = df, nvmax = 10, method = 'forward')
+reg_subset$xnames <- str_sub(reg_subset$xnames, 2, -2)
+```
+
+```{r ex8di, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 5), fig.cap='Selected variables for each criteria for forward selection.', fig.align='center'}
+ggregsubsets(reg_subset, criterion = c('adjr2', 'cp', 'bic')) + theme_custom()
+```
+
+```{r ex8dii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Best models according to $C_p$, $BIC$ and adjusted $R^2$ for forward selection.', fig.align='center'}
+p1 <- ggcriteria(reg_subset, criterion = 'bic') + theme_custom()
+p2 <- ggcriteria(reg_subset, criterion = 'cp') + theme_custom()
+p3 <- ggcriteria(reg_subset, criterion = 'adjr2') + theme_custom()
+grid.arrange(p1, p2, p3, layout_matrix = matrix(c(1, 2, 3), ncol = 3))
+```
+
+<div style="overflow-x:auto;">
+```{r ex8diii, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.min(summary(reg_subset)$bic)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to $BIC$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+<div style="overflow-x:auto;">
+```{r ex8div, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.min(summary(reg_subset)$cp)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to $C_p$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+<div style="overflow-x:auto;">
+```{r ex8dv, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.max(summary(reg_subset)$adjr2)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to Adjusted $R^2$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+```{r ex8dvi, message=FALSE, warning=FALSE}
+reg_subset <- regsubsets(Y ~ ., data = df, nvmax = 10, method = 'backward')
+reg_subset$xnames <- str_sub(reg_subset$xnames, 2, -2)
+```
+
+```{r ex8dvii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 5), fig.cap='Selected variables for each criteria for backward selection.', fig.align='center'}
+ggregsubsets(reg_subset, criterion = c('adjr2', 'cp', 'bic')) + theme_custom()
+```
+
+```{r ex8dviii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Best models according to $C_p$, $BIC$ and adjusted $R^2$ for backward selection.', fig.align='center'}
+p1 <- ggcriteria(reg_subset, criterion = 'bic') + theme_custom()
+p2 <- ggcriteria(reg_subset, criterion = 'cp') + theme_custom()
+p3 <- ggcriteria(reg_subset, criterion = 'adjr2') + theme_custom()
+grid.arrange(p1, p2, p3, layout_matrix = matrix(c(1, 2, 3), ncol = 3))
+```
+
+<div style="overflow-x:auto;">
+```{r ex8dix, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.min(summary(reg_subset)$bic)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to $BIC$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+<div style="overflow-x:auto;">
+```{r ex8dx, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.min(summary(reg_subset)$cp)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to $C_p$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+<div style="overflow-x:auto;">
+```{r ex8dxi, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.max(summary(reg_subset)$adjr2)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to Adjusted $R^2$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+* *Question (e)*
+```{r ex8e, echo=TRUE, message=FALSE, warning=FALSE}
+set.seed(42)
+lasso_cv <- cv.glmnet(as.matrix(df[-1]), df$Y, alpha = 1)
+```
+
+```{r ex8ei, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Cross validation error as a function of $\\lambda$.', fig.align='center'}
+ggcv.glmnet(lasso_cv) + theme_custom()
+```
+
+```{r ex8eii, echo=TRUE, message=FALSE, warning=FALSE}
+lasso_model <- glmnet(as.matrix(df[-1]), df$Y, alpha = 1)
+lasso_coef <- predict(lasso_model, type = 'coefficients', s = lasso_cv$lambda.min)
+```
+
+<div style="overflow-x:auto;">
+```{r ex8eiii, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+as.matrix(lasso_coef) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the model fitted by lasso.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+The lasso gives good coefficients estimation (and set to 0 all the coefficient that are not significant in the model). We can do model selection using the lasso.
+
+* *Question (f)*
+
+```{r ex8f, echo=TRUE, message=FALSE, warning=FALSE}
+set.seed(42)
+Y <- 5 + 0.2 * pull(X, 7) + eps
+df <- X %>% add_column(Y, .before = 1)
+```
+
+First, we perform best subset selection for the $Y$ vector with the $X$ matrix as features.
+
+```{r ex8fi, message=FALSE, warning=FALSE}
+reg_subset <- regsubsets(Y ~ ., data = df, nvmax = 10)
+reg_subset$xnames <- str_sub(reg_subset$xnames, 2, -2)
+```
+
+```{r ex8fii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 5), fig.cap='Selected variables for each criteria for best subset selection.', fig.align='center'}
+ggregsubsets(reg_subset, criterion = c('adjr2', 'cp', 'bic')) + theme_custom()
+```
+
+```{r ex8fiii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Best models according to $C_p$, $BIC$ and adjusted $R^2$ for best subset selection.', fig.align='center'}
+p1 <- ggcriteria(reg_subset, criterion = 'bic') + theme_custom()
+p2 <- ggcriteria(reg_subset, criterion = 'cp') + theme_custom()
+p3 <- ggcriteria(reg_subset, criterion = 'adjr2') + theme_custom()
+grid.arrange(p1, p2, p3, layout_matrix = matrix(c(1, 2, 3), ncol = 3))
+```
+
+<div style="overflow-x:auto;">
+```{r ex8fiv, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.min(summary(reg_subset)$bic)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to $BIC$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+<div style="overflow-x:auto;">
+```{r ex8fv, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.min(summary(reg_subset)$cp)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to $C_p$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+<div style="overflow-x:auto;">
+```{r ex8fvi, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.max(summary(reg_subset)$adjr2)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to Adjusted $R^2$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+And now, we fit the lasso model on the data.
+
+```{r ex8fvii, echo=TRUE, message=FALSE, warning=FALSE}
+set.seed(42)
+lasso_cv <- cv.glmnet(as.matrix(df[-1]), df$Y, alpha = 1)
+```
+
+```{r ex8fviii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Cross validation error as a function of $\\lambda$.', fig.align='center'}
+ggcv.glmnet(lasso_cv) + theme_custom()
+```
+
+```{r ex8fix, echo=TRUE, message=FALSE, warning=FALSE}
+lasso_model <- glmnet(as.matrix(df[-1]), df$Y, alpha = 1)
+lasso_coef <- predict(lasso_model, type = 'coefficients', s = lasso_cv$lambda.min)
+```
+
+<div style="overflow-x:auto;">
+```{r ex8fx, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+as.matrix(lasso_coef) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the model fitted by lasso.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+The results obtained with the best subset selection are very poor compared to the ones obtained with the lasso. Indeed, we can not recover the true underlying model using the best subset selection. At the opposite, the model fit with the lasso is almost perfect. A large part of the coefficients is set to $0$ except the one of interest $\beta_7$ (and another $\beta_5$, but very close to $0$).
+
+
+### Exercise 9.
+
+In this exercise, we will predict the number of applications received (`Apps` variable) using the other variables in the `College` dataset.
+
+* *Question (a)*
+
+```{r ex9a, message=FALSE, warning=FALSE}
+set.seed(42)
+df <- as_tibble(College[-1])
+idx <- df$Apps %>% createDataPartition(p = 0.7, list = FALSE, times = 1)
+train <- slice(df, idx); Y_train <- as.vector(train$Apps); X_train <- as.matrix(select(train, -Apps))
+test <- slice(df, -idx); Y_test <- as.vector(test$Apps); X_test <- as.matrix(select(test, -Apps))
+```
+
+* *Question (b)*
+
+```{r ex9b, message=FALSE, warning=FALSE}
+lm_model <- lm(Apps ~ ., data = train)
+pred_lm <- predict.lm(lm_model, newdata = test)
+```
+
+The mean squared error obtained using the linear model is $`r mean((test[['Apps']] - pred_lm)**2)`$. 
+
+* *Question (c)*
+
+```{r ex9c, message=FALSE, warning=FALSE}
+cv.out <- cv.glmnet(X_train, Y_train, alpha = 0)
+ridge_mod <- glmnet(X_train, Y_train, alpha = 0, lambda = cv.out$lambda.min)
+pred_ridge <- predict(ridge_mod, newx = X_test)
+```
+
+The mean squared error obtained using the ridge regression model is $`r mean((Y_test - pred_ridge)**2)`$. 
+
+* *Question (d)*
+
+```{r ex9d, message=FALSE, warning=FALSE}
+cv.out <- cv.glmnet(X_train, Y_train, alpha = 1)
+lasso_mod <- glmnet(X_train, Y_train, alpha = 1, lambda = cv.out$lambda.min)
+pred_lasso <- predict(lasso_mod, newx = X_test)
+```
+
+The mean squared error obtained using the ridge regression model is $`r mean((Y_test - pred_lasso)**2)`$. The number of non-zero coefficients is `r lasso_mod$df`.
+
+* *Question (e)*
+
+```{r ex9e, message=FALSE, warning=FALSE}
+pcr_mod <- pcr(Apps ~ ., data = train, scale = TRUE, validation = 'CV')
+pred_pcr <- predict(pcr_mod, test, ncomp = which.min(pcr_mod$validation$adj))
+```
+
+The mean squared error obtained using the PCR model is $`r mean((Y_test - pred_pcr)**2)`$. The number of components $M$ selected with cross-validation is `r which.min(pcr_mod$validation$adj)`.
+
+* *Question (f)*
+
+```{r ex9f, message=FALSE, warning=FALSE}
+pls_mod <- plsr(Apps ~ ., data = train, scale = TRUE, validation = 'CV')
+pred_pls <- predict(pls_mod, test, ncomp = which.min(pls_mod$validation$adj))
+```
+
+The mean squared error obtained using the PCR model is $`r mean((Y_test - pred_pls)**2)`$. The number of components $M$ selected with cross-validation is `r which.min(pls_mod$validation$adj)`.
+
+* *Question (g)*
+
+Let's compute the $R^2$ for each model in order to compare them.
+
+<div style="overflow-x:auto;">
+| Model        | $R^2$                           | 
+| ------------ |:-------------------------------:| 
+| Linear       | `r 1 - mean((test[['Apps']] - pred_lm)^2) / mean((test[['Apps']] - mean(test[['Apps']]))^2)`   | 
+| Ridge        | `r 1 - mean((test[['Apps']] - pred_ridge)^2) / mean((test[['Apps']] - mean(test[['Apps']]))^2)`| 
+| Lasso        | `r 1 - mean((test[['Apps']] - pred_lasso)^2) / mean((test[['Apps']] - mean(test[['Apps']]))^2)`|
+| PCR          | `r 1 - mean((test[['Apps']] - pred_pcr)^2) / mean((test[['Apps']] - mean(test[['Apps']]))^2)`  |
+| PLS          | `r 1 - mean((test[['Apps']] - pred_pls)^2) / mean((test[['Apps']] - mean(test[['Apps']]))^2)`  |
+Table: $R^2$ for all the models
+</div>
+
+So, all the model are quite comparable with a $R^2$ around $0.9$. None of them performs really better than the others. And as the $R^2$ is quite high, all of them are quite accurate in this case and fit the data pretty well. All the tests arrors are very similar.
+
+
+### Exercise 10.
+
+We have seen that as the number of features used in a model increases, the training error will necessarily decrease, but the test error may not. We will now explore this in a simulated dataset.
+
+* *Question (a)*
+
+```{r ex10a, message=FALSE, warning=FALSE}
+set.seed(42)
+n <- 1000; p <- 20
+X <- as.data.frame(matrix(rnorm(n * p), nrow = n))
+beta <- runif(20, min = 0.5, max = 1)
+beta[sample(1:length(beta), 5)] <- 0
+Y <- as.matrix(X) %*% beta + rnorm(n)
+df <- data.frame(Y, X)
+```
+
+* *Question (b)*
+
+```{r ex10b, message=FALSE, warning=FALSE}
+idx <- sample(1:length(Y), size = 100)
+train <- df[idx,]
+test <- df[-idx,]
+```
+
+* *Question (c)*
+
+Let's perform best subset selection on the train set. 
+
+```{r ex10ci, message=FALSE, warning=FALSE}
+regfit_subset <- regsubsets(Y ~ ., data = train, nvmax = 20)
+model_matrix <- model.matrix(Y ~ ., data = train)
+val_errors_train <- rep(NA, 20)
+for (i in 1:20) {
+  coefi <- coef(regfit_subset, id = i)
+  pred <- model_matrix[, names(coefi)] %*% coefi
+  val_errors_train[i] <- mean((train$Y - pred)**2)
+}
+```
+
+```{r ex10cii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Train MSE associated with the best model of each size.', fig.align='center'}
+ggplot(data = tibble(Size = 1:p, TrainMSE = val_errors_train)) +
+  geom_point(aes(x = Size, y = TrainMSE)) +
+  geom_line(aes(x = Size, y = TrainMSE)) +
+  ylab('Train MSE') +
+  xlab('Model size') +
+  theme_custom()
+```
+
+* *Question (d)*
+
+Let's do the same thing on the test set.
+
+```{r ex10di, message=FALSE, warning=FALSE}
+regfit_subset <- regsubsets(Y ~ ., data = train, nvmax = 20)
+model_matrix <- model.matrix(Y ~ ., data = test)
+val_errors_test <- rep(NA, 20)
+for (i in 1:20) {
+  coefi <- coef(regfit_subset, id = i)
+  pred <- model_matrix[, names(coefi)] %*% coefi
+  val_errors_test[i] <- mean((test$Y - pred)**2)
+}
+```
+
+
+```{r ex10dii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Test MSE associated with the best model of each size.', fig.align='center'}
+ggplot(data = tibble(Size = 1:p, TestMSE = val_errors_test)) +
+  geom_point(aes(x = Size, y = TestMSE)) +
+  geom_line(aes(x = Size, y = TestMSE)) +
+  ylab('Test MSE') +
+  xlab('Model size') +
+  theme_custom()
+```
+
+* *Question (e)*
+
+The minimum value of the test MSE is `r min(val_errors_test)`. This minimum is reach for a model of size `r which.min(val_errors_test)`.
+
+* *Question (f)*
+
+The model at which the test set MSE is minimized as the same number of coefficients than the true model. Moreover, all the coefficients that are set to $0$ in the generating process are equal to $0$ in the model with the minimum test MSE. But, the coefficients are not to close to true ones (but this is probably due to the generating process).
+
+* *Question (g)*
+
+```{r ex10g, message=FALSE, warning=FALSE}
+beta <- c(0, beta)
+names(beta) <- names(coef(regfit_subset, id = 20))
+beta_errors <- rep(NA, 20)
+for (i in 1:20) {
+  coefi <- coef(regfit_subset, id = i)
+  b <- merge(data.frame(beta=names(beta), beta), data.frame(beta=names(coefi),coefi), all.x = TRUE)
+  b[is.na(b)] <- 0
+  beta_errors[i] <- sqrt(sum((b[,2] - b[,3])**2))
+}
+```
+
+```{r ex10giii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Errors on the coefficients compared to the size of the model.', fig.align='center'}
+ggplot(data = tibble(Size = 1:p, MSE = beta_errors)) +
+  geom_point(aes(x = Size, y = MSE)) +
+  geom_line(aes(x = Size, y = MSE)) +
+  ylab('$\\sqrt{\\sum_{j=1}^p (\\beta_j - \\hat{\\beta}_j^r)^2}$') +
+  xlab('Model size') +
+  theme_custom()
+```
+
+The $\sqrt{\sum_{j=1}^p (\beta_j - \hat{\beta}_j^r)^2}$ curve looks quite the same than the test MSE. However, the minimum is not reach to the same model size.
+
+### Exercise 11.
+
+We will now try to predict per capita crime rate in the `Boston`data set.
+
+```{r ex10load, message=FALSE, warning=FALSE}
+# Load data
+df <- as_tibble(Boston)
+# Split intot train and test set
+set.seed(42)
+idx <- sample(1:nrow(df), size = 100)
+train <- df[idx,]; model_train <- model.matrix(crim ~ ., data = train)
+test <- df[-idx,]; model_test <- model.matrix(crim ~ ., data = test)
+```
+
+* *Question (a)*
+
+Let's start by best subset selection.
+
+```{r ex11ai, message=FALSE, warning=FALSE}
+regfit_subset <- regsubsets(crim ~ ., data = train, nvmax = ncol(train) - 1)
+```
+
+```{r ex11aii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Best models according to $BIC$ for best subset selection.', fig.align='center'}
+ggcriteria(regfit_subset, criterion = 'bic') + theme_custom()
+```
+
+So, it appears that the best model according to the best subset selection model has two variables.
+
+```{r ex11ax}
+best_coeff <- coef(regfit_subset, id = 2)
+pred_best <- model_test[, names(best_coeff)] %*% best_coeff
+```
+
+
+Then, let's perform lasso regression.
+
+```{r ex11aiii, message=FALSE, warning=FALSE}
+set.seed(42)
+lasso_cv <- cv.glmnet(x = as.matrix(train[,2:ncol(train)]), y = train[['crim']], alpha = 1)
+lasso_mod <- glmnet(as.matrix(train[,2:ncol(train)]), train[['crim']], alpha = 1, lambda = lasso_cv$lambda.min)
+pred_lasso <- predict(lasso_mod, newx = as.matrix(test[,2:ncol(test)]))
+```
+
+Another one is the ridge regression.
+
+```{r ex11aiv, message=FALSE, warning=FALSE}
+set.seed(42)
+ridge_cv <- cv.glmnet(x = as.matrix(train[,2:ncol(train)]), y = train[['crim']], alpha = 0)
+ridge_mod <- glmnet(as.matrix(train[,2:ncol(train)]), train[['crim']], alpha = 0, lambda = ridge_cv$lambda.min)
+pred_ridge <- predict(ridge_mod, newx = as.matrix(test[,2:ncol(test)]))
+```
+
+And finally, the PCR model.
+
+```{r ex11av, message=FALSE, warning=FALSE}
+set.seed(42)
+pcr_mod <- pcr(crim ~ ., data = train, scale = TRUE, validation = 'CV')
+pred_pcr <- predict(pcr_mod, test[,2:ncol(test)], ncomp = 7)
+```
+
+* *Question (b)*
+
+We are going to compare the different models using the MSE on the test set. 
+
+```{r ex11b, message=FALSE, warning=FALSE}
+mse_best <- mean((pred_best - test$crim)**2)
+mse_lasso <- mean((pred_lasso - test$crim)**2)
+mse_ridge <- mean((pred_ridge - test$crim)**2)
+mse_pcr <- mean((pred_pcr - test$crim)**2)
+```
+
+<div style="overflow-x:auto;">
+| Model        | MSE                             | 
+| ------------ |:-------------------------------:| 
+| Best subset  | `r mse_best` |
+| Ridge        | `r mse_ridge`| 
+| Lasso        | `r mse_lasso`|
+| PCR          | `r mse_pcr`  |
+Table: MSE for all the models
+</div>
+
+So, it appears that the lasso has the smallest MSE on the test set. Thus, we choose the lasso model as the final model.
+
+* *Question (c)*
+
+Our model does not involve all the features because the lasso model shrinks some coefficients towards 0.
+
+```{r ex11c, message=FALSE, warning=FALSE}
+predict(lasso_mod, type = 'coefficient')
+```
+
