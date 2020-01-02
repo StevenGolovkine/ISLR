@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 2 An Overview of Statistical Learning | An Introduction to Statistical Learning</title>
+  <title>2 An Overview of Statistical Learning | An Introduction to Statistical Learning</title>
   <meta name="description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
   <meta name="generator" content="bookdown 0.14 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 2 An Overview of Statistical Learning | An Introduction to Statistical Learning" />
+  <meta property="og:title" content="2 An Overview of Statistical Learning | An Introduction to Statistical Learning" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 2 An Overview of Statistical Learning | An Introduction to Statistical Learning" />
+  <meta name="twitter:title" content="2 An Overview of Statistical Learning | An Introduction to Statistical Learning" />
   
   <meta name="twitter:description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
   
@@ -24,7 +24,7 @@
 <meta name="author" content="Steven Golovkine" />
 
 
-<meta name="date" content="2019-11-18" />
+<meta name="date" content="2020-01-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -54,18 +54,17 @@
 
 
 <style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -85,7 +84,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -135,8 +134,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
-<li class="chapter" data-level="2" data-path="overview.html"><a href="overview.html"><i class="fa fa-check"></i><b>2</b> An Overview of Statistical Learning</a><ul>
-<li class="chapter" data-level="2.1" data-path="overview.html"><a href="overview.html#conceptual-exercises"><i class="fa fa-check"></i><b>2.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="2" data-path="overview.html"><a href="overview.html"><i class="fa fa-check"></i><b>2</b> An Overview of Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="overview.html"><a href="overview.html#conceptual-exercises"><i class="fa fa-check"></i><b>2.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="2.1.1" data-path="overview.html"><a href="overview.html#exercise-1."><i class="fa fa-check"></i><b>2.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="2.1.2" data-path="overview.html"><a href="overview.html#exercise-2."><i class="fa fa-check"></i><b>2.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="2.1.3" data-path="overview.html"><a href="overview.html#exercise-3."><i class="fa fa-check"></i><b>2.1.3</b> Exercise 3.</a></li>
@@ -145,14 +146,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1.6" data-path="overview.html"><a href="overview.html#exercise-6."><i class="fa fa-check"></i><b>2.1.6</b> Exercise 6.</a></li>
 <li class="chapter" data-level="2.1.7" data-path="overview.html"><a href="overview.html#exercise-7."><i class="fa fa-check"></i><b>2.1.7</b> Exercise 7.</a></li>
 </ul></li>
-<li class="chapter" data-level="2.2" data-path="overview.html"><a href="overview.html#applied-exercises"><i class="fa fa-check"></i><b>2.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="2.2" data-path="overview.html"><a href="overview.html#applied-exercises"><i class="fa fa-check"></i><b>2.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="2.2.1" data-path="overview.html"><a href="overview.html#exercise-8."><i class="fa fa-check"></i><b>2.2.1</b> Exercise 8.</a></li>
 <li class="chapter" data-level="2.2.2" data-path="overview.html"><a href="overview.html#exercise-9."><i class="fa fa-check"></i><b>2.2.2</b> Exercise 9.</a></li>
 <li class="chapter" data-level="2.2.3" data-path="overview.html"><a href="overview.html#exercise-10."><i class="fa fa-check"></i><b>2.2.3</b> Exercise 10.</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="linear-regression.html"><a href="linear-regression.html"><i class="fa fa-check"></i><b>3</b> Linear Regression</a><ul>
-<li class="chapter" data-level="3.1" data-path="linear-regression.html"><a href="linear-regression.html#conceptual-exercises-1"><i class="fa fa-check"></i><b>3.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="3" data-path="linear-regression.html"><a href="linear-regression.html"><i class="fa fa-check"></i><b>3</b> Linear Regression</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-regression.html"><a href="linear-regression.html#conceptual-exercises-1"><i class="fa fa-check"></i><b>3.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="3.1.1" data-path="linear-regression.html"><a href="linear-regression.html#exercise-1.-1"><i class="fa fa-check"></i><b>3.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="3.1.2" data-path="linear-regression.html"><a href="linear-regression.html#exercise-2.-1"><i class="fa fa-check"></i><b>3.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="3.1.3" data-path="linear-regression.html"><a href="linear-regression.html#exercise-3.-1"><i class="fa fa-check"></i><b>3.1.3</b> Exercise 3.</a></li>
@@ -161,7 +165,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.1.6" data-path="linear-regression.html"><a href="linear-regression.html#exercise-6.-1"><i class="fa fa-check"></i><b>3.1.6</b> Exercise 6.</a></li>
 <li class="chapter" data-level="3.1.7" data-path="linear-regression.html"><a href="linear-regression.html#exercise-7.-1"><i class="fa fa-check"></i><b>3.1.7</b> Exercise 7.</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="linear-regression.html"><a href="linear-regression.html#applied-exercises-1"><i class="fa fa-check"></i><b>3.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="3.2" data-path="linear-regression.html"><a href="linear-regression.html#applied-exercises-1"><i class="fa fa-check"></i><b>3.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="3.2.1" data-path="linear-regression.html"><a href="linear-regression.html#exercise-8.-1"><i class="fa fa-check"></i><b>3.2.1</b> Exercise 8.</a></li>
 <li class="chapter" data-level="3.2.2" data-path="linear-regression.html"><a href="linear-regression.html#exercise-9.-1"><i class="fa fa-check"></i><b>3.2.2</b> Exercise 9.</a></li>
 <li class="chapter" data-level="3.2.3" data-path="linear-regression.html"><a href="linear-regression.html#exercise-10.-1"><i class="fa fa-check"></i><b>3.2.3</b> Exercise 10.</a></li>
@@ -172,8 +177,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.2.8" data-path="linear-regression.html"><a href="linear-regression.html#exercise-15."><i class="fa fa-check"></i><b>3.2.8</b> Exercise 15.</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="classification.html"><a href="classification.html"><i class="fa fa-check"></i><b>4</b> Classification</a><ul>
-<li class="chapter" data-level="4.1" data-path="classification.html"><a href="classification.html#conceptual-exercises-2"><i class="fa fa-check"></i><b>4.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="4" data-path="classification.html"><a href="classification.html"><i class="fa fa-check"></i><b>4</b> Classification</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="classification.html"><a href="classification.html#conceptual-exercises-2"><i class="fa fa-check"></i><b>4.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="4.1.1" data-path="classification.html"><a href="classification.html#exercise-1.-2"><i class="fa fa-check"></i><b>4.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="4.1.2" data-path="classification.html"><a href="classification.html#exercise-2.-2"><i class="fa fa-check"></i><b>4.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="4.1.3" data-path="classification.html"><a href="classification.html#exercise-3.-2"><i class="fa fa-check"></i><b>4.1.3</b> Exercise 3.</a></li>
@@ -184,21 +191,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.1.8" data-path="classification.html"><a href="classification.html#exercise-8.-2"><i class="fa fa-check"></i><b>4.1.8</b> Exercise 8.</a></li>
 <li class="chapter" data-level="4.1.9" data-path="classification.html"><a href="classification.html#exercise-9.-2"><i class="fa fa-check"></i><b>4.1.9</b> Exercise 9.</a></li>
 </ul></li>
-<li class="chapter" data-level="4.2" data-path="classification.html"><a href="classification.html#applied-exercises-2"><i class="fa fa-check"></i><b>4.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="4.2" data-path="classification.html"><a href="classification.html#applied-exercises-2"><i class="fa fa-check"></i><b>4.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="4.2.1" data-path="classification.html"><a href="classification.html#exercise-10.-2"><i class="fa fa-check"></i><b>4.2.1</b> Exercise 10.</a></li>
 <li class="chapter" data-level="4.2.2" data-path="classification.html"><a href="classification.html#exercise-11.-1"><i class="fa fa-check"></i><b>4.2.2</b> Exercise 11.</a></li>
 <li class="chapter" data-level="4.2.3" data-path="classification.html"><a href="classification.html#exercise-12.-1"><i class="fa fa-check"></i><b>4.2.3</b> Exercise 12.</a></li>
 <li class="chapter" data-level="4.2.4" data-path="classification.html"><a href="classification.html#exercise-13.-1"><i class="fa fa-check"></i><b>4.2.4</b> Exercise 13.</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="resampling-methods.html"><a href="resampling-methods.html"><i class="fa fa-check"></i><b>5</b> Resampling Methods</a><ul>
-<li class="chapter" data-level="5.1" data-path="resampling-methods.html"><a href="resampling-methods.html#conceptual-exercises-3"><i class="fa fa-check"></i><b>5.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="5" data-path="resampling-methods.html"><a href="resampling-methods.html"><i class="fa fa-check"></i><b>5</b> Resampling Methods</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="resampling-methods.html"><a href="resampling-methods.html#conceptual-exercises-3"><i class="fa fa-check"></i><b>5.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="5.1.1" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-1.-3"><i class="fa fa-check"></i><b>5.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="5.1.2" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-2.-3"><i class="fa fa-check"></i><b>5.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="5.1.3" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-3.-3"><i class="fa fa-check"></i><b>5.1.3</b> Exercise 3.</a></li>
 <li class="chapter" data-level="5.1.4" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-4.-3"><i class="fa fa-check"></i><b>5.1.4</b> Exercise 4.</a></li>
 </ul></li>
-<li class="chapter" data-level="5.2" data-path="resampling-methods.html"><a href="resampling-methods.html#applied-exercises-3"><i class="fa fa-check"></i><b>5.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="5.2" data-path="resampling-methods.html"><a href="resampling-methods.html#applied-exercises-3"><i class="fa fa-check"></i><b>5.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="5.2.1" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-5.-3"><i class="fa fa-check"></i><b>5.2.1</b> Exercise 5.</a></li>
 <li class="chapter" data-level="5.2.2" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-6.-3"><i class="fa fa-check"></i><b>5.2.2</b> Exercise 6.</a></li>
 <li class="chapter" data-level="5.2.3" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-7.-3"><i class="fa fa-check"></i><b>5.2.3</b> Exercise 7.</a></li>
@@ -206,8 +217,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.2.5" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-9.-3"><i class="fa fa-check"></i><b>5.2.5</b> Exercise 9.</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html"><i class="fa fa-check"></i><b>6</b> Linear Model Selection and Regularization</a><ul>
-<li class="chapter" data-level="6.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#conceptual-exercises-4"><i class="fa fa-check"></i><b>6.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html"><i class="fa fa-check"></i><b>6</b> Linear Model Selection and Regularization</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#conceptual-exercises-4"><i class="fa fa-check"></i><b>6.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="6.1.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-1.-4"><i class="fa fa-check"></i><b>6.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="6.1.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-2.-4"><i class="fa fa-check"></i><b>6.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="6.1.3" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-3.-4"><i class="fa fa-check"></i><b>6.1.3</b> Exercise 3.</a></li>
@@ -216,7 +229,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.1.6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-6.-4"><i class="fa fa-check"></i><b>6.1.6</b> Exercise 6.</a></li>
 <li class="chapter" data-level="6.1.7" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-7.-4"><i class="fa fa-check"></i><b>6.1.7</b> Exercise 7.</a></li>
 </ul></li>
-<li class="chapter" data-level="6.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#applied-exercises-4"><i class="fa fa-check"></i><b>6.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="6.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#applied-exercises-4"><i class="fa fa-check"></i><b>6.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="6.2.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-8.-4"><i class="fa fa-check"></i><b>6.2.1</b> Exercise 8.</a></li>
 <li class="chapter" data-level="6.2.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-9.-4"><i class="fa fa-check"></i><b>6.2.2</b> Exercise 9.</a></li>
 <li class="chapter" data-level="6.2.3" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-10.-3"><i class="fa fa-check"></i><b>6.2.3</b> Exercise 10.</a></li>
@@ -244,12 +258,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="overview" class="section level1">
-<h1><span class="header-section-number">Chapter 2</span> An Overview of Statistical Learning</h1>
-<div id="conceptual-exercises" class="section level2">
-<h2><span class="header-section-number">2.1</span> Conceptual Exercises</h2>
-<div id="exercise-1." class="section level3">
-<h3><span class="header-section-number">2.1.1</span> Exercise 1.</h3>
+<div id="overview" class="section level1" number="2">
+<h1 number="2"><span class="header-section-number">2</span> An Overview of Statistical Learning</h1>
+<div id="conceptual-exercises" class="section level2" number="2.1">
+<h2 number="2.1"><span class="header-section-number">2.1</span> Conceptual Exercises</h2>
+<div id="exercise-1." class="section level3" number="2.1.1">
+<h3 number="2.1.1"><span class="header-section-number">2.1.1</span> Exercise 1.</h3>
 <p>This exercise is about <em>flexible</em> and <em>inflexible</em> statistical learning methods. First, let’s recall what are the differences between these methods. The aim of statistical learning is to estimate a function <span class="math inline">\(f\)</span> such that <span class="math inline">\(f\)</span> is a link between the input <span class="math inline">\(X\)</span> and the output <span class="math inline">\(Y\)</span>. A <em>flexible</em> model means that we do not assume a particular form for <span class="math inline">\(f\)</span>. So, an advantage of such models is to generally provide a better fit to the data (however, be careful with the overfitting) but the number of parameters to estimate is usually large. At the contrary, an <em>inflexible</em> model has less parameters but we have to prespecified a particular form for the data (for example linear), even if it poorly fits the data.</p>
 <ul>
 <li><em>Question (a)</em></li>
@@ -268,8 +282,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p>If the variance of the error terms is extremely high, an inflexible model will perform better than a flexible one. Because, if we set a flexible method, the function <span class="math inline">\(f\)</span> will tend to follow the error and thus will overfit.</p>
 </div>
-<div id="exercise-2." class="section level3">
-<h3><span class="header-section-number">2.1.2</span> Exercise 2.</h3>
+<div id="exercise-2." class="section level3" number="2.1.2">
+<h3 number="2.1.2"><span class="header-section-number">2.1.2</span> Exercise 2.</h3>
 <p>This exercise is about the difference between <em>regression</em> and <em>classification</em> problems and the <em>inference</em> or <em>prediction</em> purposes. Let’s recall what these different terms mean. A <em>regression</em> task is done when we try to infer or predict an output which takes continuous values. A <em>classification</em> task is done when we try to infer or predict an output which takes discrete values. An <em>inference</em> purpose consists in the understanding of how the features have an influence on the response, whereas a <em>prediction</em> purpose is to find a value of the output variable based on a new realisation of the dependant variables and the knowledge of some features and outputs.</p>
 <ul>
 <li><em>Question (a)</em></li>
@@ -284,8 +298,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p>This is a regression problem because the % change in the US dollar is continuous. We aim to do prediction (<em>We are interesting in predicting</em>). <span class="math inline">\(n\)</span> is equal to 52 (number of week in 2012), <span class="math inline">\(p\)</span> equals to 3 (the % change in the US market, the % change in the British market, and the % change in the German market) and the output variable is the % change in the dollar.</p>
 </div>
-<div id="exercise-3." class="section level3">
-<h3><span class="header-section-number">2.1.3</span> Exercise 3.</h3>
+<div id="exercise-3." class="section level3" number="2.1.3">
+<h3 number="2.1.3"><span class="header-section-number">2.1.3</span> Exercise 3.</h3>
 <p>This exercise is about the bias-variance decomposition of the mean square error.</p>
 <p>Consider the following model: <span class="math inline">\(y = f(x) + \epsilon\)</span>. We denote by <span class="math inline">\(\widehat{y}\)</span> and <span class="math inline">\(\widehat{f}\)</span> the estimation of <span class="math inline">\(y\)</span> and <span class="math inline">\(f\)</span>. The mean square error is:</p>
 <p><span class="math display">\[MSE = \mathbb{E}\left[(\widehat{y} - y)^2\right].\]</span></p>
@@ -293,12 +307,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="figure" style="text-align: center"><span id="fig:ex3"></span>
 <img src="01-overview_files/figure-html/ex3-1.png" alt="Model complexity." width="960" />
 <p class="caption">
-Figure 2.1: Model complexity.
+Figure 1: Model complexity.
 </p>
 </div>
 </div>
-<div id="exercise-4." class="section level3">
-<h3><span class="header-section-number">2.1.4</span> Exercise 4.</h3>
+<div id="exercise-4." class="section level3" number="2.1.4">
+<h3 number="2.1.4"><span class="header-section-number">2.1.4</span> Exercise 4.</h3>
 <p>This exercise is about giving examples of real-life applications of statistical learning.</p>
 <div class="figure">
 <span id="fig:ml_appli"></span>
@@ -308,19 +322,19 @@ From Armando Arroyo GeekStyle on <a href="https://www.linkedin.com//pulse/busine
 </p>
 </div>
 </div>
-<div id="exercise-5." class="section level3">
-<h3><span class="header-section-number">2.1.5</span> Exercise 5.</h3>
+<div id="exercise-5." class="section level3" number="2.1.5">
+<h3 number="2.1.5"><span class="header-section-number">2.1.5</span> Exercise 5.</h3>
 <p>This exercise is about the difference between flexible and non-flexible statistical learning methods.</p>
 <p>A very flexible method has for main advantage over a less flexible methods the large number of functional forms that it can take. It shows two majors drawbacks: the first one is the number of parameters to fit (usually, way more larger than the non-flexible methods) and the second one, its propension to overfit the data. Moreover, they can exhibit less interpretability.</p>
 <p>We can prefer a less flexible approach when we want to do inference of the dataset because of the interpretability of such models. However, when the goal is prediction, we may use very flexible methods in order to (hopefully) have better results. The choice of between a very flexible and a less flexible method refers closely with the bias-variance tradeoff. In general, a very flexible one will lead to small bias, large variance and a less flexible one to large bias, small variance.</p>
 </div>
-<div id="exercise-6." class="section level3">
-<h3><span class="header-section-number">2.1.6</span> Exercise 6.</h3>
+<div id="exercise-6." class="section level3" number="2.1.6">
+<h3 number="2.1.6"><span class="header-section-number">2.1.6</span> Exercise 6.</h3>
 <p>This exercise is about the difference between parametric and non-parametric approaches.</p>
 <p>Consider the following model: <span class="math inline">\(Y = f(X) + \epsilon\)</span>. We aim to estimate the function <span class="math inline">\(f\)</span>. For the parametric approaches, we assume a particular form for <span class="math inline">\(f\)</span>, linear for example, and then, estimate some parameters. However, if the form we assume is not the right one, our estimate won’t be very accurate. At the opposite, non-parametric approaches do not assume a particular form for <span class="math inline">\(f\)</span>. So, the estimate of <span class="math inline">\(f\)</span> will be close to the true functional form of <span class="math inline">\(f\)</span>. But, we need a lot of data (compare to parametric approches) to obtain an accurate estimate of <span class="math inline">\(f\)</span>.</p>
 </div>
-<div id="exercise-7." class="section level3">
-<h3><span class="header-section-number">2.1.7</span> Exercise 7.</h3>
+<div id="exercise-7." class="section level3" number="2.1.7">
+<h3 number="2.1.7"><span class="header-section-number">2.1.7</span> Exercise 7.</h3>
 <p>This exercise is an application of <span class="math inline">\(K\)</span>-nearest neighbors.</p>
 <table>
 <caption>Data</caption>
@@ -421,10 +435,10 @@ From Armando Arroyo GeekStyle on <a href="https://www.linkedin.com//pulse/busine
 <p>If the Bayes decision boundary in this problem is highly non-linear, we would expect the best value for K to be small because the smaller <span class="math inline">\(K\)</span> is, the more flexible the model is. So, if the model is very flexible, it will adapt to highly non-linear problem.</p>
 </div>
 </div>
-<div id="applied-exercises" class="section level2">
-<h2><span class="header-section-number">2.2</span> Applied Exercises</h2>
-<div id="exercise-8." class="section level3">
-<h3><span class="header-section-number">2.2.1</span> Exercise 8.</h3>
+<div id="applied-exercises" class="section level2" number="2.2">
+<h2 number="2.2"><span class="header-section-number">2.2</span> Applied Exercises</h2>
+<div id="exercise-8." class="section level3" number="2.2.1">
+<h3 number="2.2.1"><span class="header-section-number">2.2.1</span> Exercise 8.</h3>
 <p>This exercise is about the <code>College</code> dataset. It contains 777 observations of 18 variables about the universities and colleges in the United States. For a description of the variables, please refer to the page 54 of the book or in <strong>R</strong> by typing <code>help(College)</code> after loading the package <code>ISLR</code>.</p>
 <ul>
 <li><em>Question (a) and (b)</em></li>
@@ -1349,7 +1363,7 @@ Grad.Rate
 <div class="figure" style="text-align: center"><span id="fig:ex8cii"></span>
 <img src="01-overview_files/figure-html/ex8cii-1.png" alt="Pair plots." width="1440" />
 <p class="caption">
-Figure 2.2: Pair plots.
+Figure 2: Pair plots.
 </p>
 </div>
 <ul>
@@ -1358,7 +1372,7 @@ Figure 2.2: Pair plots.
 <div class="figure" style="text-align: center"><span id="fig:ex8ciii"></span>
 <img src="01-overview_files/figure-html/ex8ciii-1.png" alt="Boxplots of the variable Outstate by Private." width="1440" />
 <p class="caption">
-Figure 2.3: Boxplots of the variable Outstate by Private.
+Figure 3: Boxplots of the variable Outstate by Private.
 </p>
 </div>
 <ul>
@@ -1419,7 +1433,7 @@ TRUE
 <div class="figure" style="text-align: center"><span id="fig:ex8civ3"></span>
 <img src="01-overview_files/figure-html/ex8civ3-1.png" alt="Boxplots of the variable Outstate vs Elite." width="1440" />
 <p class="caption">
-Figure 2.4: Boxplots of the variable Outstate vs Elite.
+Figure 4: Boxplots of the variable Outstate vs Elite.
 </p>
 </div>
 <ul>
@@ -1429,7 +1443,7 @@ Figure 2.4: Boxplots of the variable Outstate vs Elite.
 <div class="figure" style="text-align: center"><span id="fig:ex8cv"></span>
 <img src="01-overview_files/figure-html/ex8cv-1.png" alt="Histograms of the variable Apps for different binwidth." width="960" />
 <p class="caption">
-Figure 2.5: Histograms of the variable Apps for different binwidth.
+Figure 5: Histograms of the variable Apps for different binwidth.
 </p>
 </div>
 </center>
@@ -1438,8 +1452,8 @@ Figure 2.5: Histograms of the variable Apps for different binwidth.
 </ul>
 <p>As a brief summary, we found that there is a huge correlation between the number of full-time undergraduates and the number of applications received, accepted and students enrolled. The price to be enrolled in a private university is in mean twice as the price for a public one. But the variance of the price for the private colleges is very important. Moreover, the maximum value of the price for public universities is almost equal to the mean of the private ones (except outliers). Finally, the elite universities (the ones with new students from top 10% of high school class) are usually more expensive than the other ones.</p>
 </div>
-<div id="exercise-9." class="section level3">
-<h3><span class="header-section-number">2.2.2</span> Exercise 9.</h3>
+<div id="exercise-9." class="section level3" number="2.2.2">
+<h3 number="2.2.2"><span class="header-section-number">2.2.2</span> Exercise 9.</h3>
 <p>This exercise is about the <code>Auto</code> dataset. It contains 392 observations of 9 variables about vehicles. For a description of the variables, please refer to <strong>R</strong> by typing <code>help(Auto)</code> after loading the package <code>ISLR</code>.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="overview.html#cb5-1"></a>Auto &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(Auto, <span class="dt">rownames =</span> <span class="ot">NA</span>)</span>
 <span id="cb5-2"><a href="overview.html#cb5-2"></a>Auto &lt;-<span class="st"> </span>Auto <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="op">-</span>name) <span class="op">%&gt;%</span><span class="st"> </span></span>
@@ -2568,7 +2582,7 @@ acceleration
 <div class="figure" style="text-align: center"><span id="fig:ex9e"></span>
 <img src="01-overview_files/figure-html/ex9e-1.png" alt="Pairs plot" width="1440" />
 <p class="caption">
-Figure 2.6: Pairs plot
+Figure 6: Pairs plot
 </p>
 </div>
 <ul>
@@ -2576,8 +2590,8 @@ Figure 2.6: Pairs plot
 </ul>
 <p>The variables <em>displacement</em>, <em>weight</em> and <em>origin</em> have a huge correlation with the variable to predict, <em>mpg</em>. So, this ones could particularly useful for the prediction. The relation between these variables does not seem to be linear but instead in <span class="math inline">\(\exp(-x)\)</span>. Moreover, the miles per gallon look very different depending on the origin of the car.</p>
 </div>
-<div id="exercise-10." class="section level3">
-<h3><span class="header-section-number">2.2.3</span> Exercise 10.</h3>
+<div id="exercise-10." class="section level3" number="2.2.3">
+<h3 number="2.2.3"><span class="header-section-number">2.2.3</span> Exercise 10.</h3>
 <p>This exercise is about the <code>Boston</code> dataset.</p>
 <ul>
 <li><em>Question (a)</em></li>
@@ -2591,7 +2605,7 @@ Figure 2.6: Pairs plot
 <div class="figure" style="text-align: center"><span id="fig:ex10b"></span>
 <img src="01-overview_files/figure-html/ex10b-1.png" alt="Pairs plot" width="1440" />
 <p class="caption">
-Figure 2.7: Pairs plot
+Figure 7: Pairs plot
 </p>
 </div>
 <p>We can see some interesting correlations in this dataset. For exemple, the mean distances to five Boston employement has a correlation of -0.77 with the nitrogen oxides concentration. Or, the lower status of the population are related to the average number of rooms per dwelling (-0.61 for correlation). The variable that are the most related with the crime rate by town is the full-value property-tax rate per $10,000.</p>
@@ -2605,7 +2619,7 @@ Figure 2.7: Pairs plot
 <div class="figure" style="text-align: center"><span id="fig:ex10d"></span>
 <img src="01-overview_files/figure-html/ex10d-1.png" alt="Boxplots of some variables." width="1440" />
 <p class="caption">
-Figure 2.8: Boxplots of some variables.
+Figure 8: Boxplots of some variables.
 </p>
 </div>
 <p>Half of the suburbs have less than 10% of crime rates, but for three of them, this rate is greater than 70%. The range for this variable is very important. The tax rates do not seem to have outliers but the range is also very important. Indeed, the tax can go from under $200,000 to above $700,000. Finally, there are some suburbs in Boston that have a very low pupil-teacher ratio compare to the others. However, the range is not very wide.</p>

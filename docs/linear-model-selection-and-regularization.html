@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 6 Linear Model Selection and Regularization | An Introduction to Statistical Learning</title>
+  <title>6 Linear Model Selection and Regularization | An Introduction to Statistical Learning</title>
   <meta name="description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
   <meta name="generator" content="bookdown 0.14 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 6 Linear Model Selection and Regularization | An Introduction to Statistical Learning" />
+  <meta property="og:title" content="6 Linear Model Selection and Regularization | An Introduction to Statistical Learning" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 6 Linear Model Selection and Regularization | An Introduction to Statistical Learning" />
+  <meta name="twitter:title" content="6 Linear Model Selection and Regularization | An Introduction to Statistical Learning" />
   
   <meta name="twitter:description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
   
@@ -24,7 +24,7 @@
 <meta name="author" content="Steven Golovkine" />
 
 
-<meta name="date" content="2019-11-18" />
+<meta name="date" content="2020-01-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -54,18 +54,17 @@
 
 
 <style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -85,7 +84,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -135,8 +134,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
-<li class="chapter" data-level="2" data-path="overview.html"><a href="overview.html"><i class="fa fa-check"></i><b>2</b> An Overview of Statistical Learning</a><ul>
-<li class="chapter" data-level="2.1" data-path="overview.html"><a href="overview.html#conceptual-exercises"><i class="fa fa-check"></i><b>2.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="2" data-path="overview.html"><a href="overview.html"><i class="fa fa-check"></i><b>2</b> An Overview of Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="overview.html"><a href="overview.html#conceptual-exercises"><i class="fa fa-check"></i><b>2.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="2.1.1" data-path="overview.html"><a href="overview.html#exercise-1."><i class="fa fa-check"></i><b>2.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="2.1.2" data-path="overview.html"><a href="overview.html#exercise-2."><i class="fa fa-check"></i><b>2.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="2.1.3" data-path="overview.html"><a href="overview.html#exercise-3."><i class="fa fa-check"></i><b>2.1.3</b> Exercise 3.</a></li>
@@ -145,14 +146,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1.6" data-path="overview.html"><a href="overview.html#exercise-6."><i class="fa fa-check"></i><b>2.1.6</b> Exercise 6.</a></li>
 <li class="chapter" data-level="2.1.7" data-path="overview.html"><a href="overview.html#exercise-7."><i class="fa fa-check"></i><b>2.1.7</b> Exercise 7.</a></li>
 </ul></li>
-<li class="chapter" data-level="2.2" data-path="overview.html"><a href="overview.html#applied-exercises"><i class="fa fa-check"></i><b>2.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="2.2" data-path="overview.html"><a href="overview.html#applied-exercises"><i class="fa fa-check"></i><b>2.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="2.2.1" data-path="overview.html"><a href="overview.html#exercise-8."><i class="fa fa-check"></i><b>2.2.1</b> Exercise 8.</a></li>
 <li class="chapter" data-level="2.2.2" data-path="overview.html"><a href="overview.html#exercise-9."><i class="fa fa-check"></i><b>2.2.2</b> Exercise 9.</a></li>
 <li class="chapter" data-level="2.2.3" data-path="overview.html"><a href="overview.html#exercise-10."><i class="fa fa-check"></i><b>2.2.3</b> Exercise 10.</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="linear-regression.html"><a href="linear-regression.html"><i class="fa fa-check"></i><b>3</b> Linear Regression</a><ul>
-<li class="chapter" data-level="3.1" data-path="linear-regression.html"><a href="linear-regression.html#conceptual-exercises-1"><i class="fa fa-check"></i><b>3.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="3" data-path="linear-regression.html"><a href="linear-regression.html"><i class="fa fa-check"></i><b>3</b> Linear Regression</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-regression.html"><a href="linear-regression.html#conceptual-exercises-1"><i class="fa fa-check"></i><b>3.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="3.1.1" data-path="linear-regression.html"><a href="linear-regression.html#exercise-1.-1"><i class="fa fa-check"></i><b>3.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="3.1.2" data-path="linear-regression.html"><a href="linear-regression.html#exercise-2.-1"><i class="fa fa-check"></i><b>3.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="3.1.3" data-path="linear-regression.html"><a href="linear-regression.html#exercise-3.-1"><i class="fa fa-check"></i><b>3.1.3</b> Exercise 3.</a></li>
@@ -161,7 +165,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.1.6" data-path="linear-regression.html"><a href="linear-regression.html#exercise-6.-1"><i class="fa fa-check"></i><b>3.1.6</b> Exercise 6.</a></li>
 <li class="chapter" data-level="3.1.7" data-path="linear-regression.html"><a href="linear-regression.html#exercise-7.-1"><i class="fa fa-check"></i><b>3.1.7</b> Exercise 7.</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="linear-regression.html"><a href="linear-regression.html#applied-exercises-1"><i class="fa fa-check"></i><b>3.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="3.2" data-path="linear-regression.html"><a href="linear-regression.html#applied-exercises-1"><i class="fa fa-check"></i><b>3.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="3.2.1" data-path="linear-regression.html"><a href="linear-regression.html#exercise-8.-1"><i class="fa fa-check"></i><b>3.2.1</b> Exercise 8.</a></li>
 <li class="chapter" data-level="3.2.2" data-path="linear-regression.html"><a href="linear-regression.html#exercise-9.-1"><i class="fa fa-check"></i><b>3.2.2</b> Exercise 9.</a></li>
 <li class="chapter" data-level="3.2.3" data-path="linear-regression.html"><a href="linear-regression.html#exercise-10.-1"><i class="fa fa-check"></i><b>3.2.3</b> Exercise 10.</a></li>
@@ -172,8 +177,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.2.8" data-path="linear-regression.html"><a href="linear-regression.html#exercise-15."><i class="fa fa-check"></i><b>3.2.8</b> Exercise 15.</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="classification.html"><a href="classification.html"><i class="fa fa-check"></i><b>4</b> Classification</a><ul>
-<li class="chapter" data-level="4.1" data-path="classification.html"><a href="classification.html#conceptual-exercises-2"><i class="fa fa-check"></i><b>4.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="4" data-path="classification.html"><a href="classification.html"><i class="fa fa-check"></i><b>4</b> Classification</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="classification.html"><a href="classification.html#conceptual-exercises-2"><i class="fa fa-check"></i><b>4.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="4.1.1" data-path="classification.html"><a href="classification.html#exercise-1.-2"><i class="fa fa-check"></i><b>4.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="4.1.2" data-path="classification.html"><a href="classification.html#exercise-2.-2"><i class="fa fa-check"></i><b>4.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="4.1.3" data-path="classification.html"><a href="classification.html#exercise-3.-2"><i class="fa fa-check"></i><b>4.1.3</b> Exercise 3.</a></li>
@@ -184,21 +191,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.1.8" data-path="classification.html"><a href="classification.html#exercise-8.-2"><i class="fa fa-check"></i><b>4.1.8</b> Exercise 8.</a></li>
 <li class="chapter" data-level="4.1.9" data-path="classification.html"><a href="classification.html#exercise-9.-2"><i class="fa fa-check"></i><b>4.1.9</b> Exercise 9.</a></li>
 </ul></li>
-<li class="chapter" data-level="4.2" data-path="classification.html"><a href="classification.html#applied-exercises-2"><i class="fa fa-check"></i><b>4.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="4.2" data-path="classification.html"><a href="classification.html#applied-exercises-2"><i class="fa fa-check"></i><b>4.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="4.2.1" data-path="classification.html"><a href="classification.html#exercise-10.-2"><i class="fa fa-check"></i><b>4.2.1</b> Exercise 10.</a></li>
 <li class="chapter" data-level="4.2.2" data-path="classification.html"><a href="classification.html#exercise-11.-1"><i class="fa fa-check"></i><b>4.2.2</b> Exercise 11.</a></li>
 <li class="chapter" data-level="4.2.3" data-path="classification.html"><a href="classification.html#exercise-12.-1"><i class="fa fa-check"></i><b>4.2.3</b> Exercise 12.</a></li>
 <li class="chapter" data-level="4.2.4" data-path="classification.html"><a href="classification.html#exercise-13.-1"><i class="fa fa-check"></i><b>4.2.4</b> Exercise 13.</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="resampling-methods.html"><a href="resampling-methods.html"><i class="fa fa-check"></i><b>5</b> Resampling Methods</a><ul>
-<li class="chapter" data-level="5.1" data-path="resampling-methods.html"><a href="resampling-methods.html#conceptual-exercises-3"><i class="fa fa-check"></i><b>5.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="5" data-path="resampling-methods.html"><a href="resampling-methods.html"><i class="fa fa-check"></i><b>5</b> Resampling Methods</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="resampling-methods.html"><a href="resampling-methods.html#conceptual-exercises-3"><i class="fa fa-check"></i><b>5.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="5.1.1" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-1.-3"><i class="fa fa-check"></i><b>5.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="5.1.2" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-2.-3"><i class="fa fa-check"></i><b>5.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="5.1.3" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-3.-3"><i class="fa fa-check"></i><b>5.1.3</b> Exercise 3.</a></li>
 <li class="chapter" data-level="5.1.4" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-4.-3"><i class="fa fa-check"></i><b>5.1.4</b> Exercise 4.</a></li>
 </ul></li>
-<li class="chapter" data-level="5.2" data-path="resampling-methods.html"><a href="resampling-methods.html#applied-exercises-3"><i class="fa fa-check"></i><b>5.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="5.2" data-path="resampling-methods.html"><a href="resampling-methods.html#applied-exercises-3"><i class="fa fa-check"></i><b>5.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="5.2.1" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-5.-3"><i class="fa fa-check"></i><b>5.2.1</b> Exercise 5.</a></li>
 <li class="chapter" data-level="5.2.2" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-6.-3"><i class="fa fa-check"></i><b>5.2.2</b> Exercise 6.</a></li>
 <li class="chapter" data-level="5.2.3" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-7.-3"><i class="fa fa-check"></i><b>5.2.3</b> Exercise 7.</a></li>
@@ -206,8 +217,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.2.5" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-9.-3"><i class="fa fa-check"></i><b>5.2.5</b> Exercise 9.</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html"><i class="fa fa-check"></i><b>6</b> Linear Model Selection and Regularization</a><ul>
-<li class="chapter" data-level="6.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#conceptual-exercises-4"><i class="fa fa-check"></i><b>6.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html"><i class="fa fa-check"></i><b>6</b> Linear Model Selection and Regularization</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#conceptual-exercises-4"><i class="fa fa-check"></i><b>6.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="6.1.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-1.-4"><i class="fa fa-check"></i><b>6.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="6.1.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-2.-4"><i class="fa fa-check"></i><b>6.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="6.1.3" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-3.-4"><i class="fa fa-check"></i><b>6.1.3</b> Exercise 3.</a></li>
@@ -216,7 +229,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.1.6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-6.-4"><i class="fa fa-check"></i><b>6.1.6</b> Exercise 6.</a></li>
 <li class="chapter" data-level="6.1.7" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-7.-4"><i class="fa fa-check"></i><b>6.1.7</b> Exercise 7.</a></li>
 </ul></li>
-<li class="chapter" data-level="6.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#applied-exercises-4"><i class="fa fa-check"></i><b>6.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="6.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#applied-exercises-4"><i class="fa fa-check"></i><b>6.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="6.2.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-8.-4"><i class="fa fa-check"></i><b>6.2.1</b> Exercise 8.</a></li>
 <li class="chapter" data-level="6.2.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-9.-4"><i class="fa fa-check"></i><b>6.2.2</b> Exercise 9.</a></li>
 <li class="chapter" data-level="6.2.3" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-10.-3"><i class="fa fa-check"></i><b>6.2.3</b> Exercise 10.</a></li>
@@ -244,12 +258,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="linear-model-selection-and-regularization" class="section level1">
-<h1><span class="header-section-number">Chapter 6</span> Linear Model Selection and Regularization</h1>
-<div id="conceptual-exercises-4" class="section level2">
-<h2><span class="header-section-number">6.1</span> Conceptual Exercises</h2>
-<div id="exercise-1.-4" class="section level3">
-<h3><span class="header-section-number">6.1.1</span> Exercise 1.</h3>
+<div id="linear-model-selection-and-regularization" class="section level1" number="6">
+<h1 number="6"><span class="header-section-number">6</span> Linear Model Selection and Regularization</h1>
+<div id="conceptual-exercises-4" class="section level2" number="6.1">
+<h2 number="6.1"><span class="header-section-number">6.1</span> Conceptual Exercises</h2>
+<div id="exercise-1.-4" class="section level3" number="6.1.1">
+<h3 number="6.1.1"><span class="header-section-number">6.1.1</span> Exercise 1.</h3>
 <ul>
 <li><em>Question (a)</em></li>
 </ul>
@@ -263,8 +277,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p>The predictors in the <span class="math inline">\(k\)</span>-variable model identified by forward and backward stepwise are a subset of the predictors in the <span class="math inline">\((k+1)\)</span>-variable model identified by forward and backward stepwise selection by definition of the forward and backward stepwise selection procedure (it is the step 2.a of both algorithms). The predictors in the <span class="math inline">\(k\)</span>-variable model identified by backward (resp. forward) stepwise are <em>not</em> a subset of the predictors in the <span class="math inline">\((k+1)\)</span>-variable model identified by forward (resp. backward) stepwise selection because these two procdedure are different. The predictors in the <span class="math inline">\(k\)</span>-variable model identified by best subset are <em>not</em> necessarily a subset of the predictors in the <span class="math inline">\((k+1)\)</span>-variable model identified by best subset selection because for any particular <span class="math inline">\(k\)</span>, the best subset selection considers all the models with <span class="math inline">\(k\)</span> predictors, so these model can be very different for two differents <span class="math inline">\(k\)</span>.</p>
 </div>
-<div id="exercise-2.-4" class="section level3">
-<h3><span class="header-section-number">6.1.2</span> Exercise 2.</h3>
+<div id="exercise-2.-4" class="section level3" number="6.1.2">
+<h3 number="6.1.2"><span class="header-section-number">6.1.2</span> Exercise 2.</h3>
 <ul>
 <li><em>Question (a)</em></li>
 </ul>
@@ -278,8 +292,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p>Non-linear methods, relative to least squares, are more flexible and hence will give improved prediction accuracy when its increase in variance is less than its decrease in bias because non-linear methods tends to have large variance and low bias.</p>
 </div>
-<div id="exercise-3.-4" class="section level3">
-<h3><span class="header-section-number">6.1.3</span> Exercise 3.</h3>
+<div id="exercise-3.-4" class="section level3" number="6.1.3">
+<h3 number="6.1.3"><span class="header-section-number">6.1.3</span> Exercise 3.</h3>
 <p>Suppose we estimate the regression coefficients in a linear regression model by minimizing</p>
 <p><span class="math display">\[ \mid\mid Y - X\beta \mid\mid^2 \quad\text{subject to}\quad \mid\mid \beta \mid\mid_1 \leq s\]</span></p>
 <p>for a particular value of <span class="math inline">\(s\)</span>. This minimization corresponds to the Lasso regression.</p>
@@ -304,8 +318,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p>By definition, the irreducible error is irreducible. So, it will remain constant along the change of <span class="math inline">\(s\)</span>.</p>
 </div>
-<div id="exercise-4.-4" class="section level3">
-<h3><span class="header-section-number">6.1.4</span> Exercise 4.</h3>
+<div id="exercise-4.-4" class="section level3" number="6.1.4">
+<h3 number="6.1.4"><span class="header-section-number">6.1.4</span> Exercise 4.</h3>
 <p>Suppose we estimate the regression coefficients in a linear regression model by minimizing</p>
 <p><span class="math display">\[ \mid\mid Y - X\beta \mid\mid^2 + \lambda\mid\mid \beta \mid\mid_2^2\]</span></p>
 <p>for a particular value of <span class="math inline">\(s\)</span>. This minimization corresponds to the Ridge regression.</p>
@@ -330,8 +344,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p>By definition, the irreducible error is irreducible. So, it will remain constant along the change of <span class="math inline">\(\lambda\)</span>.</p>
 </div>
-<div id="exercise-5.-4" class="section level3">
-<h3><span class="header-section-number">6.1.5</span> Exercise 5.</h3>
+<div id="exercise-5.-4" class="section level3" number="6.1.5">
+<h3 number="6.1.5"><span class="header-section-number">6.1.5</span> Exercise 5.</h3>
 <p>It is well-known that ridge regression tends to give similar coefficient values to correlated variables, whereas the lasso may give quite different coefficient values to correlated variables. We will now explore this property in a very simple setting.</p>
 <p>Suppose that <span class="math inline">\(n = 2\)</span>, <span class="math inline">\(p = 2\)</span>, <span class="math inline">\(x_{11} = x_{12}\)</span>, <span class="math inline">\(x_{21} = x_{22}\)</span>. Furthermore, suppose that <span class="math inline">\(y_1 + y_2 = 0\)</span> and <span class="math inline">\(x_{11} + x_{21} = 0\)</span> and <span class="math inline">\(x_{12} + x_{22} = 0\)</span>, so that the estimate for the intercept in a least squares, ridge regression, or lasso model is zero: <span class="math inline">\(\widehat{β}_0 = 0\)</span>.</p>
 <ul>
@@ -381,8 +395,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 \right. \Leftrightarrow \frac{\mid\beta_1\mid}{\beta_1} = \frac{\mid\beta_2\mid}{\beta_2}\]</span></p>
 <p>So, the ridge coefficient estimates satisfy <span class="math inline">\(\frac{\mid\beta_1\mid}{\beta_1} = \frac{\mid\beta_2\mid}{\beta_2}\)</span>. So, there are an infinite number of solutions for this equation. The only constraint is that <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> must have the same sign (and different of <span class="math inline">\(0\)</span>).</p>
 </div>
-<div id="exercise-6.-4" class="section level3">
-<h3><span class="header-section-number">6.1.6</span> Exercise 6.</h3>
+<div id="exercise-6.-4" class="section level3" number="6.1.6">
+<h3 number="6.1.6"><span class="header-section-number">6.1.6</span> Exercise 6.</h3>
 <ul>
 <li><em>Question (a)</em></li>
 </ul>
@@ -395,7 +409,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="figure" style="text-align: center"><span id="fig:ex6aii"></span>
 <img src="05-regularization_files/figure-html/ex6aii-1.png" alt="The ridge regression optimization problem is solved by (6.14)" width="960" />
 <p class="caption">
-Figure 6.1: The ridge regression optimization problem is solved by (6.14)
+Figure 35: The ridge regression optimization problem is solved by (6.14)
 </p>
 </div>
 <ul>
@@ -410,12 +424,12 @@ Figure 6.1: The ridge regression optimization problem is solved by (6.14)
 <div class="figure" style="text-align: center"><span id="fig:ex6bii"></span>
 <img src="05-regularization_files/figure-html/ex6bii-1.png" alt="The lasso regression optimization problem is solved by (6.15)" width="960" />
 <p class="caption">
-Figure 6.2: The lasso regression optimization problem is solved by (6.15)
+Figure 36: The lasso regression optimization problem is solved by (6.15)
 </p>
 </div>
 </div>
-<div id="exercise-7.-4" class="section level3">
-<h3><span class="header-section-number">6.1.7</span> Exercise 7.</h3>
+<div id="exercise-7.-4" class="section level3" number="6.1.7">
+<h3 number="6.1.7"><span class="header-section-number">6.1.7</span> Exercise 7.</h3>
 <p>We will now derive the Bayesian connection to the lasso and ridge regression.</p>
 <ul>
 <li><em>Question (a)</em></li>
@@ -466,10 +480,10 @@ p(\beta \mid Y, X) &amp;\propto f(Y \mid X, \beta)p(\beta) \\
 <p>which is equivalent to the ridge regression optimization function. As the posterior distribution is also gaussian, we know that the mode is also the mean.</p>
 </div>
 </div>
-<div id="applied-exercises-4" class="section level2">
-<h2><span class="header-section-number">6.2</span> Applied Exercises</h2>
-<div id="exercise-8.-4" class="section level3">
-<h3><span class="header-section-number">6.2.1</span> Exercise 8.</h3>
+<div id="applied-exercises-4" class="section level2" number="6.2">
+<h2 number="6.2"><span class="header-section-number">6.2</span> Applied Exercises</h2>
+<div id="exercise-8.-4" class="section level3" number="6.2.1">
+<h3 number="6.2.1"><span class="header-section-number">6.2.1</span> Exercise 8.</h3>
 <ul>
 <li><em>Question (a)</em></li>
 </ul>
@@ -493,19 +507,19 @@ p(\beta \mid Y, X) &amp;\propto f(Y \mid X, \beta)p(\beta) \\
 <div class="figure" style="text-align: center"><span id="fig:ex8cii"></span>
 <img src="05-regularization_files/figure-html/ex8cii-1.png" alt="Selected variables for each criteria for best subset selection." width="1440" />
 <p class="caption">
-Figure 2.2: Selected variables for each criteria for best subset selection.
+Figure 2: Selected variables for each criteria for best subset selection.
 </p>
 </div>
 <div class="figure" style="text-align: center"><span id="fig:ex8ciii"></span>
 <img src="05-regularization_files/figure-html/ex8ciii-1.png" alt="Best models according to $C_p$, $BIC$ and adjusted $R^2$ for best subset selection." width="960" />
 <p class="caption">
-Figure 2.3: Best models according to <span class="math inline">\(C_p\)</span>, <span class="math inline">\(BIC\)</span> and adjusted <span class="math inline">\(R^2\)</span> for best subset selection.
+Figure 3: Best models according to <span class="math inline">\(C_p\)</span>, <span class="math inline">\(BIC\)</span> and adjusted <span class="math inline">\(R^2\)</span> for best subset selection.
 </p>
 </div>
 <div style="overflow-x:auto;">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:ex8civ">Table 6.1: </span>Coefficients for the best model according to <span class="math inline">\(BIC\)</span>.
+<span id="tab:ex8civ">Table 2: </span>Coefficients for the best model according to <span class="math inline">\(BIC\)</span>.
 </caption>
 <thead>
 <tr>
@@ -556,7 +570,7 @@ Intercept
 <div style="overflow-x:auto;">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:ex8cv">Table 6.2: </span>Coefficients for the best model according to <span class="math inline">\(C_p\)</span>.
+<span id="tab:ex8cv">Table 3: </span>Coefficients for the best model according to <span class="math inline">\(C_p\)</span>.
 </caption>
 <thead>
 <tr>
@@ -619,7 +633,7 @@ Intercept
 <div style="overflow-x:auto;">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:ex8cvi">Table 6.3: </span>Coefficients for the best model according to Adjusted <span class="math inline">\(R^2\)</span>.
+<span id="tab:ex8cvi">Table 4: </span>Coefficients for the best model according to Adjusted <span class="math inline">\(R^2\)</span>.
 </caption>
 <thead>
 <tr>
@@ -687,19 +701,19 @@ Intercept
 <div class="figure" style="text-align: center"><span id="fig:ex8di"></span>
 <img src="05-regularization_files/figure-html/ex8di-1.png" alt="Selected variables for each criteria for forward selection." width="1440" />
 <p class="caption">
-Figure 6.3: Selected variables for each criteria for forward selection.
+Figure 37: Selected variables for each criteria for forward selection.
 </p>
 </div>
 <div class="figure" style="text-align: center"><span id="fig:ex8dii"></span>
 <img src="05-regularization_files/figure-html/ex8dii-1.png" alt="Best models according to $C_p$, $BIC$ and adjusted $R^2$ for forward selection." width="960" />
 <p class="caption">
-Figure 6.4: Best models according to <span class="math inline">\(C_p\)</span>, <span class="math inline">\(BIC\)</span> and adjusted <span class="math inline">\(R^2\)</span> for forward selection.
+Figure 38: Best models according to <span class="math inline">\(C_p\)</span>, <span class="math inline">\(BIC\)</span> and adjusted <span class="math inline">\(R^2\)</span> for forward selection.
 </p>
 </div>
 <div style="overflow-x:auto;">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:ex8diii">Table 6.4: </span>Coefficients for the best model according to <span class="math inline">\(BIC\)</span>.
+<span id="tab:ex8diii">Table 5: </span>Coefficients for the best model according to <span class="math inline">\(BIC\)</span>.
 </caption>
 <thead>
 <tr>
@@ -756,7 +770,7 @@ Intercept
 <div style="overflow-x:auto;">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:ex8div">Table 6.5: </span>Coefficients for the best model according to <span class="math inline">\(C_p\)</span>.
+<span id="tab:ex8div">Table 6: </span>Coefficients for the best model according to <span class="math inline">\(C_p\)</span>.
 </caption>
 <thead>
 <tr>
@@ -813,7 +827,7 @@ Intercept
 <div style="overflow-x:auto;">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:ex8dv">Table 6.6: </span>Coefficients for the best model according to Adjusted <span class="math inline">\(R^2\)</span>.
+<span id="tab:ex8dv">Table 7: </span>Coefficients for the best model according to Adjusted <span class="math inline">\(R^2\)</span>.
 </caption>
 <thead>
 <tr>
@@ -884,19 +898,19 @@ Intercept
 <div class="figure" style="text-align: center"><span id="fig:ex8dvii"></span>
 <img src="05-regularization_files/figure-html/ex8dvii-1.png" alt="Selected variables for each criteria for backward selection." width="1440" />
 <p class="caption">
-Figure 6.5: Selected variables for each criteria for backward selection.
+Figure 39: Selected variables for each criteria for backward selection.
 </p>
 </div>
 <div class="figure" style="text-align: center"><span id="fig:ex8dviii"></span>
 <img src="05-regularization_files/figure-html/ex8dviii-1.png" alt="Best models according to $C_p$, $BIC$ and adjusted $R^2$ for backward selection." width="960" />
 <p class="caption">
-Figure 6.6: Best models according to <span class="math inline">\(C_p\)</span>, <span class="math inline">\(BIC\)</span> and adjusted <span class="math inline">\(R^2\)</span> for backward selection.
+Figure 40: Best models according to <span class="math inline">\(C_p\)</span>, <span class="math inline">\(BIC\)</span> and adjusted <span class="math inline">\(R^2\)</span> for backward selection.
 </p>
 </div>
 <div style="overflow-x:auto;">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:ex8dix">Table 6.7: </span>Coefficients for the best model according to <span class="math inline">\(BIC\)</span>.
+<span id="tab:ex8dix">Table 8: </span>Coefficients for the best model according to <span class="math inline">\(BIC\)</span>.
 </caption>
 <thead>
 <tr>
@@ -947,7 +961,7 @@ Intercept
 <div style="overflow-x:auto;">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:ex8dx">Table 6.8: </span>Coefficients for the best model according to <span class="math inline">\(C_p\)</span>.
+<span id="tab:ex8dx">Table 9: </span>Coefficients for the best model according to <span class="math inline">\(C_p\)</span>.
 </caption>
 <thead>
 <tr>
@@ -1010,7 +1024,7 @@ Intercept
 <div style="overflow-x:auto;">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:ex8dxi">Table 6.9: </span>Coefficients for the best model according to Adjusted <span class="math inline">\(R^2\)</span>.
+<span id="tab:ex8dxi">Table 10: </span>Coefficients for the best model according to Adjusted <span class="math inline">\(R^2\)</span>.
 </caption>
 <thead>
 <tr>
@@ -1078,7 +1092,7 @@ Intercept
 <div class="figure" style="text-align: center"><span id="fig:ex8ei"></span>
 <img src="05-regularization_files/figure-html/ex8ei-1.png" alt="Cross validation error as a function of $\lambda$." width="960" />
 <p class="caption">
-Figure 6.7: Cross validation error as a function of <span class="math inline">\(\lambda\)</span>.
+Figure 41: Cross validation error as a function of <span class="math inline">\(\lambda\)</span>.
 </p>
 </div>
 <div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="linear-model-selection-and-regularization.html#cb110-1"></a>lasso_model &lt;-<span class="st"> </span><span class="kw">glmnet</span>(<span class="kw">as.matrix</span>(df[<span class="op">-</span><span class="dv">1</span>]), df<span class="op">$</span>Y, <span class="dt">alpha =</span> <span class="dv">1</span>)</span>
@@ -1086,7 +1100,7 @@ Figure 6.7: Cross validation error as a function of <span class="math inline">\(
 <div style="overflow-x:auto;">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:ex8eiii">Table 6.10: </span>Coefficients for the model fitted by lasso.
+<span id="tab:ex8eiii">Table 11: </span>Coefficients for the model fitted by lasso.
 </caption>
 <thead>
 <tr>
@@ -1177,19 +1191,19 @@ Figure 6.7: Cross validation error as a function of <span class="math inline">\(
 <div class="figure" style="text-align: center"><span id="fig:ex8fii"></span>
 <img src="05-regularization_files/figure-html/ex8fii-1.png" alt="Selected variables for each criteria for best subset selection." width="1440" />
 <p class="caption">
-Figure 6.8: Selected variables for each criteria for best subset selection.
+Figure 42: Selected variables for each criteria for best subset selection.
 </p>
 </div>
 <div class="figure" style="text-align: center"><span id="fig:ex8fiii"></span>
 <img src="05-regularization_files/figure-html/ex8fiii-1.png" alt="Best models according to $C_p$, $BIC$ and adjusted $R^2$ for best subset selection." width="960" />
 <p class="caption">
-Figure 6.9: Best models according to <span class="math inline">\(C_p\)</span>, <span class="math inline">\(BIC\)</span> and adjusted <span class="math inline">\(R^2\)</span> for best subset selection.
+Figure 43: Best models according to <span class="math inline">\(C_p\)</span>, <span class="math inline">\(BIC\)</span> and adjusted <span class="math inline">\(R^2\)</span> for best subset selection.
 </p>
 </div>
 <div style="overflow-x:auto;">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:ex8fiv">Table 6.11: </span>Coefficients for the best model according to <span class="math inline">\(BIC\)</span>.
+<span id="tab:ex8fiv">Table 12: </span>Coefficients for the best model according to <span class="math inline">\(BIC\)</span>.
 </caption>
 <thead>
 <tr>
@@ -1234,7 +1248,7 @@ Intercept
 <div style="overflow-x:auto;">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:ex8fv">Table 6.12: </span>Coefficients for the best model according to <span class="math inline">\(C_p\)</span>.
+<span id="tab:ex8fv">Table 13: </span>Coefficients for the best model according to <span class="math inline">\(C_p\)</span>.
 </caption>
 <thead>
 <tr>
@@ -1285,7 +1299,7 @@ Intercept
 <div style="overflow-x:auto;">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:ex8fvi">Table 6.13: </span>Coefficients for the best model according to Adjusted <span class="math inline">\(R^2\)</span>.
+<span id="tab:ex8fvi">Table 14: </span>Coefficients for the best model according to Adjusted <span class="math inline">\(R^2\)</span>.
 </caption>
 <thead>
 <tr>
@@ -1345,7 +1359,7 @@ Intercept
 <div class="figure" style="text-align: center"><span id="fig:ex8fviii"></span>
 <img src="05-regularization_files/figure-html/ex8fviii-1.png" alt="Cross validation error as a function of $\lambda$." width="960" />
 <p class="caption">
-Figure 6.10: Cross validation error as a function of <span class="math inline">\(\lambda\)</span>.
+Figure 44: Cross validation error as a function of <span class="math inline">\(\lambda\)</span>.
 </p>
 </div>
 <div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="linear-model-selection-and-regularization.html#cb114-1"></a>lasso_model &lt;-<span class="st"> </span><span class="kw">glmnet</span>(<span class="kw">as.matrix</span>(df[<span class="op">-</span><span class="dv">1</span>]), df<span class="op">$</span>Y, <span class="dt">alpha =</span> <span class="dv">1</span>)</span>
@@ -1353,7 +1367,7 @@ Figure 6.10: Cross validation error as a function of <span class="math inline">\
 <div style="overflow-x:auto;">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:ex8fx">Table 6.14: </span>Coefficients for the model fitted by lasso.
+<span id="tab:ex8fx">Table 15: </span>Coefficients for the model fitted by lasso.
 </caption>
 <thead>
 <tr>
@@ -1433,8 +1447,8 @@ Figure 6.10: Cross validation error as a function of <span class="math inline">\
 </div>
 <p>The results obtained with the best subset selection are very poor compared to the ones obtained with the lasso. Indeed, we can not recover the true underlying model using the best subset selection. At the opposite, the model fit with the lasso is almost perfect. A large part of the coefficients is set to <span class="math inline">\(0\)</span> except the one of interest <span class="math inline">\(\beta_7\)</span> (and another <span class="math inline">\(\beta_5\)</span>, but very close to <span class="math inline">\(0\)</span>).</p>
 </div>
-<div id="exercise-9.-4" class="section level3">
-<h3><span class="header-section-number">6.2.2</span> Exercise 9.</h3>
+<div id="exercise-9.-4" class="section level3" number="6.2.2">
+<h3 number="6.2.2"><span class="header-section-number">6.2.2</span> Exercise 9.</h3>
 <p>In this exercise, we will predict the number of applications received (<code>Apps</code> variable) using the other variables in the <code>College</code> dataset.</p>
 <ul>
 <li><em>Question (a)</em></li>
@@ -1515,8 +1529,8 @@ Figure 6.10: Cross validation error as a function of <span class="math inline">\
 </div>
 <p>So, all the model are quite comparable with a <span class="math inline">\(R^2\)</span> around <span class="math inline">\(0.9\)</span>. None of them performs really better than the others. And as the <span class="math inline">\(R^2\)</span> is quite high, all of them are quite accurate in this case and fit the data pretty well. All the tests arrors are very similar.</p>
 </div>
-<div id="exercise-10.-3" class="section level3">
-<h3><span class="header-section-number">6.2.3</span> Exercise 10.</h3>
+<div id="exercise-10.-3" class="section level3" number="6.2.3">
+<h3 number="6.2.3"><span class="header-section-number">6.2.3</span> Exercise 10.</h3>
 <p>We have seen that as the number of features used in a model increases, the training error will necessarily decrease, but the test error may not. We will now explore this in a simulated dataset.</p>
 <ul>
 <li><em>Question (a)</em></li>
@@ -1549,7 +1563,7 @@ Figure 6.10: Cross validation error as a function of <span class="math inline">\
 <div class="figure" style="text-align: center"><span id="fig:ex10cii"></span>
 <img src="05-regularization_files/figure-html/ex10cii-1.png" alt="Train MSE associated with the best model of each size." width="960" />
 <p class="caption">
-Figure 6.11: Train MSE associated with the best model of each size.
+Figure 45: Train MSE associated with the best model of each size.
 </p>
 </div>
 <ul>
@@ -1567,7 +1581,7 @@ Figure 6.11: Train MSE associated with the best model of each size.
 <div class="figure" style="text-align: center"><span id="fig:ex10dii"></span>
 <img src="05-regularization_files/figure-html/ex10dii-1.png" alt="Test MSE associated with the best model of each size." width="960" />
 <p class="caption">
-Figure 6.12: Test MSE associated with the best model of each size.
+Figure 46: Test MSE associated with the best model of each size.
 </p>
 </div>
 <ul>
@@ -1593,13 +1607,13 @@ Figure 6.12: Test MSE associated with the best model of each size.
 <div class="figure" style="text-align: center"><span id="fig:ex10giii"></span>
 <img src="05-regularization_files/figure-html/ex10giii-1.png" alt="Errors on the coefficients compared to the size of the model." width="960" />
 <p class="caption">
-Figure 6.13: Errors on the coefficients compared to the size of the model.
+Figure 47: Errors on the coefficients compared to the size of the model.
 </p>
 </div>
 <p>The <span class="math inline">\(\sqrt{\sum_{j=1}^p (\beta_j - \hat{\beta}_j^r)^2}\)</span> curve looks quite the same than the test MSE. However, the minimum is not reach to the same model size.</p>
 </div>
-<div id="exercise-11.-2" class="section level3">
-<h3><span class="header-section-number">6.2.4</span> Exercise 11.</h3>
+<div id="exercise-11.-2" class="section level3" number="6.2.4">
+<h3 number="6.2.4"><span class="header-section-number">6.2.4</span> Exercise 11.</h3>
 <p>We will now try to predict per capita crime rate in the <code>Boston</code>data set.</p>
 <div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="linear-model-selection-and-regularization.html#cb126-1"></a><span class="co"># Load data</span></span>
 <span id="cb126-2"><a href="linear-model-selection-and-regularization.html#cb126-2"></a>df &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(Boston)</span>
@@ -1616,7 +1630,7 @@ Figure 6.13: Errors on the coefficients compared to the size of the model.
 <div class="figure" style="text-align: center"><span id="fig:ex11aii"></span>
 <img src="05-regularization_files/figure-html/ex11aii-1.png" alt="Best models according to $BIC$ for best subset selection." width="960" />
 <p class="caption">
-Figure 6.14: Best models according to <span class="math inline">\(BIC\)</span> for best subset selection.
+Figure 48: Best models according to <span class="math inline">\(BIC\)</span> for best subset selection.
 </p>
 </div>
 <p>So, it appears that the best model according to the best subset selection model has two variables.</p>

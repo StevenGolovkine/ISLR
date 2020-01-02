@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 4 Classification | An Introduction to Statistical Learning</title>
+  <title>4 Classification | An Introduction to Statistical Learning</title>
   <meta name="description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
   <meta name="generator" content="bookdown 0.14 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 4 Classification | An Introduction to Statistical Learning" />
+  <meta property="og:title" content="4 Classification | An Introduction to Statistical Learning" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 4 Classification | An Introduction to Statistical Learning" />
+  <meta name="twitter:title" content="4 Classification | An Introduction to Statistical Learning" />
   
   <meta name="twitter:description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
   
@@ -24,7 +24,7 @@
 <meta name="author" content="Steven Golovkine" />
 
 
-<meta name="date" content="2019-11-18" />
+<meta name="date" content="2020-01-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -54,18 +54,17 @@
 
 
 <style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -85,7 +84,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -135,8 +134,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <li class="divider"></li>
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
-<li class="chapter" data-level="2" data-path="overview.html"><a href="overview.html"><i class="fa fa-check"></i><b>2</b> An Overview of Statistical Learning</a><ul>
-<li class="chapter" data-level="2.1" data-path="overview.html"><a href="overview.html#conceptual-exercises"><i class="fa fa-check"></i><b>2.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="2" data-path="overview.html"><a href="overview.html"><i class="fa fa-check"></i><b>2</b> An Overview of Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="overview.html"><a href="overview.html#conceptual-exercises"><i class="fa fa-check"></i><b>2.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="2.1.1" data-path="overview.html"><a href="overview.html#exercise-1."><i class="fa fa-check"></i><b>2.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="2.1.2" data-path="overview.html"><a href="overview.html#exercise-2."><i class="fa fa-check"></i><b>2.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="2.1.3" data-path="overview.html"><a href="overview.html#exercise-3."><i class="fa fa-check"></i><b>2.1.3</b> Exercise 3.</a></li>
@@ -145,14 +146,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1.6" data-path="overview.html"><a href="overview.html#exercise-6."><i class="fa fa-check"></i><b>2.1.6</b> Exercise 6.</a></li>
 <li class="chapter" data-level="2.1.7" data-path="overview.html"><a href="overview.html#exercise-7."><i class="fa fa-check"></i><b>2.1.7</b> Exercise 7.</a></li>
 </ul></li>
-<li class="chapter" data-level="2.2" data-path="overview.html"><a href="overview.html#applied-exercises"><i class="fa fa-check"></i><b>2.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="2.2" data-path="overview.html"><a href="overview.html#applied-exercises"><i class="fa fa-check"></i><b>2.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="2.2.1" data-path="overview.html"><a href="overview.html#exercise-8."><i class="fa fa-check"></i><b>2.2.1</b> Exercise 8.</a></li>
 <li class="chapter" data-level="2.2.2" data-path="overview.html"><a href="overview.html#exercise-9."><i class="fa fa-check"></i><b>2.2.2</b> Exercise 9.</a></li>
 <li class="chapter" data-level="2.2.3" data-path="overview.html"><a href="overview.html#exercise-10."><i class="fa fa-check"></i><b>2.2.3</b> Exercise 10.</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="linear-regression.html"><a href="linear-regression.html"><i class="fa fa-check"></i><b>3</b> Linear Regression</a><ul>
-<li class="chapter" data-level="3.1" data-path="linear-regression.html"><a href="linear-regression.html#conceptual-exercises-1"><i class="fa fa-check"></i><b>3.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="3" data-path="linear-regression.html"><a href="linear-regression.html"><i class="fa fa-check"></i><b>3</b> Linear Regression</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-regression.html"><a href="linear-regression.html#conceptual-exercises-1"><i class="fa fa-check"></i><b>3.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="3.1.1" data-path="linear-regression.html"><a href="linear-regression.html#exercise-1.-1"><i class="fa fa-check"></i><b>3.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="3.1.2" data-path="linear-regression.html"><a href="linear-regression.html#exercise-2.-1"><i class="fa fa-check"></i><b>3.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="3.1.3" data-path="linear-regression.html"><a href="linear-regression.html#exercise-3.-1"><i class="fa fa-check"></i><b>3.1.3</b> Exercise 3.</a></li>
@@ -161,7 +165,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.1.6" data-path="linear-regression.html"><a href="linear-regression.html#exercise-6.-1"><i class="fa fa-check"></i><b>3.1.6</b> Exercise 6.</a></li>
 <li class="chapter" data-level="3.1.7" data-path="linear-regression.html"><a href="linear-regression.html#exercise-7.-1"><i class="fa fa-check"></i><b>3.1.7</b> Exercise 7.</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="linear-regression.html"><a href="linear-regression.html#applied-exercises-1"><i class="fa fa-check"></i><b>3.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="3.2" data-path="linear-regression.html"><a href="linear-regression.html#applied-exercises-1"><i class="fa fa-check"></i><b>3.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="3.2.1" data-path="linear-regression.html"><a href="linear-regression.html#exercise-8.-1"><i class="fa fa-check"></i><b>3.2.1</b> Exercise 8.</a></li>
 <li class="chapter" data-level="3.2.2" data-path="linear-regression.html"><a href="linear-regression.html#exercise-9.-1"><i class="fa fa-check"></i><b>3.2.2</b> Exercise 9.</a></li>
 <li class="chapter" data-level="3.2.3" data-path="linear-regression.html"><a href="linear-regression.html#exercise-10.-1"><i class="fa fa-check"></i><b>3.2.3</b> Exercise 10.</a></li>
@@ -172,8 +177,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.2.8" data-path="linear-regression.html"><a href="linear-regression.html#exercise-15."><i class="fa fa-check"></i><b>3.2.8</b> Exercise 15.</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="classification.html"><a href="classification.html"><i class="fa fa-check"></i><b>4</b> Classification</a><ul>
-<li class="chapter" data-level="4.1" data-path="classification.html"><a href="classification.html#conceptual-exercises-2"><i class="fa fa-check"></i><b>4.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="4" data-path="classification.html"><a href="classification.html"><i class="fa fa-check"></i><b>4</b> Classification</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="classification.html"><a href="classification.html#conceptual-exercises-2"><i class="fa fa-check"></i><b>4.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="4.1.1" data-path="classification.html"><a href="classification.html#exercise-1.-2"><i class="fa fa-check"></i><b>4.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="4.1.2" data-path="classification.html"><a href="classification.html#exercise-2.-2"><i class="fa fa-check"></i><b>4.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="4.1.3" data-path="classification.html"><a href="classification.html#exercise-3.-2"><i class="fa fa-check"></i><b>4.1.3</b> Exercise 3.</a></li>
@@ -184,21 +191,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.1.8" data-path="classification.html"><a href="classification.html#exercise-8.-2"><i class="fa fa-check"></i><b>4.1.8</b> Exercise 8.</a></li>
 <li class="chapter" data-level="4.1.9" data-path="classification.html"><a href="classification.html#exercise-9.-2"><i class="fa fa-check"></i><b>4.1.9</b> Exercise 9.</a></li>
 </ul></li>
-<li class="chapter" data-level="4.2" data-path="classification.html"><a href="classification.html#applied-exercises-2"><i class="fa fa-check"></i><b>4.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="4.2" data-path="classification.html"><a href="classification.html#applied-exercises-2"><i class="fa fa-check"></i><b>4.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="4.2.1" data-path="classification.html"><a href="classification.html#exercise-10.-2"><i class="fa fa-check"></i><b>4.2.1</b> Exercise 10.</a></li>
 <li class="chapter" data-level="4.2.2" data-path="classification.html"><a href="classification.html#exercise-11.-1"><i class="fa fa-check"></i><b>4.2.2</b> Exercise 11.</a></li>
 <li class="chapter" data-level="4.2.3" data-path="classification.html"><a href="classification.html#exercise-12.-1"><i class="fa fa-check"></i><b>4.2.3</b> Exercise 12.</a></li>
 <li class="chapter" data-level="4.2.4" data-path="classification.html"><a href="classification.html#exercise-13.-1"><i class="fa fa-check"></i><b>4.2.4</b> Exercise 13.</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="resampling-methods.html"><a href="resampling-methods.html"><i class="fa fa-check"></i><b>5</b> Resampling Methods</a><ul>
-<li class="chapter" data-level="5.1" data-path="resampling-methods.html"><a href="resampling-methods.html#conceptual-exercises-3"><i class="fa fa-check"></i><b>5.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="5" data-path="resampling-methods.html"><a href="resampling-methods.html"><i class="fa fa-check"></i><b>5</b> Resampling Methods</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="resampling-methods.html"><a href="resampling-methods.html#conceptual-exercises-3"><i class="fa fa-check"></i><b>5.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="5.1.1" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-1.-3"><i class="fa fa-check"></i><b>5.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="5.1.2" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-2.-3"><i class="fa fa-check"></i><b>5.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="5.1.3" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-3.-3"><i class="fa fa-check"></i><b>5.1.3</b> Exercise 3.</a></li>
 <li class="chapter" data-level="5.1.4" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-4.-3"><i class="fa fa-check"></i><b>5.1.4</b> Exercise 4.</a></li>
 </ul></li>
-<li class="chapter" data-level="5.2" data-path="resampling-methods.html"><a href="resampling-methods.html#applied-exercises-3"><i class="fa fa-check"></i><b>5.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="5.2" data-path="resampling-methods.html"><a href="resampling-methods.html#applied-exercises-3"><i class="fa fa-check"></i><b>5.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="5.2.1" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-5.-3"><i class="fa fa-check"></i><b>5.2.1</b> Exercise 5.</a></li>
 <li class="chapter" data-level="5.2.2" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-6.-3"><i class="fa fa-check"></i><b>5.2.2</b> Exercise 6.</a></li>
 <li class="chapter" data-level="5.2.3" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-7.-3"><i class="fa fa-check"></i><b>5.2.3</b> Exercise 7.</a></li>
@@ -206,8 +217,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="5.2.5" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-9.-3"><i class="fa fa-check"></i><b>5.2.5</b> Exercise 9.</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html"><i class="fa fa-check"></i><b>6</b> Linear Model Selection and Regularization</a><ul>
-<li class="chapter" data-level="6.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#conceptual-exercises-4"><i class="fa fa-check"></i><b>6.1</b> Conceptual Exercises</a><ul>
+<li class="chapter" data-level="6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html"><i class="fa fa-check"></i><b>6</b> Linear Model Selection and Regularization</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#conceptual-exercises-4"><i class="fa fa-check"></i><b>6.1</b> Conceptual Exercises</a>
+<ul>
 <li class="chapter" data-level="6.1.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-1.-4"><i class="fa fa-check"></i><b>6.1.1</b> Exercise 1.</a></li>
 <li class="chapter" data-level="6.1.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-2.-4"><i class="fa fa-check"></i><b>6.1.2</b> Exercise 2.</a></li>
 <li class="chapter" data-level="6.1.3" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-3.-4"><i class="fa fa-check"></i><b>6.1.3</b> Exercise 3.</a></li>
@@ -216,7 +229,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="6.1.6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-6.-4"><i class="fa fa-check"></i><b>6.1.6</b> Exercise 6.</a></li>
 <li class="chapter" data-level="6.1.7" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-7.-4"><i class="fa fa-check"></i><b>6.1.7</b> Exercise 7.</a></li>
 </ul></li>
-<li class="chapter" data-level="6.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#applied-exercises-4"><i class="fa fa-check"></i><b>6.2</b> Applied Exercises</a><ul>
+<li class="chapter" data-level="6.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#applied-exercises-4"><i class="fa fa-check"></i><b>6.2</b> Applied Exercises</a>
+<ul>
 <li class="chapter" data-level="6.2.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-8.-4"><i class="fa fa-check"></i><b>6.2.1</b> Exercise 8.</a></li>
 <li class="chapter" data-level="6.2.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-9.-4"><i class="fa fa-check"></i><b>6.2.2</b> Exercise 9.</a></li>
 <li class="chapter" data-level="6.2.3" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-10.-3"><i class="fa fa-check"></i><b>6.2.3</b> Exercise 10.</a></li>
@@ -244,19 +258,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="classification" class="section level1">
-<h1><span class="header-section-number">Chapter 4</span> Classification</h1>
-<div id="conceptual-exercises-2" class="section level2">
-<h2><span class="header-section-number">4.1</span> Conceptual Exercises</h2>
-<div id="exercise-1.-2" class="section level3">
-<h3><span class="header-section-number">4.1.1</span> Exercise 1.</h3>
+<div id="classification" class="section level1" number="4">
+<h1 number="4"><span class="header-section-number">4</span> Classification</h1>
+<div id="conceptual-exercises-2" class="section level2" number="4.1">
+<h2 number="4.1"><span class="header-section-number">4.1</span> Conceptual Exercises</h2>
+<div id="exercise-1.-2" class="section level3" number="4.1.1">
+<h3 number="4.1.1"><span class="header-section-number">4.1.1</span> Exercise 1.</h3>
 <p>Proof that the logistic function representation and logit representation for the logistic regression model are equivalent.</p>
 <p><span class="math display">\[p(x) = \frac{\exp(\beta_0 + \beta_1x)}{1 - \exp(\beta_0 + \beta_1x)} \quad\text{and}\quad 1 - p(x) = \frac{1}{1 - \exp(\beta_0 + \beta_1x)}\]</span></p>
 <p>So,
 <span class="math display">\[\frac{p(x)}{1 - p(x)} = \exp(\beta_0 + \beta_1x)\]</span></p>
 </div>
-<div id="exercise-2.-2" class="section level3">
-<h3><span class="header-section-number">4.1.2</span> Exercise 2.</h3>
+<div id="exercise-2.-2" class="section level3" number="4.1.2">
+<h3 number="4.1.2"><span class="header-section-number">4.1.2</span> Exercise 2.</h3>
 <p>Asume that the observations in the <span class="math inline">\(k\)</span>-th classes are drawn from a <span class="math inline">\(\mathcal{N}(\mu_k, \sigma^2)\)</span>-distribution. Proof that the Bayes classifier assigns an observation to the class for which the discriminant function is maximised.</p>
 <p><span class="math display">\[p(x) = \frac{\pi_k\frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{1}{2\sigma^2}\left(x - \mu_k\right)^2\right)}{\prod_{l=1}^{K}\pi_l\frac{1}{\sqrt{2\pi\sigma^2}}\exp\left(-\frac{1}{2\sigma^2}\left(x - \mu_l\right)^2\right)} = C\pi_k\exp\left(-\frac{1}{2\sigma^2}\left(x - \mu_k\right)^2\right),\]</span></p>
 <p>where <span class="math inline">\(C\)</span> is constant with respect to <span class="math inline">\(k\)</span>.
@@ -264,8 +278,8 @@ By taking the logarithm of <span class="math inline">\(p(x)\)</span>, we find:</
 <p><span class="math display">\[\log(p(x)) = \log{C} + \log{\pi_k} - \frac{1}{2\sigma^2}\left(x - \mu_k\right)^2 = \log{C} + \log{\pi_k} - \frac{x^2}{2\sigma^2} + \frac{x\mu_k}{\sigma^2} + \frac{\mu_k^2}{2\sigma^2}.\]</span></p>
 <p>So, maximising <span class="math inline">\(p(x)\)</span> with respect to <span class="math inline">\(k\)</span> is equivalent to maximising <span class="math inline">\(\delta_k(x) = \log{\pi_k} + \frac{x\mu_k}{\sigma^2} + \frac{\mu_k^2}{2\sigma^2}\)</span> with respect to <span class="math inline">\(k\)</span>.</p>
 </div>
-<div id="exercise-3.-2" class="section level3">
-<h3><span class="header-section-number">4.1.3</span> Exercise 3.</h3>
+<div id="exercise-3.-2" class="section level3" number="4.1.3">
+<h3 number="4.1.3"><span class="header-section-number">4.1.3</span> Exercise 3.</h3>
 <p>Assume there is only one feature which come from an one-dimensional normal distribution. If an observation belongs to the <span class="math inline">\(k\)</span>-th classe, <span class="math inline">\(X\)</span> have a <span class="math inline">\(\mathcal{N}(\mu_k, \sigma_k^2)\)</span> distribution.</p>
 <p>The probability that <span class="math inline">\(X = x\)</span> belongs to the class <span class="math inline">\(k\)</span> is:</p>
 <p><span class="math display">\[ p_k(x) = \frac{\pi_k\frac{1}{\sqrt{2\pi\sigma_k^2}}\exp\left(-\frac{1}{2\sigma_k^2}\left(x - \mu_k\right)^2\right)}{\prod_{l=1}^{K}\pi_l\frac{1}{\sqrt{2\pi\sigma_l^2}}\exp\left(-\frac{1}{2\sigma_l^2}\left(x - \mu_l\right)^2\right)}\]</span></p>
@@ -274,8 +288,8 @@ By taking the logarithm of <span class="math inline">\(p(x)\)</span>, we find:</
 where <span class="math inline">\(C\)</span> is constant with respect to <span class="math inline">\(k\)</span>.
 The Bayes classifier involves assigning <span class="math inline">\(X = x\)</span> to <span class="math inline">\(\arg \max_k p_k(x)\)</span> which is equal to <span class="math inline">\(\arg \max_k \left(\log{\pi_k} -\frac{1}{2}\log(\sigma_k) - \frac{1}{2\sigma_k^2}\left(x - \mu_k\right)^2\right)\)</span>. So, the Bayes classifier is quadratic is this case.</p>
 </div>
-<div id="exercise-4.-2" class="section level3">
-<h3><span class="header-section-number">4.1.4</span> Exercise 4.</h3>
+<div id="exercise-4.-2" class="section level3" number="4.1.4">
+<h3 number="4.1.4"><span class="header-section-number">4.1.4</span> Exercise 4.</h3>
 <p>This exercise is about the curse of dimensionality.</p>
 <ul>
 <li><em>Question (a)</em></li>
@@ -298,8 +312,8 @@ The Bayes classifier involves assigning <span class="math inline">\(X = x\)</spa
 </ul>
 <p>We want <span class="math inline">\(10\%\)</span> observations that are in an hypercube around the new observations. Note <span class="math inline">\(l\)</span> the length of each side of the hypercube. In order to have 10% of the data to predict the response of the new observation, we should have <span class="math inline">\(l^p = 0.1\)</span>. So, the length of each side of the hypercube is <span class="math inline">\(l = (0.1)^{1/p}\)</span>. If <span class="math inline">\(p = 1\)</span>, the length is <span class="math inline">\(0.1\)</span>, if <span class="math inline">\(p = 2, l = 0.31\)</span> and if <span class="math inline">\(p = 100, l = 0.98\)</span>. Given that the maximum size of the hypercube is <span class="math inline">\(1\)</span>, having an hypercube of length <span class="math inline">\(0.98\)</span> to get 10% of the data when <span class="math inline">\(p = 100\)</span> is something very annoying. See <em>The Elements of Statistical Learning</em>, by Hastie, Tibshirani and Friedman for more information.</p>
 </div>
-<div id="exercise-5.-2" class="section level3">
-<h3><span class="header-section-number">4.1.5</span> Exercise 5.</h3>
+<div id="exercise-5.-2" class="section level3" number="4.1.5">
+<h3 number="4.1.5"><span class="header-section-number">4.1.5</span> Exercise 5.</h3>
 <p>This exercise is about the differences between LDA and QDA.</p>
 <ul>
 <li><em>Question (a)</em></li>
@@ -318,8 +332,8 @@ The Bayes classifier involves assigning <span class="math inline">\(X = x\)</spa
 </ul>
 <p>QDA is not flexible enough to model linear decision as good as LDA. So, the test arror rate of QDA will not be better than the one of LDA if the Bayes decision boundary is linear. Mathematically speaking, this is because the coefficient in front of the quadratic term in QDA can not null. As exemple, you can take a look at the figure 4.11).</p>
 </div>
-<div id="exercise-6.-2" class="section level3">
-<h3><span class="header-section-number">4.1.6</span> Exercise 6.</h3>
+<div id="exercise-6.-2" class="section level3" number="4.1.6">
+<h3 number="4.1.6"><span class="header-section-number">4.1.6</span> Exercise 6.</h3>
 <ul>
 <li><em>Question (a)</em></li>
 </ul>
@@ -342,8 +356,8 @@ The Bayes classifier involves assigning <span class="math inline">\(X = x\)</spa
 \]</span></p>
 <p>A student with an undergrad GPA of 3.5 needs to studies 50 hours to have 50% chance of getting an A in the class.</p>
 </div>
-<div id="exercise-7.-2" class="section level3">
-<h3><span class="header-section-number">4.1.7</span> Exercise 7.</h3>
+<div id="exercise-7.-2" class="section level3" number="4.1.7">
+<h3 number="4.1.7"><span class="header-section-number">4.1.7</span> Exercise 7.</h3>
 <p><span class="math display">\[
 \begin{align} 
 \mathbb{P}(Y = &quot;yes&quot; \mid X = 4) &amp;= \frac{0.8f_1(4)}{0.8f_1(4) + 0.2f_2(4)} \quad\text{where} f_1 \sim \mathcal{N}(10, 36) \text{ and } f_2 \sim \mathcal{N}(0, 36)
@@ -352,12 +366,12 @@ The Bayes classifier involves assigning <span class="math inline">\(X = x\)</spa
 \]</span></p>
 <p>A company with a percentage profit of 4% last year have 75% chance to issue dividend this year.</p>
 </div>
-<div id="exercise-8.-2" class="section level3">
-<h3><span class="header-section-number">4.1.8</span> Exercise 8.</h3>
+<div id="exercise-8.-2" class="section level3" number="4.1.8">
+<h3 number="4.1.8"><span class="header-section-number">4.1.8</span> Exercise 8.</h3>
 <p>The error rates for the logistic regression is quite high. So, it might imply that the Bayes decision boundary is (higly) non-linear. Thus, 1-NN should be prefered for new observations. However, 1-NN usually overfits. It is possible that there is an error of 0% on the training set and 36% on the test sets. So, we can not conclude on which method is better.</p>
 </div>
-<div id="exercise-9.-2" class="section level3">
-<h3><span class="header-section-number">4.1.9</span> Exercise 9.</h3>
+<div id="exercise-9.-2" class="section level3" number="4.1.9">
+<h3 number="4.1.9"><span class="header-section-number">4.1.9</span> Exercise 9.</h3>
 <p>This exercise is about odds. Note <span class="math inline">\(p_{def}\)</span> the default probability.</p>
 <ul>
 <li><em>Question (a)</em></li>
@@ -371,10 +385,10 @@ The Bayes classifier involves assigning <span class="math inline">\(X = x\)</spa
 <p>A person with a percentage of changce to default of 16% on their credit card payment has an odd of 0.19.</p>
 </div>
 </div>
-<div id="applied-exercises-2" class="section level2">
-<h2><span class="header-section-number">4.2</span> Applied Exercises</h2>
-<div id="exercise-10.-2" class="section level3">
-<h3><span class="header-section-number">4.2.1</span> Exercise 10.</h3>
+<div id="applied-exercises-2" class="section level2" number="4.2">
+<h2 number="4.2"><span class="header-section-number">4.2</span> Applied Exercises</h2>
+<div id="exercise-10.-2" class="section level3" number="4.2.1">
+<h3 number="4.2.1"><span class="header-section-number">4.2.1</span> Exercise 10.</h3>
 <p>This exercise is about fitting a simple logistic model to the <code>Weekly</code> dataset. It contains 1089 observations of 9 variables about the weekly percentage returns for the S&amp;P 500 stock index between 1990 and 2010. For a description of the variables, please refer to <strong>R</strong> by typing <code>help(Weekly)</code> after loading the package <code>ISLR</code>.</p>
 <div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="classification.html#cb45-1"></a>weekly &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(Weekly, <span class="dt">rownames =</span> <span class="ot">NA</span>)</span></code></pre></div>
 <ul>
@@ -870,7 +884,7 @@ Today
 <div class="figure" style="text-align: center"><span id="fig:ex10aii"></span>
 <img src="03-classification_files/figure-html/ex10aii-1.png" alt="Pair plots." width="1440" />
 <p class="caption">
-Figure 4.1: Pair plots.
+Figure 21: Pair plots.
 </p>
 </div>
 <p>We see a strong exponential pattern between the <code>Year</code> and <code>Volume</code> features.</p>
@@ -1157,7 +1171,7 @@ Volume
 <div class="figure" style="text-align: center"><span id="fig:ex10c3"></span>
 <img src="03-classification_files/figure-html/ex10c3-1.png" alt="Confusion matrix for the complete logistic model." width="192" />
 <p class="caption">
-Figure 4.2: Confusion matrix for the complete logistic model.
+Figure 22: Confusion matrix for the complete logistic model.
 </p>
 </div>
 </center>
@@ -1175,7 +1189,7 @@ Figure 4.2: Confusion matrix for the complete logistic model.
 <div class="figure" style="text-align: center"><span id="fig:ex10d3"></span>
 <img src="03-classification_files/figure-html/ex10d3-1.png" alt="Confusion matrix for the logistic model on the test set." width="192" />
 <p class="caption">
-Figure 4.3: Confusion matrix for the logistic model on the test set.
+Figure 23: Confusion matrix for the logistic model on the test set.
 </p>
 </div>
 </center>
@@ -1190,7 +1204,7 @@ Figure 4.3: Confusion matrix for the logistic model on the test set.
 <div class="figure" style="text-align: center"><span id="fig:ex10e2"></span>
 <img src="03-classification_files/figure-html/ex10e2-1.png" alt="Confusion matrix for the LDA model on the test set." width="192" />
 <p class="caption">
-Figure 4.4: Confusion matrix for the LDA model on the test set.
+Figure 24: Confusion matrix for the LDA model on the test set.
 </p>
 </div>
 </center>
@@ -1205,7 +1219,7 @@ Figure 4.4: Confusion matrix for the LDA model on the test set.
 <div class="figure" style="text-align: center"><span id="fig:ex10f2"></span>
 <img src="03-classification_files/figure-html/ex10f2-1.png" alt="Confusion matrix for the QDA model on the test set." width="192" />
 <p class="caption">
-Figure 4.5: Confusion matrix for the QDA model on the test set.
+Figure 25: Confusion matrix for the QDA model on the test set.
 </p>
 </div>
 </center>
@@ -1218,11 +1232,11 @@ Figure 4.5: Confusion matrix for the QDA model on the test set.
 <div class="figure" style="text-align: center"><span id="fig:ex10g2"></span>
 <img src="03-classification_files/figure-html/ex10g2-1.png" alt="Confusion matrix for the $K$-NN model on the test set." width="192" />
 <p class="caption">
-Figure 4.6: Confusion matrix for the <span class="math inline">\(K\)</span>-NN model on the test set.
+Figure 26: Confusion matrix for the <span class="math inline">\(K\)</span>-NN model on the test set.
 </p>
 </div>
 </center>
-<p>The percentage of correct prediction of the movement of the market on the test set is 51% for the <span class="math inline">\(K\)</span>-NN model with <span class="math inline">\(K = 1\)</span>.</p>
+<p>The percentage of correct prediction of the movement of the market on the test set is 50% for the <span class="math inline">\(K\)</span>-NN model with <span class="math inline">\(K = 1\)</span>.</p>
 <ul>
 <li><em>Question (g)</em></li>
 </ul>
@@ -1242,13 +1256,13 @@ Figure 4.6: Confusion matrix for the <span class="math inline">\(K\)</span>-NN m
 <div class="figure" style="text-align: center"><span id="fig:ex10i3"></span>
 <img src="03-classification_files/figure-html/ex10i3-1.png" alt="Evolution of percentage of correct predictions compared to $K$." width="960" />
 <p class="caption">
-Figure 4.7: Evolution of percentage of correct predictions compared to <span class="math inline">\(K\)</span>.
+Figure 27: Evolution of percentage of correct predictions compared to <span class="math inline">\(K\)</span>.
 </p>
 </div>
 <p>For the <span class="math inline">\(K\)</span>-NN model, we obtain the best results for <span class="math inline">\(K\)</span> between 10 and 17. But, even here, the results are not as good as the ones of the logistic model and the LDA model.</p>
 </div>
-<div id="exercise-11.-1" class="section level3">
-<h3><span class="header-section-number">4.2.2</span> Exercise 11.</h3>
+<div id="exercise-11.-1" class="section level3" number="4.2.2">
+<h3 number="4.2.2"><span class="header-section-number">4.2.2</span> Exercise 11.</h3>
 <div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="classification.html#cb55-1"></a>auto &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(Auto)</span></code></pre></div>
 <ul>
 <li><em>Question (a)</em></li>
@@ -1263,7 +1277,7 @@ Figure 4.7: Evolution of percentage of correct predictions compared to <span cla
 <div class="figure" style="text-align: center"><span id="fig:ex10bii"></span>
 <img src="03-classification_files/figure-html/ex10bii-1.png" alt="Pair plots." width="1440" />
 <p class="caption">
-Figure 4.8: Pair plots.
+Figure 28: Pair plots.
 </p>
 </div>
 <p>Based on the pairs plot, four variables seem to be associated with the variable <code>mpg01</code> and could be used to predict its value. These variables are <code>cylinders</code>, <code>displacement</code>, <code>horsepower</code> and <code>weight</code>. However, some of them appears to be particularly correlated (in particular, <code>displacement</code> with <code>horsepower</code> and <code>weight</code>). So, we have to be careful to not had redundant information in the model.</p>
@@ -1284,7 +1298,7 @@ Figure 4.8: Pair plots.
 <div class="figure" style="text-align: center"><span id="fig:ex11d2"></span>
 <img src="03-classification_files/figure-html/ex11d2-1.png" alt="Confusion matrix for the LDA model on the test set." width="192" />
 <p class="caption">
-Figure 4.9: Confusion matrix for the LDA model on the test set.
+Figure 29: Confusion matrix for the LDA model on the test set.
 </p>
 </div>
 </center>
@@ -1299,7 +1313,7 @@ Figure 4.9: Confusion matrix for the LDA model on the test set.
 <div class="figure" style="text-align: center"><span id="fig:ex11e2"></span>
 <img src="03-classification_files/figure-html/ex11e2-1.png" alt="Confusion matrix for the QDA model on the test set." width="192" />
 <p class="caption">
-Figure 4.10: Confusion matrix for the QDA model on the test set.
+Figure 30: Confusion matrix for the QDA model on the test set.
 </p>
 </div>
 </center>
@@ -1314,7 +1328,7 @@ Figure 4.10: Confusion matrix for the QDA model on the test set.
 <div class="figure" style="text-align: center"><span id="fig:ex11f2"></span>
 <img src="03-classification_files/figure-html/ex11f2-1.png" alt="Confusion matrix for the logistic model on the test set." width="192" />
 <p class="caption">
-Figure 4.11: Confusion matrix for the logistic model on the test set.
+Figure 31: Confusion matrix for the logistic model on the test set.
 </p>
 </div>
 </center>
@@ -1335,17 +1349,17 @@ Figure 4.11: Confusion matrix for the logistic model on the test set.
 <div class="figure" style="text-align: center"><span id="fig:ex11g2"></span>
 <img src="03-classification_files/figure-html/ex11g2-1.png" alt="Evolution of percentage of incorrect predictions compared to $K$." width="960" />
 <p class="caption">
-Figure 4.12: Evolution of percentage of incorrect predictions compared to <span class="math inline">\(K\)</span>.
+Figure 32: Evolution of percentage of incorrect predictions compared to <span class="math inline">\(K\)</span>.
 </p>
 </div>
 <p>The <span class="math inline">\(K\)</span> which give the best results for the <span class="math inline">\(K\)</span>-NN model is <span class="math inline">\(K = 3\)</span>.</p>
 </div>
-<div id="exercise-12.-1" class="section level3">
-<h3><span class="header-section-number">4.2.3</span> Exercise 12.</h3>
+<div id="exercise-12.-1" class="section level3" number="4.2.3">
+<h3 number="4.2.3"><span class="header-section-number">4.2.3</span> Exercise 12.</h3>
 <p>Consider to look <a href="http://yahwes.github.io/ISLR/exercises/ch04soln.html#ex12">here</a>.</p>
 </div>
-<div id="exercise-13.-1" class="section level3">
-<h3><span class="header-section-number">4.2.4</span> Exercise 13.</h3>
+<div id="exercise-13.-1" class="section level3" number="4.2.4">
+<h3 number="4.2.4"><span class="header-section-number">4.2.4</span> Exercise 13.</h3>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="classification.html#cb62-1"></a>boston &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(Boston)</span></code></pre></div>
 <div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="classification.html#cb63-1"></a>boston &lt;-<span class="st"> </span>boston <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb63-2"><a href="classification.html#cb63-2"></a><span class="st">            </span><span class="kw">mutate</span>(<span class="dt">crim01 =</span> <span class="kw">if_else</span>(crim <span class="op">&gt;</span><span class="st"> </span><span class="kw">median</span>(crim), <span class="dv">1</span>, <span class="dv">0</span>)) <span class="op">%&gt;%</span></span>
@@ -1362,7 +1376,7 @@ Figure 4.12: Evolution of percentage of incorrect predictions compared to <span 
 <div class="figure" style="text-align: center"><span id="fig:ex13d"></span>
 <img src="03-classification_files/figure-html/ex13d-1.png" alt="Confusion matrix for the LDA model on the test set." width="192" />
 <p class="caption">
-Figure 3.7: Confusion matrix for the LDA model on the test set.
+Figure 15: Confusion matrix for the LDA model on the test set.
 </p>
 </div>
 </center>
@@ -1374,7 +1388,7 @@ Figure 3.7: Confusion matrix for the LDA model on the test set.
 <div class="figure" style="text-align: center"><span id="fig:ex13f"></span>
 <img src="03-classification_files/figure-html/ex13f-1.png" alt="Confusion matrix for the QDA model on the test set." width="192" />
 <p class="caption">
-Figure 3.8: Confusion matrix for the QDA model on the test set.
+Figure 16: Confusion matrix for the QDA model on the test set.
 </p>
 </div>
 </center>
@@ -1386,7 +1400,7 @@ Figure 3.8: Confusion matrix for the QDA model on the test set.
 <div class="figure" style="text-align: center"><span id="fig:ex13h"></span>
 <img src="03-classification_files/figure-html/ex13h-1.png" alt="Confusion matrix for the logistic model on the test set." width="192" />
 <p class="caption">
-Figure 4.13: Confusion matrix for the logistic model on the test set.
+Figure 33: Confusion matrix for the logistic model on the test set.
 </p>
 </div>
 </center>
@@ -1404,7 +1418,7 @@ Figure 4.13: Confusion matrix for the logistic model on the test set.
 <div class="figure" style="text-align: center"><span id="fig:ex13j"></span>
 <img src="03-classification_files/figure-html/ex13j-1.png" alt="Evolution of percentage of incorrect predictions compared to $K$." width="960" />
 <p class="caption">
-Figure 3.10: Evolution of percentage of incorrect predictions compared to <span class="math inline">\(K\)</span>.
+Figure 18: Evolution of percentage of incorrect predictions compared to <span class="math inline">\(K\)</span>.
 </p>
 </div>
 <p>The <span class="math inline">\(K\)</span> which give the best results for the <span class="math inline">\(K\)</span>-NN model is <span class="math inline">\(K = 4\)</span> or <span class="math inline">\(K = 5\)</span>.</p>
