@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>7 Moving Beyond Linearity | An Introduction to Statistical Learning</title>
+  <meta name="description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
+  <meta name="generator" content="bookdown 0.14 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="7 Moving Beyond Linearity | An Introduction to Statistical Learning" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="7 Moving Beyond Linearity | An Introduction to Statistical Learning" />
+  
+  <meta name="twitter:description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
+  
+
+<meta name="author" content="Steven Golovkine" />
+
+
+<meta name="date" content="2020-01-26" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="linear-model-selection-and-regularization.html"/>
+<link rel="next" href="references.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Introduction to Statistical Learning</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="overview.html"><a href="overview.html"><i class="fa fa-check"></i><b>2</b> An Overview of Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="overview.html"><a href="overview.html#conceptual-exercises"><i class="fa fa-check"></i><b>2.1</b> Conceptual Exercises</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="overview.html"><a href="overview.html#exercise-1."><i class="fa fa-check"></i><b>2.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="2.1.2" data-path="overview.html"><a href="overview.html#exercise-2."><i class="fa fa-check"></i><b>2.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="2.1.3" data-path="overview.html"><a href="overview.html#exercise-3."><i class="fa fa-check"></i><b>2.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="2.1.4" data-path="overview.html"><a href="overview.html#exercise-4."><i class="fa fa-check"></i><b>2.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="2.1.5" data-path="overview.html"><a href="overview.html#exercise-5."><i class="fa fa-check"></i><b>2.1.5</b> Exercise 5.</a></li>
+<li class="chapter" data-level="2.1.6" data-path="overview.html"><a href="overview.html#exercise-6."><i class="fa fa-check"></i><b>2.1.6</b> Exercise 6.</a></li>
+<li class="chapter" data-level="2.1.7" data-path="overview.html"><a href="overview.html#exercise-7."><i class="fa fa-check"></i><b>2.1.7</b> Exercise 7.</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="overview.html"><a href="overview.html#applied-exercises"><i class="fa fa-check"></i><b>2.2</b> Applied Exercises</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="overview.html"><a href="overview.html#exercise-8."><i class="fa fa-check"></i><b>2.2.1</b> Exercise 8.</a></li>
+<li class="chapter" data-level="2.2.2" data-path="overview.html"><a href="overview.html#exercise-9."><i class="fa fa-check"></i><b>2.2.2</b> Exercise 9.</a></li>
+<li class="chapter" data-level="2.2.3" data-path="overview.html"><a href="overview.html#exercise-10."><i class="fa fa-check"></i><b>2.2.3</b> Exercise 10.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="linear-regression.html"><a href="linear-regression.html"><i class="fa fa-check"></i><b>3</b> Linear Regression</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-regression.html"><a href="linear-regression.html#conceptual-exercises-1"><i class="fa fa-check"></i><b>3.1</b> Conceptual Exercises</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="linear-regression.html"><a href="linear-regression.html#exercise-1.-1"><i class="fa fa-check"></i><b>3.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="3.1.2" data-path="linear-regression.html"><a href="linear-regression.html#exercise-2.-1"><i class="fa fa-check"></i><b>3.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="3.1.3" data-path="linear-regression.html"><a href="linear-regression.html#exercise-3.-1"><i class="fa fa-check"></i><b>3.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="3.1.4" data-path="linear-regression.html"><a href="linear-regression.html#exercise-4.-1"><i class="fa fa-check"></i><b>3.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="3.1.5" data-path="linear-regression.html"><a href="linear-regression.html#exercise-5.-1"><i class="fa fa-check"></i><b>3.1.5</b> Exercise 5.</a></li>
+<li class="chapter" data-level="3.1.6" data-path="linear-regression.html"><a href="linear-regression.html#exercise-6.-1"><i class="fa fa-check"></i><b>3.1.6</b> Exercise 6.</a></li>
+<li class="chapter" data-level="3.1.7" data-path="linear-regression.html"><a href="linear-regression.html#exercise-7.-1"><i class="fa fa-check"></i><b>3.1.7</b> Exercise 7.</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="linear-regression.html"><a href="linear-regression.html#applied-exercises-1"><i class="fa fa-check"></i><b>3.2</b> Applied Exercises</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="linear-regression.html"><a href="linear-regression.html#exercise-8.-1"><i class="fa fa-check"></i><b>3.2.1</b> Exercise 8.</a></li>
+<li class="chapter" data-level="3.2.2" data-path="linear-regression.html"><a href="linear-regression.html#exercise-9.-1"><i class="fa fa-check"></i><b>3.2.2</b> Exercise 9.</a></li>
+<li class="chapter" data-level="3.2.3" data-path="linear-regression.html"><a href="linear-regression.html#exercise-10.-1"><i class="fa fa-check"></i><b>3.2.3</b> Exercise 10.</a></li>
+<li class="chapter" data-level="3.2.4" data-path="linear-regression.html"><a href="linear-regression.html#exercise-11."><i class="fa fa-check"></i><b>3.2.4</b> Exercise 11.</a></li>
+<li class="chapter" data-level="3.2.5" data-path="linear-regression.html"><a href="linear-regression.html#exercise-12."><i class="fa fa-check"></i><b>3.2.5</b> Exercise 12.</a></li>
+<li class="chapter" data-level="3.2.6" data-path="linear-regression.html"><a href="linear-regression.html#exercise-13."><i class="fa fa-check"></i><b>3.2.6</b> Exercise 13.</a></li>
+<li class="chapter" data-level="3.2.7" data-path="linear-regression.html"><a href="linear-regression.html#exercise-14."><i class="fa fa-check"></i><b>3.2.7</b> Exercise 14.</a></li>
+<li class="chapter" data-level="3.2.8" data-path="linear-regression.html"><a href="linear-regression.html#exercise-15."><i class="fa fa-check"></i><b>3.2.8</b> Exercise 15.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="classification.html"><a href="classification.html"><i class="fa fa-check"></i><b>4</b> Classification</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="classification.html"><a href="classification.html#conceptual-exercises-2"><i class="fa fa-check"></i><b>4.1</b> Conceptual Exercises</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="classification.html"><a href="classification.html#exercise-1.-2"><i class="fa fa-check"></i><b>4.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="4.1.2" data-path="classification.html"><a href="classification.html#exercise-2.-2"><i class="fa fa-check"></i><b>4.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="4.1.3" data-path="classification.html"><a href="classification.html#exercise-3.-2"><i class="fa fa-check"></i><b>4.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="4.1.4" data-path="classification.html"><a href="classification.html#exercise-4.-2"><i class="fa fa-check"></i><b>4.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="4.1.5" data-path="classification.html"><a href="classification.html#exercise-5.-2"><i class="fa fa-check"></i><b>4.1.5</b> Exercise 5.</a></li>
+<li class="chapter" data-level="4.1.6" data-path="classification.html"><a href="classification.html#exercise-6.-2"><i class="fa fa-check"></i><b>4.1.6</b> Exercise 6.</a></li>
+<li class="chapter" data-level="4.1.7" data-path="classification.html"><a href="classification.html#exercise-7.-2"><i class="fa fa-check"></i><b>4.1.7</b> Exercise 7.</a></li>
+<li class="chapter" data-level="4.1.8" data-path="classification.html"><a href="classification.html#exercise-8.-2"><i class="fa fa-check"></i><b>4.1.8</b> Exercise 8.</a></li>
+<li class="chapter" data-level="4.1.9" data-path="classification.html"><a href="classification.html#exercise-9.-2"><i class="fa fa-check"></i><b>4.1.9</b> Exercise 9.</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="classification.html"><a href="classification.html#applied-exercises-2"><i class="fa fa-check"></i><b>4.2</b> Applied Exercises</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="classification.html"><a href="classification.html#exercise-10.-2"><i class="fa fa-check"></i><b>4.2.1</b> Exercise 10.</a></li>
+<li class="chapter" data-level="4.2.2" data-path="classification.html"><a href="classification.html#exercise-11.-1"><i class="fa fa-check"></i><b>4.2.2</b> Exercise 11.</a></li>
+<li class="chapter" data-level="4.2.3" data-path="classification.html"><a href="classification.html#exercise-12.-1"><i class="fa fa-check"></i><b>4.2.3</b> Exercise 12.</a></li>
+<li class="chapter" data-level="4.2.4" data-path="classification.html"><a href="classification.html#exercise-13.-1"><i class="fa fa-check"></i><b>4.2.4</b> Exercise 13.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="resampling-methods.html"><a href="resampling-methods.html"><i class="fa fa-check"></i><b>5</b> Resampling Methods</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="resampling-methods.html"><a href="resampling-methods.html#conceptual-exercises-3"><i class="fa fa-check"></i><b>5.1</b> Conceptual Exercises</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-1.-3"><i class="fa fa-check"></i><b>5.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="5.1.2" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-2.-3"><i class="fa fa-check"></i><b>5.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="5.1.3" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-3.-3"><i class="fa fa-check"></i><b>5.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="5.1.4" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-4.-3"><i class="fa fa-check"></i><b>5.1.4</b> Exercise 4.</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="resampling-methods.html"><a href="resampling-methods.html#applied-exercises-3"><i class="fa fa-check"></i><b>5.2</b> Applied Exercises</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-5.-3"><i class="fa fa-check"></i><b>5.2.1</b> Exercise 5.</a></li>
+<li class="chapter" data-level="5.2.2" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-6.-3"><i class="fa fa-check"></i><b>5.2.2</b> Exercise 6.</a></li>
+<li class="chapter" data-level="5.2.3" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-7.-3"><i class="fa fa-check"></i><b>5.2.3</b> Exercise 7.</a></li>
+<li class="chapter" data-level="5.2.4" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-8.-3"><i class="fa fa-check"></i><b>5.2.4</b> Exercise 8.</a></li>
+<li class="chapter" data-level="5.2.5" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-9.-3"><i class="fa fa-check"></i><b>5.2.5</b> Exercise 9.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html"><i class="fa fa-check"></i><b>6</b> Linear Model Selection and Regularization</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#conceptual-exercises-4"><i class="fa fa-check"></i><b>6.1</b> Conceptual Exercises</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-1.-4"><i class="fa fa-check"></i><b>6.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="6.1.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-2.-4"><i class="fa fa-check"></i><b>6.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="6.1.3" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-3.-4"><i class="fa fa-check"></i><b>6.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="6.1.4" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-4.-4"><i class="fa fa-check"></i><b>6.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="6.1.5" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-5.-4"><i class="fa fa-check"></i><b>6.1.5</b> Exercise 5.</a></li>
+<li class="chapter" data-level="6.1.6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-6.-4"><i class="fa fa-check"></i><b>6.1.6</b> Exercise 6.</a></li>
+<li class="chapter" data-level="6.1.7" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-7.-4"><i class="fa fa-check"></i><b>6.1.7</b> Exercise 7.</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#applied-exercises-4"><i class="fa fa-check"></i><b>6.2</b> Applied Exercises</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-8.-4"><i class="fa fa-check"></i><b>6.2.1</b> Exercise 8.</a></li>
+<li class="chapter" data-level="6.2.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-9.-4"><i class="fa fa-check"></i><b>6.2.2</b> Exercise 9.</a></li>
+<li class="chapter" data-level="6.2.3" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-10.-3"><i class="fa fa-check"></i><b>6.2.3</b> Exercise 10.</a></li>
+<li class="chapter" data-level="6.2.4" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-11.-2"><i class="fa fa-check"></i><b>6.2.4</b> Exercise 11.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html"><i class="fa fa-check"></i><b>7</b> Moving Beyond Linearity</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#conceptual-exercises-5"><i class="fa fa-check"></i><b>7.1</b> Conceptual exercises</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-1.-5"><i class="fa fa-check"></i><b>7.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="7.1.2" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-2.-5"><i class="fa fa-check"></i><b>7.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="7.1.3" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-3.-5"><i class="fa fa-check"></i><b>7.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="7.1.4" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-4.-5"><i class="fa fa-check"></i><b>7.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="7.1.5" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-5.-5"><i class="fa fa-check"></i><b>7.1.5</b> Exercise 5.</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#applied-exercises-5"><i class="fa fa-check"></i><b>7.2</b> Applied exercises</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-6.-5"><i class="fa fa-check"></i><b>7.2.1</b> Exercise 6.</a></li>
+<li class="chapter" data-level="7.2.2" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-7.-5"><i class="fa fa-check"></i><b>7.2.2</b> Exercise 7.</a></li>
+<li class="chapter" data-level="7.2.3" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-8.-5"><i class="fa fa-check"></i><b>7.2.3</b> Exercise 8.</a></li>
+<li class="chapter" data-level="7.2.4" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-9.-5"><i class="fa fa-check"></i><b>7.2.4</b> Exercise 9.</a></li>
+<li class="chapter" data-level="7.2.5" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-10.-4"><i class="fa fa-check"></i><b>7.2.5</b> Exercise 10.</a></li>
+<li class="chapter" data-level="7.2.6" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-11.-3"><i class="fa fa-check"></i><b>7.2.6</b> Exercise 11.</a></li>
+<li class="chapter" data-level="7.2.7" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-12.-2"><i class="fa fa-check"></i><b>7.2.7</b> Exercise 12.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">An Introduction to Statistical Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="moving-beyond-linearity" class="section level1" number="7">
+<h1 number="7"><span class="header-section-number">7</span> Moving Beyond Linearity</h1>
+<div id="conceptual-exercises-5" class="section level2" number="7.1">
+<h2 number="7.1"><span class="header-section-number">7.1</span> Conceptual exercises</h2>
+<div id="exercise-1.-5" class="section level3" number="7.1.1">
+<h3 number="7.1.1"><span class="header-section-number">7.1.1</span> Exercise 1.</h3>
+<p>A cubic regression spline with one knot at <span class="math inline">\(\xi\)</span> can be obtained using a basis of the form <span class="math inline">\(x, x^2, x^3, (x - \xi)_+^3\)</span>, where <span class="math inline">\((x - \xi)_+^3 = (x - \xi)^3\)</span> if <span class="math inline">\(x &gt; \xi\)</span> and equals <span class="math inline">\(0\)</span> otherwise. We will now show that a function of the form
+<span class="math display">\[ f(x) = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4(x - \xi)_+^3 \]</span>
+is indeed a cubic regression spline, regardless of the values of <span class="math inline">\(\beta_0, \beta_1, \beta_2, \beta_3\)</span> and <span class="math inline">\(\beta_4\)</span>.</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>Let’s define a function
+<span class="math display">\[ f_1(x) = a_1 + b_1x + c_1x^2 + d_1x^3, \quad\text{for some real numbers}\quad a_1, b_1, c_1, d_1. \]</span></p>
+<p>For all <span class="math inline">\(x \leq \xi\)</span>, <span class="math inline">\((x - \xi)_+^3 = 0\)</span>, and so we have <span class="math inline">\(f(x) = f_1(x)\)</span> for all <span class="math inline">\(x \leq \xi\)</span>. And <span class="math inline">\(a_1 = \beta_0\)</span>, <span class="math inline">\(b_1 = \beta_1\)</span>, <span class="math inline">\(c_1 = \beta_2\)</span> and <span class="math inline">\(d_1 = \beta_3\)</span>.</p>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>Let’s define a function
+<span class="math display">\[ f_2(x) = a_2 + b_2x + c_2x^2 + d_2x^3, \quad\text{for some real numbers}\quad a_2, b_2, c_2, d_2. \]</span></p>
+<p>For all <span class="math inline">\(x &gt; \xi\)</span>, <span class="math inline">\((x - \xi)_+^3 = (x - \xi)^3 = x^3 - 3\xi x^2 + 3\xi^2 x - \xi^3\)</span>. Thus, we can rewrite <span class="math inline">\(f(x)\)</span> as:
+<span class="math display">\[ f(x) = (\beta_0 - \beta_4\xi^3) + (\beta_1 + 3\beta_4\xi^2)x + (\beta_2 - 3\beta_4\xi)x^2 + (\beta_3 + \beta_4)x^3.\]</span></p>
+<p>Then, by identification, we found that <span class="math inline">\(a_2 = \beta_0 - \beta_4\xi^3\)</span>, <span class="math inline">\(b_2 = \beta_1 + 3\beta_4\xi^2\)</span>, <span class="math inline">\(c_2 = \beta_2 - 3\beta_4\xi\)</span> and <span class="math inline">\(d_2 = \beta_3 + \beta_4\)</span>.</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>We have that:
+<span class="math display">\[\begin{align*}
+f_2(\xi) &amp;=  (\beta_0 - \beta_4\xi^3) + (\beta_1 + 3\beta_4\xi^2)\xi + (\beta_2 - 3\beta_4\xi)\xi^2 + (\beta_3 + \beta_4)\xi^3 \\
+         &amp;= \beta_0 + \beta_1\xi + \beta_2\xi^2 + \beta_3\xi^3 + (-\beta_4\xi^3 + 3\beta_4\xi^3 - 3\beta_4\xi^3 + \beta_4\xi^3) \\
+         &amp;= f_1(\xi)
+\end{align*}\]</span></p>
+<p>So, <span class="math inline">\(f(x)\)</span> is continous at <span class="math inline">\(\xi\)</span>.</p>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>By taking the first derivatives:
+<span class="math display">\[f_1^\prime(x) = \beta_1 + 2\beta_2x + 3\beta_3x^2 \quad\text{and}\quad f_2^\prime(x) = (\beta_1 + 3\beta_4\xi^2) + 2(\beta_2 - 3\beta_4\xi)x + 3(\beta_3 + \beta_4)x^2.\]</span></p>
+<p>And so,
+<span class="math display">\[\begin{align*}
+f_2^\prime(\xi) &amp;= (\beta_1 + 3\beta_4\xi^2) + 2(\beta_2 - 3\beta_4\xi)\xi + 3(\beta_3 + \beta_4)\xi^2 \\
+              &amp;= \beta_1 + 2\beta_2\xi + 3\beta_3\xi^2 + (3\beta_4\xi^2 - 6\beta_4\xi^2 + 3\beta_4\xi^2) \\
+              &amp;= f_1^\prime(\xi)
+\end{align*}\]</span></p>
+<p>So, <span class="math inline">\(f^\prime(x)\)</span> is continuous at <span class="math inline">\(\xi\)</span>.</p>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<p>By taking the second derivatives:
+<span class="math display">\[f_1^{\prime\prime}(x) = 2\beta_2 + 6\beta_3x \quad\text{and}\quad f_2^{\prime\prime}(x) =  2(\beta_2 - 3\beta_4\xi) + 6(\beta_3 + \beta_4)x.\]</span></p>
+<p>And so,
+<span class="math display">\[\begin{align*}
+f_2^{\prime\prime}(\xi) &amp;=  2(\beta_2 - 3\beta_4\xi) + 6(\beta_3 + \beta_4)\xi \\
+                        &amp;= 2\beta_2 + 6\beta_3\xi - 6\beta_4\xi + 6\beta_4\xi \\
+                        &amp;= f_1^{\prime\prime}(\xi)
+\end{align*}\]</span></p>
+<p>So, <span class="math inline">\(f^{\prime\prime}(x)\)</span> is continuous at <span class="math inline">\(\xi\)</span>.</p>
+<p>Therefore, <span class="math inline">\(f(x)\)</span> is indeed a cubic sline.</p>
+</div>
+<div id="exercise-2.-5" class="section level3" number="7.1.2">
+<h3 number="7.1.2"><span class="header-section-number">7.1.2</span> Exercise 2.</h3>
+<p>Suppose that a curve <span class="math inline">\(\widehat{g}\)</span> is computed to smoothly fit a set of <span class="math inline">\(n\)</span> points using the following formula:</p>
+<p><span class="math display">\[ \widehat{g} = \arg\min_g \left(\sum_{i=1}^n \left(y_i - g(x_i)\right)^2 + \lambda\int \left[g^{(m)}(x)\right]^2dx\right),\]</span>
+where <span class="math inline">\(g^{(m)}\)</span> represents the <span class="math inline">\(m\)</span>th derivatives of <span class="math inline">\(g\)</span> (and <span class="math inline">\(g^{(0)} = g\)</span>).</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>When <span class="math inline">\(\lambda = \infty\)</span> and <span class="math inline">\(m = 0\)</span>, <span class="math inline">\(\widehat{g}\)</span> will be perfectly smooth and so <span class="math inline">\(\int \left[g^{(0)}(x)\right]^2dx\)</span> should be very close to <span class="math inline">\(0\)</span>. Thus, we find that <span class="math inline">\(\widehat{g}\)</span> will be equal to <span class="math inline">\(0\)</span>.</p>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>When <span class="math inline">\(\lambda = \infty\)</span> and <span class="math inline">\(m = 1\)</span>, <span class="math inline">\(\widehat{g}\)</span> will be perfectly smooth and so <span class="math inline">\(\int \left[g^{(1)}(x)\right]^2dx\)</span> should be very close to <span class="math inline">\(0\)</span>. Thus, we find that <span class="math inline">\(\widehat{g}\)</span> will be a constant function (of the form <span class="math inline">\(\widehat{g}(x) = k\)</span>).</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>When <span class="math inline">\(\lambda = \infty\)</span> and <span class="math inline">\(m = 2\)</span>, <span class="math inline">\(\widehat{g}\)</span> will be perfectly smooth and so <span class="math inline">\(\int \left[g^{(2)}(x)\right]^2dx\)</span> should be very close to <span class="math inline">\(0\)</span>. Thus, we find that <span class="math inline">\(\widehat{g}\)</span> will be a linear function (of the form <span class="math inline">\(\widehat{g}(x) = ax + b\)</span>).</p>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>When <span class="math inline">\(\lambda = \infty\)</span> and <span class="math inline">\(m = 3\)</span>, <span class="math inline">\(\widehat{g}\)</span> will be perfectly smooth and so <span class="math inline">\(\int \left[g^{(3)}(x)\right]^2dx\)</span> should be very close to <span class="math inline">\(0\)</span>. Thus, we find that <span class="math inline">\(\widehat{g}\)</span> will be equal a quadratic function (of the form <span class="math inline">\(\widehat{g}(x) = ax^2 + bx + c\)</span>).</p>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<p>When <span class="math inline">\(\lambda = 0\)</span> and <span class="math inline">\(m = 3\)</span>, we do not put any constraints on <span class="math inline">\(g(x_i)\)</span>, then <span class="math inline">\(\widehat{g}\)</span> will be such that it interpolates all of the <span class="math inline">\(y_i\)</span>.</p>
+</div>
+<div id="exercise-3.-5" class="section level3" number="7.1.3">
+<h3 number="7.1.3"><span class="header-section-number">7.1.3</span> Exercise 3.</h3>
+<p>Suppose we fit a curve with basis functions:
+<span class="math display">\[\begin{align*}
+b_1(X) &amp;= X \\
+b_2(X) &amp;= (X - 1)^2\mathbf{1}(X \geq 1)
+\end{align*}\]</span></p>
+<p>We fit the linear regression model
+<span class="math display">\[ Y = \beta_0 + \beta_1b_1(X) + \beta_2b_2(X) + \epsilon,\]</span>
+and obtain coefficient estimates <span class="math inline">\(\widehat{\beta}_0 = 1, \widehat{\beta}_1 = 1\)</span> and <span class="math inline">\(\widehat{\beta}_2 = -2\)</span>.</p>
+<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="moving-beyond-linearity.html#cb135-1"></a>X &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="op">-</span><span class="dv">2</span>, <span class="dv">2</span>, <span class="fl">0.1</span>)</span>
+<span id="cb135-2"><a href="moving-beyond-linearity.html#cb135-2"></a>Y &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>X <span class="op">-</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>(X <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)<span class="op">**</span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>(X <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex3i"></span>
+<img src="06-nonlinearity_files/figure-html/ex3i-1.png" alt="Sketch of the estimated curve between $X = -2$ and $X = 2$" width="960" />
+<p class="caption">
+Figure 49: Sketch of the estimated curve between <span class="math inline">\(X = -2\)</span> and <span class="math inline">\(X = 2\)</span>
+</p>
+</div>
+</div>
+<div id="exercise-4.-5" class="section level3" number="7.1.4">
+<h3 number="7.1.4"><span class="header-section-number">7.1.4</span> Exercise 4.</h3>
+<p>Suppose we fit a curve with basis functions
+<span class="math display">\[\begin{align*}
+b_1(X) &amp;= \mathbf{1}(0 \leq X \leq 2) - (X - 1)\mathbf{1}(1 \leq 2) \\
+b_2(X) &amp;= (X - 3)\mathbf{1}(3 \leq X \leq 4) + \mathbf{1}(4 &lt; X \leq 5)
+\end{align*}\]</span></p>
+<p>We fit the linear regression model
+<span class="math display">\[ Y = \beta_0 + \beta_1b_1(X) + \beta_2b_2(X) + \epsilon,\]</span>
+and obtain coefficient estimates <span class="math inline">\(\widehat{\beta}_0 = 1, \widehat{\beta}_1 = 1\)</span> and <span class="math inline">\(\widehat{\beta}_2 = 3\)</span>.</p>
+<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb136-1"><a href="moving-beyond-linearity.html#cb136-1"></a>b1 &lt;-<span class="st"> </span><span class="cf">function</span>(x) (x <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span> <span class="op">&amp;</span><span class="st"> </span>x <span class="op">&lt;=</span><span class="st"> </span><span class="dv">2</span>) <span class="op">-</span><span class="st"> </span>(x <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span>(x <span class="op">&gt;=</span><span class="st"> </span><span class="dv">1</span> <span class="op">&amp;</span><span class="st"> </span>x <span class="op">&lt;=</span><span class="st"> </span><span class="dv">2</span>)</span>
+<span id="cb136-2"><a href="moving-beyond-linearity.html#cb136-2"></a>b2 &lt;-<span class="st"> </span><span class="cf">function</span>(x) (x <span class="op">-</span><span class="st"> </span><span class="dv">3</span>) <span class="op">*</span><span class="st"> </span>(x <span class="op">&gt;=</span><span class="st"> </span><span class="dv">3</span> <span class="op">&amp;</span><span class="st"> </span>x <span class="op">&lt;=</span><span class="st"> </span><span class="dv">4</span>) <span class="op">+</span><span class="st"> </span>(x <span class="op">&gt;</span><span class="st"> </span><span class="dv">4</span> <span class="op">&amp;</span><span class="st"> </span>x <span class="op">&lt;=</span><span class="st"> </span><span class="dv">5</span>)</span>
+<span id="cb136-3"><a href="moving-beyond-linearity.html#cb136-3"></a>X &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>, <span class="fl">0.1</span>)</span>
+<span id="cb136-4"><a href="moving-beyond-linearity.html#cb136-4"></a>Y &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">b1</span>(X) <span class="op">+</span><span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="kw">b2</span>(X)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex4i"></span>
+<img src="06-nonlinearity_files/figure-html/ex4i-1.png" alt="Sketch of the estimated curve between $X = -5$ and $X = 5$" width="960" />
+<p class="caption">
+Figure 50: Sketch of the estimated curve between <span class="math inline">\(X = -5\)</span> and <span class="math inline">\(X = 5\)</span>
+</p>
+</div>
+</div>
+<div id="exercise-5.-5" class="section level3" number="7.1.5">
+<h3 number="7.1.5"><span class="header-section-number">7.1.5</span> Exercise 5.</h3>
+<p>Consider two curves, <span class="math inline">\(\widehat{g}_1\)</span> and <span class="math inline">\(\widehat{g}_2\)</span>, defined by</p>
+<p><span class="math display">\[\widehat{g}_1 = \arg\min_g \left(\sum_{i=1}^n \left(y_i - g(x_i)\right)^2 + \lambda\int \left[g^{(3)}(x)\right]^2dx\right),\]</span></p>
+<p><span class="math display">\[\widehat{g}_2 = \arg\min_g \left(\sum_{i=1}^n \left(y_i - g(x_i)\right)^2 + \lambda\int \left[g^{(4)}(x)\right]^2dx\right)\]</span></p>
+<p>where <span class="math inline">\(g^{(m)}\)</span> represents the <span class="math inline">\(m\)</span>th derivative of <span class="math inline">\(g\)</span>.</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>As <span class="math inline">\(\lambda \rightarrow \infty\)</span>, <span class="math inline">\(\widehat{g}_2\)</span> will have the smaller training RSS because <span class="math inline">\(\widehat{g}_2\)</span> should be more flexible than <span class="math inline">\(\widehat{g}_1\)</span> (less constraints), so it should better fit the training data and lead to a smaller training RSS.</p>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>As <span class="math inline">\(\lambda \rightarrow \infty\)</span>, we can not say which function will have the smaller test RSS because it depends on the true underlying function <span class="math inline">\(g\)</span>. If the true function <span class="math inline">\(g\)</span> is a polynomial function with degree at most 2, then <span class="math inline">\(\widehat{g}_1\)</span> will likely have the smaller test RSS (because <span class="math inline">\(\widehat{g}_2\)</span> will overfit). Once, the true function is a polynomial function with degree larger than 3, it should be the other way round.</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>For <span class="math inline">\(\lambda = 0\)</span>, <span class="math inline">\(\widehat{g}_1\)</span> and <span class="math inline">\(\widehat{g}_2\)</span> become the same function, so they will have the same training and test RSS.</p>
+</div>
+</div>
+<div id="applied-exercises-5" class="section level2" number="7.2">
+<h2 number="7.2"><span class="header-section-number">7.2</span> Applied exercises</h2>
+<div id="exercise-6.-5" class="section level3" number="7.2.1">
+<h3 number="7.2.1"><span class="header-section-number">7.2.1</span> Exercise 6.</h3>
+<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="moving-beyond-linearity.html#cb137-1"></a>wage &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(Wage)</span>
+<span id="cb137-2"><a href="moving-beyond-linearity.html#cb137-2"></a>X &lt;-<span class="st"> </span>wage<span class="op">$</span>age; Y &lt;-<span class="st"> </span>wage<span class="op">$</span>wage</span></code></pre></div>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>We aim to predict <code>wage</code> using <code>age</code> with polynomial regression of degree <span class="math inline">\(d\)</span>. The degree will be chosen by cross-validation.</p>
+<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="moving-beyond-linearity.html#cb138-1"></a>fits &lt;-<span class="st"> </span><span class="kw">list</span>()</span>
+<span id="cb138-2"><a href="moving-beyond-linearity.html#cb138-2"></a>cv_error &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="dt">length =</span> <span class="dv">10</span>)</span>
+<span id="cb138-3"><a href="moving-beyond-linearity.html#cb138-3"></a></span>
+<span id="cb138-4"><a href="moving-beyond-linearity.html#cb138-4"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb138-5"><a href="moving-beyond-linearity.html#cb138-5"></a><span class="cf">for</span>(d <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>){</span>
+<span id="cb138-6"><a href="moving-beyond-linearity.html#cb138-6"></a>  fits[d] &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">lm</span>(wage <span class="op">~</span><span class="st"> </span><span class="kw">poly</span>(age, d), <span class="dt">data =</span> wage))</span>
+<span id="cb138-7"><a href="moving-beyond-linearity.html#cb138-7"></a>  fit &lt;-<span class="st"> </span><span class="kw">glm</span>(wage <span class="op">~</span><span class="st"> </span><span class="kw">poly</span>(age, d), <span class="dt">data =</span> wage)</span>
+<span id="cb138-8"><a href="moving-beyond-linearity.html#cb138-8"></a>  cv_error[d] &lt;-<span class="st"> </span><span class="kw">cv.glm</span>(wage, fit, <span class="dt">K =</span> <span class="dv">10</span>)<span class="op">$</span>delta[<span class="dv">2</span>]</span>
+<span id="cb138-9"><a href="moving-beyond-linearity.html#cb138-9"></a>}</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex6ai"></span>
+<img src="06-nonlinearity_files/figure-html/ex6ai-1.png" alt="Cross-validation errors according to the considered degree." width="960" />
+<p class="caption">
+Figure 51: Cross-validation errors according to the considered degree.
+</p>
+</div>
+<p>So, according to cross-validation, the best degree to fit the wage is 9.</p>
+<p>Now, we will compare the chosen degree with the one obtained by hypothesis testing using ANOVA. ANOVA tests the null hypothesis that a model <span class="math inline">\(\mathcal{M}_1\)</span> is sufficient to explain the data against the alternative hypothesis that a more complex model <span class="math inline">\(\mathcal{M}_2\)</span> is required. Careful, <span class="math inline">\(\mathcal{M}_1\)</span> and <span class="math inline">\(\mathcal{M}_2\)</span> must be nested.</p>
+<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="moving-beyond-linearity.html#cb139-1"></a><span class="kw">do.call</span>(anova, fits)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Model  1: wage ~ poly(age, d)
+## Model  2: wage ~ poly(age, d)
+## Model  3: wage ~ poly(age, d)
+## Model  4: wage ~ poly(age, d)
+## Model  5: wage ~ poly(age, d)
+## Model  6: wage ~ poly(age, d)
+## Model  7: wage ~ poly(age, d)
+## Model  8: wage ~ poly(age, d)
+## Model  9: wage ~ poly(age, d)
+## Model 10: wage ~ poly(age, d)
+##    Res.Df     RSS Df Sum of Sq        F    Pr(&gt;F)    
+## 1    2998 5022216                                    
+## 2    2997 4793430  1    228786 143.7638 &lt; 2.2e-16 ***
+## 3    2996 4777674  1     15756   9.9005  0.001669 ** 
+## 4    2995 4771604  1      6070   3.8143  0.050909 .  
+## 5    2994 4770322  1      1283   0.8059  0.369398    
+## 6    2993 4766389  1      3932   2.4709  0.116074    
+## 7    2992 4763834  1      2555   1.6057  0.205199    
+## 8    2991 4763707  1       127   0.0796  0.777865    
+## 9    2990 4756703  1      7004   4.4014  0.035994 *  
+## 10   2989 4756701  1         3   0.0017  0.967529    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Then, the results are the same than the ones from the book (p. 270). The p-value comparing the linear model to the quadratic model is essentially zero (<span class="math inline">\(&lt; 10^{-15}\)</span>), indicating that a linear fit is not sufficient. Similarly the p-value comparing the quadratic model to the cubic model is very low, so the quadratic fit is also insufficient. The p-value comparing the cubic and the quadric models is approximately <span class="math inline">\(5\%\)</span> while the degree-5 polynomial seems unnecessary because its high p-value. Hence, either a cubic or a quartic polynomial appear to provide a reasonable fit to the data, but lower- or higher-order models are not justified. These results are quite similar to the cross-validation ones. Even if the cubic or quartic polynomial have not the smallest CV errors, they are quite close to the best.</p>
+<p>Finally, let’s fit the data with a degree-4 polynomial and plot it.</p>
+<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="moving-beyond-linearity.html#cb141-1"></a>fit_final &lt;-<span class="st"> </span><span class="kw">glm</span>(wage <span class="op">~</span><span class="st"> </span><span class="kw">poly</span>(age, <span class="dv">4</span>), <span class="dt">data =</span> wage)</span>
+<span id="cb141-2"><a href="moving-beyond-linearity.html#cb141-2"></a>pred &lt;-<span class="st"> </span><span class="kw">predict</span>(fit_final, <span class="dt">newdata =</span> <span class="kw">list</span>(<span class="dt">age =</span> X), <span class="dt">se.fit =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex6aiv"></span>
+<img src="06-nonlinearity_files/figure-html/ex6aiv-1.png" alt="Quadric polynomial model." width="960" />
+<p class="caption">
+Figure 52: Quadric polynomial model.
+</p>
+</div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>Let’s fit a step function to predict <code>wage</code> using <code>age</code>, and perform cross-validation to choose the optimal number of cuts.</p>
+<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="moving-beyond-linearity.html#cb142-1"></a>cv_error &lt;-<span class="st"> </span><span class="kw">vector</span>()</span>
+<span id="cb142-2"><a href="moving-beyond-linearity.html#cb142-2"></a></span>
+<span id="cb142-3"><a href="moving-beyond-linearity.html#cb142-3"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb142-4"><a href="moving-beyond-linearity.html#cb142-4"></a><span class="cf">for</span>(d <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span><span class="dv">15</span>){</span>
+<span id="cb142-5"><a href="moving-beyond-linearity.html#cb142-5"></a>  wage<span class="op">$</span>age_cut &lt;-<span class="st"> </span><span class="kw">cut</span>(wage<span class="op">$</span>age, d)</span>
+<span id="cb142-6"><a href="moving-beyond-linearity.html#cb142-6"></a>  fit &lt;-<span class="st"> </span><span class="kw">glm</span>(wage <span class="op">~</span><span class="st"> </span>age_cut, <span class="dt">data =</span> wage)</span>
+<span id="cb142-7"><a href="moving-beyond-linearity.html#cb142-7"></a>  cv_error[d<span class="dv">-1</span>] &lt;-<span class="st"> </span><span class="kw">cv.glm</span>(wage, fit, <span class="dt">K =</span> <span class="dv">10</span>)<span class="op">$</span>delta[<span class="dv">2</span>]</span>
+<span id="cb142-8"><a href="moving-beyond-linearity.html#cb142-8"></a>}</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex6bi"></span>
+<img src="06-nonlinearity_files/figure-html/ex6bi-1.png" alt="Cross-validation errors according to the considered number of cuts." width="960" />
+<p class="caption">
+Figure 53: Cross-validation errors according to the considered number of cuts.
+</p>
+</div>
+<p>So, according to cross-validation, the best number of cuts to fit the wage is 11.</p>
+<p>Finally, let’s fit the data with 11 cuts for the <code>age</code> and plot it.</p>
+<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="moving-beyond-linearity.html#cb143-1"></a>wage<span class="op">$</span>age_cut &lt;-<span class="st"> </span><span class="kw">cut</span>(wage<span class="op">$</span>age, <span class="kw">which.min</span>(cv_error) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)</span>
+<span id="cb143-2"><a href="moving-beyond-linearity.html#cb143-2"></a>fit_final &lt;-<span class="st"> </span><span class="kw">glm</span>(wage <span class="op">~</span><span class="st"> </span>age_cut, <span class="dt">data =</span> wage)</span>
+<span id="cb143-3"><a href="moving-beyond-linearity.html#cb143-3"></a>pred &lt;-<span class="st"> </span><span class="kw">predict</span>(fit_final, <span class="dt">newdata =</span> <span class="kw">list</span>(<span class="dt">age_cut =</span> <span class="kw">cut</span>(X, <span class="kw">which.min</span>(cv_error) <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)), <span class="dt">se.fit =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex6biii"></span>
+<img src="06-nonlinearity_files/figure-html/ex6biii-1.png" alt="Step model." width="960" />
+<p class="caption">
+Figure 54: Step model.
+</p>
+</div>
+</div>
+<div id="exercise-7.-5" class="section level3" number="7.2.2">
+<h3 number="7.2.2"><span class="header-section-number">7.2.2</span> Exercise 7.</h3>
+<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="moving-beyond-linearity.html#cb144-1"></a>wage &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(Wage)</span>
+<span id="cb144-2"><a href="moving-beyond-linearity.html#cb144-2"></a>X &lt;-<span class="st"> </span>wage<span class="op">$</span>age; Y &lt;-<span class="st"> </span>wage<span class="op">$</span>wage</span></code></pre></div>
+<p>Let’s explore relationships between the different variables in the <code>wage</code> dataset. For that, first, we are going to compute the correlation between the features and the ouput <code>wage</code>.</p>
+<div class="figure" style="text-align: center"><span id="fig:ex7ii"></span>
+<img src="06-nonlinearity_files/figure-html/ex7ii-1.png" alt="Correlation plot." width="960" />
+<p class="caption">
+Figure 55: Correlation plot.
+</p>
+</div>
+<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="moving-beyond-linearity.html#cb145-1"></a>fit_gam &lt;-<span class="st"> </span><span class="kw">gam</span>(wage <span class="op">~</span><span class="st"> </span><span class="kw">ns</span>(age, <span class="dv">5</span>) <span class="op">+</span><span class="st"> </span>maritl <span class="op">+</span><span class="st"> </span>race <span class="op">+</span><span class="st"> </span>education <span class="op">+</span><span class="st"> </span>jobclass <span class="op">+</span><span class="st"> </span>health, <span class="dt">data =</span> wage)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex7iv"></span>
+<img src="06-nonlinearity_files/figure-html/ex7iv-1.png" alt="Results of the GAM." width="1920" />
+<p class="caption">
+Figure 56: Results of the GAM.
+</p>
+</div>
+<p>The results are pretty intuitive. With other variables being fixed, <code>wage</code> tends to be highest for intermediate values of <code>age</code>, and lowest for the very young and the very old. With other variables being fixed, <code>wage</code> tends to increase with <code>education</code>. The more educated a person is, the higher their salary, on average. Same, people with very good <code>health</code> have a higher <code>wage</code> than the one with less good <code>health</code>. Moreover, information jobs are more paid than industrial ones. Finally, white and married people seems to earn more money.</p>
+</div>
+<div id="exercise-8.-5" class="section level3" number="7.2.3">
+<h3 number="7.2.3"><span class="header-section-number">7.2.3</span> Exercise 8.</h3>
+<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="moving-beyond-linearity.html#cb146-1"></a>auto &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(Auto)</span></code></pre></div>
+<p>Let’s explore relationship between the different variables in the <code>wage</code> dataset. For that, first, we are going to compute the correlation between the variables.</p>
+<div class="figure" style="text-align: center"><span id="fig:ex8ii"></span>
+<img src="06-nonlinearity_files/figure-html/ex8ii-1.png" alt="Correlation plot." width="960" />
+<p class="caption">
+Figure 57: Correlation plot.
+</p>
+</div>
+<p>We are going to use the <code>mpg</code> variable as a output. Most of the other variables seem to have a non-linear relationship with the variable <code>mpg</code>. Let’s use the <code>displacement</code> in order to predict the <code>mpg</code> variable.</p>
+<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="moving-beyond-linearity.html#cb147-1"></a>fits &lt;-<span class="st"> </span><span class="kw">list</span>()</span>
+<span id="cb147-2"><a href="moving-beyond-linearity.html#cb147-2"></a>cv_error &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="dt">length =</span> <span class="dv">10</span>)</span>
+<span id="cb147-3"><a href="moving-beyond-linearity.html#cb147-3"></a></span>
+<span id="cb147-4"><a href="moving-beyond-linearity.html#cb147-4"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb147-5"><a href="moving-beyond-linearity.html#cb147-5"></a><span class="cf">for</span>(d <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>){</span>
+<span id="cb147-6"><a href="moving-beyond-linearity.html#cb147-6"></a>  fits[d] &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">lm</span>(mpg <span class="op">~</span><span class="st"> </span><span class="kw">bs</span>(displacement, <span class="dt">df =</span> d), <span class="dt">data =</span> auto))</span>
+<span id="cb147-7"><a href="moving-beyond-linearity.html#cb147-7"></a>  fit &lt;-<span class="st"> </span><span class="kw">glm</span>(mpg <span class="op">~</span><span class="st"> </span><span class="kw">bs</span>(displacement, <span class="dt">df =</span> d), <span class="dt">data =</span> auto)</span>
+<span id="cb147-8"><a href="moving-beyond-linearity.html#cb147-8"></a>  cv_error[d] &lt;-<span class="st"> </span><span class="kw">cv.glm</span>(auto, fit, <span class="dt">K =</span> <span class="dv">10</span>)<span class="op">$</span>delta[<span class="dv">2</span>]</span>
+<span id="cb147-9"><a href="moving-beyond-linearity.html#cb147-9"></a>}</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex8iv"></span>
+<img src="06-nonlinearity_files/figure-html/ex8iv-1.png" alt="Cross-validation errors according to the degree of freedom of the B-splines." width="960" />
+<p class="caption">
+Figure 58: Cross-validation errors according to the degree of freedom of the B-splines.
+</p>
+</div>
+<div class="sourceCode" id="cb148"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb148-1"><a href="moving-beyond-linearity.html#cb148-1"></a>fit_final &lt;-<span class="st"> </span><span class="kw">glm</span>(mpg <span class="op">~</span><span class="st"> </span><span class="kw">bs</span>(displacement, <span class="dt">df =</span> <span class="dv">7</span>), <span class="dt">data =</span> auto)</span>
+<span id="cb148-2"><a href="moving-beyond-linearity.html#cb148-2"></a>pred &lt;-<span class="st"> </span><span class="kw">predict</span>(fit_final, <span class="dt">newdata =</span> <span class="kw">list</span>(<span class="dt">displacement =</span> auto<span class="op">$</span>displacement), <span class="dt">se.fit =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex8vi"></span>
+<img src="06-nonlinearity_files/figure-html/ex8vi-1.png" alt="B-spline model with 7 degree of freedom." width="960" />
+<p class="caption">
+Figure 59: B-spline model with 7 degree of freedom.
+</p>
+</div>
+</div>
+<div id="exercise-9.-5" class="section level3" number="7.2.4">
+<h3 number="7.2.4"><span class="header-section-number">7.2.4</span> Exercise 9.</h3>
+<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="moving-beyond-linearity.html#cb149-1"></a>boston &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(Boston)</span></code></pre></div>
+<p>We uses the variables <code>dis</code> (the weighted mean of distances to five Boston employment centers) and <code>nox</code> (nitrogen oxides concentration in parts per 10 million) from the <code>Boston</code> data. We will treat <code>dis</code> as the predictor and <code>nox</code> as the response.</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<div class="sourceCode" id="cb150"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb150-1"><a href="moving-beyond-linearity.html#cb150-1"></a>model_poly &lt;-<span class="st"> </span><span class="kw">lm</span>(nox <span class="op">~</span><span class="st"> </span><span class="kw">poly</span>(dis, <span class="dv">3</span>), <span class="dt">data =</span> boston)</span></code></pre></div>
+Results of the linear model on the <strong>boston</strong> dataset.
+<ul>
+<li>
+<em>Formula</em>: nox ~ poly(dis, 3)
+</li>
+<li>
+<em>Residuals</em>
+</li>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Name
+</th>
+<th style="text-align:right;">
+NA_num
+</th>
+<th style="text-align:right;">
+Unique
+</th>
+<th style="text-align:right;">
+Range
+</th>
+<th style="text-align:right;">
+Mean
+</th>
+<th style="text-align:right;">
+Variance
+</th>
+<th style="text-align:right;">
+Minimum
+</th>
+<th style="text-align:right;">
+Q05
+</th>
+<th style="text-align:right;">
+Q10
+</th>
+<th style="text-align:right;">
+Q25
+</th>
+<th style="text-align:right;">
+Q50
+</th>
+<th style="text-align:right;">
+Q75
+</th>
+<th style="text-align:right;">
+Q90
+</th>
+<th style="text-align:right;">
+Q95
+</th>
+<th style="text-align:right;">
+Maximum
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Residuals
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+418
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+-0.12
+</td>
+<td style="text-align:right;">
+-0.08
+</td>
+<td style="text-align:right;">
+-0.07
+</td>
+<td style="text-align:right;">
+-0.04
+</td>
+<td style="text-align:right;">
+-0.01
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+0.09
+</td>
+<td style="text-align:right;">
+0.13
+</td>
+<td style="text-align:right;">
+0.19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<li>
+<em>Coefficients</em>
+</li>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+t value
+</th>
+<th style="text-align:left;">
+Pr(&gt;|t|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.55470
+</td>
+<td style="text-align:right;">
+0.00276
+</td>
+<td style="text-align:right;">
+201.02089
+</td>
+<td style="text-align:left;">
+&lt; 2.22e-16
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+poly(dis, 3)1
+</td>
+<td style="text-align:right;">
+-2.00310
+</td>
+<td style="text-align:right;">
+0.06207
+</td>
+<td style="text-align:right;">
+-32.27107
+</td>
+<td style="text-align:left;">
+&lt; 2.22e-16
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+poly(dis, 3)2
+</td>
+<td style="text-align:right;">
+0.85633
+</td>
+<td style="text-align:right;">
+0.06207
+</td>
+<td style="text-align:right;">
+13.79599
+</td>
+<td style="text-align:left;">
+&lt; 2.22e-16
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+poly(dis, 3)3
+</td>
+<td style="text-align:right;">
+-0.31805
+</td>
+<td style="text-align:right;">
+0.06207
+</td>
+<td style="text-align:right;">
+-5.12396
+</td>
+<td style="text-align:left;">
+4.275e-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<li>
+<em>Residual standard error</em>: 0.062 on 502 degrees of freedom.
+</li>
+<li>
+<em>Multiple <span class="math inline">\(R^2\)</span></em>: 0.715.
+</li>
+<li>
+<em>Adjusted <span class="math inline">\(R^2\)</span></em>: 0.713.
+</li>
+<li>
+<em>F-statistic</em>: 419.335 on 3 and 502, p-value: &lt;2e-16.
+</li>
+</ul>
+<div class="sourceCode" id="cb151"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb151-1"><a href="moving-beyond-linearity.html#cb151-1"></a>pred &lt;-<span class="st"> </span><span class="kw">predict</span>(model_poly, <span class="dt">newdata =</span> <span class="kw">list</span>(<span class="dt">dis =</span> boston<span class="op">$</span>dis), <span class="dt">se.fit =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex9aiv"></span>
+<img src="06-nonlinearity_files/figure-html/ex9aiv-1.png" alt="Cubic polynomial regression model" width="960" />
+<p class="caption">
+Figure 60: Cubic polynomial regression model
+</p>
+</div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<div class="sourceCode" id="cb152"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb152-1"><a href="moving-beyond-linearity.html#cb152-1"></a>res &lt;-<span class="st"> </span><span class="kw">list</span>()</span>
+<span id="cb152-2"><a href="moving-beyond-linearity.html#cb152-2"></a></span>
+<span id="cb152-3"><a href="moving-beyond-linearity.html#cb152-3"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb152-4"><a href="moving-beyond-linearity.html#cb152-4"></a><span class="cf">for</span>(d <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span><span class="dv">10</span>){</span>
+<span id="cb152-5"><a href="moving-beyond-linearity.html#cb152-5"></a>  fit &lt;-<span class="st"> </span><span class="kw">lm</span>(nox <span class="op">~</span><span class="st"> </span><span class="kw">poly</span>(dis, d), <span class="dt">data =</span> boston)</span>
+<span id="cb152-6"><a href="moving-beyond-linearity.html#cb152-6"></a>  res[[d<span class="dv">-1</span>]] &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">d =</span> d, <span class="dt">pred =</span> <span class="kw">predict</span>(fit, <span class="dt">newdata =</span> <span class="kw">list</span>(<span class="dt">dis =</span> boston<span class="op">$</span>dis), <span class="dt">se.fit =</span> <span class="ot">TRUE</span>))</span>
+<span id="cb152-7"><a href="moving-beyond-linearity.html#cb152-7"></a>}</span>
+<span id="cb152-8"><a href="moving-beyond-linearity.html#cb152-8"></a></span>
+<span id="cb152-9"><a href="moving-beyond-linearity.html#cb152-9"></a>ggfit &lt;-<span class="st"> </span><span class="cf">function</span>(d, pred){</span>
+<span id="cb152-10"><a href="moving-beyond-linearity.html#cb152-10"></a>  <span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> dis, <span class="dt">y =</span> nox), <span class="dt">data =</span> boston) <span class="op">+</span></span>
+<span id="cb152-11"><a href="moving-beyond-linearity.html#cb152-11"></a><span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">alpha =</span> <span class="fl">0.5</span>) <span class="op">+</span></span>
+<span id="cb152-12"><a href="moving-beyond-linearity.html#cb152-12"></a><span class="st">    </span><span class="kw">geom_ribbon</span>(<span class="kw">aes</span>(<span class="dt">ymin =</span> pred<span class="op">$</span>fit <span class="op">-</span><span class="st"> </span><span class="dv">2</span><span class="op">*</span>pred<span class="op">$</span>se.fit, <span class="dt">ymax =</span> pred<span class="op">$</span>fit <span class="op">+</span><span class="st"> </span><span class="dv">2</span><span class="op">*</span>pred<span class="op">$</span>se.fit), <span class="dt">alpha =</span> <span class="fl">0.7</span>, <span class="dt">fill =</span> <span class="st">&#39;blue&#39;</span>) <span class="op">+</span></span>
+<span id="cb152-13"><a href="moving-beyond-linearity.html#cb152-13"></a><span class="st">    </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> boston<span class="op">$</span>dis, <span class="dt">y =</span> pred<span class="op">$</span>fit), <span class="dt">col =</span> <span class="st">&#39;red&#39;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>) <span class="op">+</span></span>
+<span id="cb152-14"><a href="moving-beyond-linearity.html#cb152-14"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="kw">paste</span>(<span class="st">&#39;Degree: &#39;</span>, d, <span class="st">&#39;(RSS = &#39;</span>, <span class="kw">round</span>(<span class="kw">sum</span>((boston<span class="op">$</span>nox <span class="op">-</span><span class="st"> </span>pred<span class="op">$</span>fit)<span class="op">**</span><span class="dv">2</span>), <span class="dv">2</span>), <span class="st">&#39;)&#39;</span>)) <span class="op">+</span></span>
+<span id="cb152-15"><a href="moving-beyond-linearity.html#cb152-15"></a><span class="st">    </span><span class="kw">xlab</span>(<span class="st">&#39;Weighted mean of distances to five Boston employment centres&#39;</span>) <span class="op">+</span></span>
+<span id="cb152-16"><a href="moving-beyond-linearity.html#cb152-16"></a><span class="st">    </span><span class="kw">ylab</span>(<span class="st">&#39;Nitrogen oxides concentration&#39;</span>) <span class="op">+</span></span>
+<span id="cb152-17"><a href="moving-beyond-linearity.html#cb152-17"></a><span class="st">    </span><span class="kw">theme_custom</span>()</span>
+<span id="cb152-18"><a href="moving-beyond-linearity.html#cb152-18"></a>}</span>
+<span id="cb152-19"><a href="moving-beyond-linearity.html#cb152-19"></a></span>
+<span id="cb152-20"><a href="moving-beyond-linearity.html#cb152-20"></a>plot_list &lt;-<span class="st"> </span>res <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">map</span>(<span class="op">~</span><span class="st"> </span><span class="kw">ggfit</span>(.x<span class="op">$</span>d, .x<span class="op">$</span>pred))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex9bi"></span>
+<img src="06-nonlinearity_files/figure-html/ex9bi-1.png" alt="Results of polynomial fits." width="1440" />
+<p class="caption">
+Figure 61: Results of polynomial fits.
+</p>
+</div>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<div class="sourceCode" id="cb153"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb153-1"><a href="moving-beyond-linearity.html#cb153-1"></a>fits &lt;-<span class="st"> </span><span class="kw">list</span>()</span>
+<span id="cb153-2"><a href="moving-beyond-linearity.html#cb153-2"></a>cv_error &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="dt">length =</span> <span class="dv">10</span>)</span>
+<span id="cb153-3"><a href="moving-beyond-linearity.html#cb153-3"></a></span>
+<span id="cb153-4"><a href="moving-beyond-linearity.html#cb153-4"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb153-5"><a href="moving-beyond-linearity.html#cb153-5"></a><span class="cf">for</span>(d <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>){</span>
+<span id="cb153-6"><a href="moving-beyond-linearity.html#cb153-6"></a>  fits[d] &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">lm</span>(nox <span class="op">~</span><span class="st"> </span><span class="kw">poly</span>(dis, d), <span class="dt">data =</span> boston))</span>
+<span id="cb153-7"><a href="moving-beyond-linearity.html#cb153-7"></a>  fit &lt;-<span class="st"> </span><span class="kw">glm</span>(nox <span class="op">~</span><span class="st"> </span><span class="kw">poly</span>(dis, d), <span class="dt">data =</span> boston)</span>
+<span id="cb153-8"><a href="moving-beyond-linearity.html#cb153-8"></a>  cv_error[d] &lt;-<span class="st"> </span><span class="kw">cv.glm</span>(boston, fit, <span class="dt">K =</span> <span class="dv">10</span>)<span class="op">$</span>delta[<span class="dv">2</span>]</span>
+<span id="cb153-9"><a href="moving-beyond-linearity.html#cb153-9"></a>}</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex9ci"></span>
+<img src="06-nonlinearity_files/figure-html/ex9ci-1.png" alt="Cross-validation errors according to the considered degree." width="960" />
+<p class="caption">
+Figure 62: Cross-validation errors according to the considered degree.
+</p>
+</div>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>We fit a regression spline using four degrees of freedom to predict <code>nox</code> using <code>dis</code>. We choose the knots to be the quantile of <code>dis</code>.</p>
+<div class="sourceCode" id="cb154"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb154-1"><a href="moving-beyond-linearity.html#cb154-1"></a>model_spline &lt;-<span class="st"> </span><span class="kw">lm</span>(nox <span class="op">~</span><span class="st"> </span><span class="kw">bs</span>(dis, <span class="dt">df =</span> <span class="dv">4</span>), <span class="dt">data =</span> boston)</span></code></pre></div>
+Results of the linear model on the <strong>boston</strong> dataset.
+<ul>
+<li>
+<em>Formula</em>: nox ~ bs(dis, df = 4)
+</li>
+<li>
+<em>Residuals</em>
+</li>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Name
+</th>
+<th style="text-align:right;">
+NA_num
+</th>
+<th style="text-align:right;">
+Unique
+</th>
+<th style="text-align:right;">
+Range
+</th>
+<th style="text-align:right;">
+Mean
+</th>
+<th style="text-align:right;">
+Variance
+</th>
+<th style="text-align:right;">
+Minimum
+</th>
+<th style="text-align:right;">
+Q05
+</th>
+<th style="text-align:right;">
+Q10
+</th>
+<th style="text-align:right;">
+Q25
+</th>
+<th style="text-align:right;">
+Q50
+</th>
+<th style="text-align:right;">
+Q75
+</th>
+<th style="text-align:right;">
+Q90
+</th>
+<th style="text-align:right;">
+Q95
+</th>
+<th style="text-align:right;">
+Maximum
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Residuals
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+420
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+-0.12
+</td>
+<td style="text-align:right;">
+-0.08
+</td>
+<td style="text-align:right;">
+-0.07
+</td>
+<td style="text-align:right;">
+-0.04
+</td>
+<td style="text-align:right;">
+-0.01
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+0.09
+</td>
+<td style="text-align:right;">
+0.13
+</td>
+<td style="text-align:right;">
+0.19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<li>
+<em>Coefficients</em>
+</li>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:right;">
+Estimate
+</th>
+<th style="text-align:right;">
+Std. Error
+</th>
+<th style="text-align:right;">
+t value
+</th>
+<th style="text-align:left;">
+Pr(&gt;|t|)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+0.73447
+</td>
+<td style="text-align:right;">
+0.01460
+</td>
+<td style="text-align:right;">
+50.30552
+</td>
+<td style="text-align:left;">
+&lt; 2.22e-16
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bs(dis, df = 4)1
+</td>
+<td style="text-align:right;">
+-0.05810
+</td>
+<td style="text-align:right;">
+0.02186
+</td>
+<td style="text-align:right;">
+-2.65782
+</td>
+<td style="text-align:left;">
+0.008116
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bs(dis, df = 4)2
+</td>
+<td style="text-align:right;">
+-0.46356
+</td>
+<td style="text-align:right;">
+0.02366
+</td>
+<td style="text-align:right;">
+-19.59614
+</td>
+<td style="text-align:left;">
+&lt; 2.22e-16
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bs(dis, df = 4)3
+</td>
+<td style="text-align:right;">
+-0.19979
+</td>
+<td style="text-align:right;">
+0.04311
+</td>
+<td style="text-align:right;">
+-4.63395
+</td>
+<td style="text-align:left;">
+4.5805e-06
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bs(dis, df = 4)4
+</td>
+<td style="text-align:right;">
+-0.38881
+</td>
+<td style="text-align:right;">
+0.04551
+</td>
+<td style="text-align:right;">
+-8.54394
+</td>
+<td style="text-align:left;">
+&lt; 2.22e-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<li>
+<em>Residual standard error</em>: 0.062 on 501 degrees of freedom.
+</li>
+<li>
+<em>Multiple <span class="math inline">\(R^2\)</span></em>: 0.716.
+</li>
+<li>
+<em>Adjusted <span class="math inline">\(R^2\)</span></em>: 0.714.
+</li>
+<li>
+<em>F-statistic</em>: 316.463 on 4 and 501, p-value: &lt;2e-16.
+</li>
+</ul>
+<div class="sourceCode" id="cb155"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb155-1"><a href="moving-beyond-linearity.html#cb155-1"></a>pred &lt;-<span class="st"> </span><span class="kw">predict</span>(model_spline, <span class="dt">newdata =</span> <span class="kw">list</span>(<span class="dt">dis =</span> boston<span class="op">$</span>dis), <span class="dt">se.fit =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex9div"></span>
+<img src="06-nonlinearity_files/figure-html/ex9div-1.png" alt="Four degrees of freedom spline regression model" width="960" />
+<p class="caption">
+Figure 63: Four degrees of freedom spline regression model
+</p>
+</div>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<div class="sourceCode" id="cb156"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb156-1"><a href="moving-beyond-linearity.html#cb156-1"></a>res &lt;-<span class="st"> </span><span class="kw">list</span>()</span>
+<span id="cb156-2"><a href="moving-beyond-linearity.html#cb156-2"></a></span>
+<span id="cb156-3"><a href="moving-beyond-linearity.html#cb156-3"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb156-4"><a href="moving-beyond-linearity.html#cb156-4"></a><span class="cf">for</span>(d <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span><span class="dv">10</span>){</span>
+<span id="cb156-5"><a href="moving-beyond-linearity.html#cb156-5"></a>  fit &lt;-<span class="st"> </span><span class="kw">lm</span>(nox <span class="op">~</span><span class="st"> </span><span class="kw">bs</span>(dis, <span class="dt">df =</span> d), <span class="dt">data =</span> boston)</span>
+<span id="cb156-6"><a href="moving-beyond-linearity.html#cb156-6"></a>  res[[d<span class="dv">-1</span>]] &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">d =</span> d, <span class="dt">pred =</span> <span class="kw">predict</span>(fit, <span class="dt">newdata =</span> <span class="kw">list</span>(<span class="dt">dis =</span> boston<span class="op">$</span>dis), <span class="dt">se.fit =</span> <span class="ot">TRUE</span>))</span>
+<span id="cb156-7"><a href="moving-beyond-linearity.html#cb156-7"></a>}</span>
+<span id="cb156-8"><a href="moving-beyond-linearity.html#cb156-8"></a></span>
+<span id="cb156-9"><a href="moving-beyond-linearity.html#cb156-9"></a>plot_list &lt;-<span class="st"> </span>res <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">map</span>(<span class="op">~</span><span class="st"> </span><span class="kw">ggfit</span>(.x<span class="op">$</span>d, .x<span class="op">$</span>pred))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex9ei"></span>
+<img src="06-nonlinearity_files/figure-html/ex9ei-1.png" alt="Results of splines fits." width="1440" />
+<p class="caption">
+Figure 64: Results of splines fits.
+</p>
+</div>
+<ul>
+<li><em>Question (f)</em></li>
+</ul>
+<div class="sourceCode" id="cb157"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb157-1"><a href="moving-beyond-linearity.html#cb157-1"></a>fits &lt;-<span class="st"> </span><span class="kw">list</span>()</span>
+<span id="cb157-2"><a href="moving-beyond-linearity.html#cb157-2"></a>cv_error &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="dt">length =</span> <span class="dv">10</span>)</span>
+<span id="cb157-3"><a href="moving-beyond-linearity.html#cb157-3"></a></span>
+<span id="cb157-4"><a href="moving-beyond-linearity.html#cb157-4"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb157-5"><a href="moving-beyond-linearity.html#cb157-5"></a><span class="cf">for</span>(d <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>){</span>
+<span id="cb157-6"><a href="moving-beyond-linearity.html#cb157-6"></a>  fits[d] &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">lm</span>(nox <span class="op">~</span><span class="st"> </span><span class="kw">bs</span>(dis, <span class="dt">df =</span> d), <span class="dt">data =</span> boston))</span>
+<span id="cb157-7"><a href="moving-beyond-linearity.html#cb157-7"></a>  fit &lt;-<span class="st"> </span><span class="kw">glm</span>(nox <span class="op">~</span><span class="st"> </span><span class="kw">bs</span>(dis, <span class="dt">df =</span> d), <span class="dt">data =</span> boston)</span>
+<span id="cb157-8"><a href="moving-beyond-linearity.html#cb157-8"></a>  cv_error[d] &lt;-<span class="st"> </span><span class="kw">cv.glm</span>(boston, fit, <span class="dt">K =</span> <span class="dv">10</span>)<span class="op">$</span>delta[<span class="dv">2</span>]</span>
+<span id="cb157-9"><a href="moving-beyond-linearity.html#cb157-9"></a>}</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex9fi"></span>
+<img src="06-nonlinearity_files/figure-html/ex9fi-1.png" alt="Cross-validation errors according to the considered degree." width="960" />
+<p class="caption">
+Figure 65: Cross-validation errors according to the considered degree.
+</p>
+</div>
+</div>
+<div id="exercise-10.-4" class="section level3" number="7.2.5">
+<h3 number="7.2.5"><span class="header-section-number">7.2.5</span> Exercise 10.</h3>
+<p>We are going to analize the <code>College</code> data set.</p>
+<div class="sourceCode" id="cb158"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb158-1"><a href="moving-beyond-linearity.html#cb158-1"></a>college &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(College)</span></code></pre></div>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>Let’s split the data set into training set and test set.</p>
+<div class="sourceCode" id="cb159"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb159-1"><a href="moving-beyond-linearity.html#cb159-1"></a>idx &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(college), <span class="dt">size =</span> <span class="kw">round</span>(<span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">nrow</span>(college)))</span>
+<span id="cb159-2"><a href="moving-beyond-linearity.html#cb159-2"></a>train &lt;-<span class="st"> </span>college <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">slice</span>(idx)</span>
+<span id="cb159-3"><a href="moving-beyond-linearity.html#cb159-3"></a>test &lt;-<span class="st"> </span>college <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">slice</span>(<span class="op">-</span>idx)</span></code></pre></div>
+<div class="sourceCode" id="cb160"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb160-1"><a href="moving-beyond-linearity.html#cb160-1"></a>reg_subset &lt;-<span class="st"> </span><span class="kw">regsubsets</span>(Outstate <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train, <span class="dt">nvmax =</span> <span class="dv">10</span>, <span class="dt">method =</span> <span class="st">&#39;forward&#39;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex10aii"></span>
+<img src="06-nonlinearity_files/figure-html/ex10aii-1.png" alt="Selected variables for each criteria for forward selection." width="1440" />
+<p class="caption">
+Figure 21: Selected variables for each criteria for forward selection.
+</p>
+</div>
+<div class="figure" style="text-align: center"><span id="fig:ex10aiii"></span>
+<img src="06-nonlinearity_files/figure-html/ex10aiii-1.png" alt="Best models according to $C_p$, $BIC$ and adjusted $R^2$ for forward selection." width="960" />
+<p class="caption">
+Figure 66: Best models according to <span class="math inline">\(C_p\)</span>, <span class="math inline">\(BIC\)</span> and adjusted <span class="math inline">\(R^2\)</span> for forward selection.
+</p>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex10aiv">Table 16: </span>Coefficients for the best model according to <span class="math inline">\(BIC\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+(Intercept)
+</th>
+<th style="text-align:right;">
+PrivateYes
+</th>
+<th style="text-align:right;">
+Top10perc
+</th>
+<th style="text-align:right;">
+Room.Board
+</th>
+<th style="text-align:right;">
+PhD
+</th>
+<th style="text-align:right;">
+perc.alumni
+</th>
+<th style="text-align:right;">
+Expend
+</th>
+<th style="text-align:right;">
+Grad.Rate
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+-3295.056
+</td>
+<td style="text-align:right;">
+2554.948
+</td>
+<td style="text-align:right;">
+21.75788
+</td>
+<td style="text-align:right;">
+1.18555
+</td>
+<td style="text-align:right;">
+28.6945
+</td>
+<td style="text-align:right;">
+41.16226
+</td>
+<td style="text-align:right;">
+0.16548
+</td>
+<td style="text-align:right;">
+21.72396
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex10av">Table 17: </span>Coefficients for the best model according to <span class="math inline">\(C_p\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+(Intercept)
+</th>
+<th style="text-align:right;">
+PrivateYes
+</th>
+<th style="text-align:right;">
+Apps
+</th>
+<th style="text-align:right;">
+Accept
+</th>
+<th style="text-align:right;">
+Top10perc
+</th>
+<th style="text-align:right;">
+F.Undergrad
+</th>
+<th style="text-align:right;">
+Room.Board
+</th>
+<th style="text-align:right;">
+PhD
+</th>
+<th style="text-align:right;">
+perc.alumni
+</th>
+<th style="text-align:right;">
+Expend
+</th>
+<th style="text-align:right;">
+Grad.Rate
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+-2959.954
+</td>
+<td style="text-align:right;">
+2481.64
+</td>
+<td style="text-align:right;">
+-0.18079
+</td>
+<td style="text-align:right;">
+0.59595
+</td>
+<td style="text-align:right;">
+26.94416
+</td>
+<td style="text-align:right;">
+-0.1486
+</td>
+<td style="text-align:right;">
+1.1412
+</td>
+<td style="text-align:right;">
+26.30114
+</td>
+<td style="text-align:right;">
+45.48378
+</td>
+<td style="text-align:right;">
+0.16667
+</td>
+<td style="text-align:right;">
+17.13799
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="overflow-x:auto;">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:ex10avi">Table 18: </span>Coefficients for the best model according to Adjusted <span class="math inline">\(R^2\)</span>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+(Intercept)
+</th>
+<th style="text-align:right;">
+PrivateYes
+</th>
+<th style="text-align:right;">
+Apps
+</th>
+<th style="text-align:right;">
+Accept
+</th>
+<th style="text-align:right;">
+Top10perc
+</th>
+<th style="text-align:right;">
+F.Undergrad
+</th>
+<th style="text-align:right;">
+Room.Board
+</th>
+<th style="text-align:right;">
+PhD
+</th>
+<th style="text-align:right;">
+perc.alumni
+</th>
+<th style="text-align:right;">
+Expend
+</th>
+<th style="text-align:right;">
+Grad.Rate
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+-2959.954
+</td>
+<td style="text-align:right;">
+2481.64
+</td>
+<td style="text-align:right;">
+-0.18079
+</td>
+<td style="text-align:right;">
+0.59595
+</td>
+<td style="text-align:right;">
+26.94416
+</td>
+<td style="text-align:right;">
+-0.1486
+</td>
+<td style="text-align:right;">
+1.1412
+</td>
+<td style="text-align:right;">
+26.30114
+</td>
+<td style="text-align:right;">
+45.48378
+</td>
+<td style="text-align:right;">
+0.16667
+</td>
+<td style="text-align:right;">
+17.13799
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>According to BIC, a satisfactory model that uses just a subset of the predictors contatins the variables <code>Private</code>, <code>Top10perc</code>, <code>Room.Board</code>, <code>PhD</code>, <code>perc.alumni</code>, <code>Expend</code> and <code>Grad.Rate</code>.</p>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>Let’s a GAM on the training data, using out-of-state tuition as the response and the features selected in the previous question as the predictors.</p>
+<div class="sourceCode" id="cb161"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb161-1"><a href="moving-beyond-linearity.html#cb161-1"></a>gam_model &lt;-<span class="st"> </span><span class="kw">gam</span>(Outstate <span class="op">~</span><span class="st"> </span>Private <span class="op">+</span><span class="st"> </span><span class="kw">ns</span>(Top10perc, <span class="dv">4</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ns</span>(Room.Board, <span class="dv">4</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb161-2"><a href="moving-beyond-linearity.html#cb161-2"></a><span class="st">                   </span><span class="kw">ns</span>(PhD, <span class="dv">4</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ns</span>(perc.alumni, <span class="dv">4</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ns</span>(Expend, <span class="dv">4</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ns</span>(Grad.Rate, <span class="dv">4</span>), <span class="dt">data =</span> train)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex10bii"></span>
+<img src="06-nonlinearity_files/figure-html/ex10bii-1.png" alt="Results of the GAM." width="1920" />
+<p class="caption">
+Figure 28: Results of the GAM.
+</p>
+</div>
+<p>We found the following results:</p>
+<ul>
+<li><p>Private schools have higher of state tuition.</p></li>
+<li><p>Universities that enroll the most students from top 10% of high school class appear to have slighly less tuition than the other ones.</p></li>
+<li><p>The higher the room and board costs the higher the tuition.</p></li>
+<li><p>The higher the number of PhD the higher the tuition.</p></li>
+<li><p>The higher the percentage of alumni the higher the tuition.</p></li>
+<li><p>The tuition is the highest for universities with not to low and not to high instructional expenditure per student.</p></li>
+<li><p>The tuition appears to be almost linear with the graduation rate. The more we paid to enter the university the more likely we obtain the degree.</p></li>
+<li><p><em>Question (c)</em></p></li>
+</ul>
+<div class="sourceCode" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb162-1"><a href="moving-beyond-linearity.html#cb162-1"></a>pred &lt;-<span class="st"> </span><span class="kw">predict</span>(gam_model, <span class="dt">newdata =</span> test, <span class="dt">se.fit =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<p>We found out the GAM model have a MSE of 4.0899017^{6}. Let’s compare the results with a linear model.</p>
+<div class="sourceCode" id="cb163"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb163-1"><a href="moving-beyond-linearity.html#cb163-1"></a>lm_model &lt;-<span class="st"> </span><span class="kw">lm</span>(Outstate <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train)</span>
+<span id="cb163-2"><a href="moving-beyond-linearity.html#cb163-2"></a>pred_lm &lt;-<span class="st"> </span><span class="kw">predict</span>(lm_model, <span class="dt">newdata =</span> test, <span class="dt">se.fit =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<p>The MSE for the linear model is 4.2630381^{6}. So, the GAM model is significally better than the linear model.</p>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>According to the plots, most of the variables seems to have non-linear relationship with the response. <code>Expend</code> appears to be the variable with the most evidence of non-linear relationship with the response.</p>
+</div>
+<div id="exercise-11.-3" class="section level3" number="7.2.6">
+<h3 number="7.2.6"><span class="header-section-number">7.2.6</span> Exercise 11.</h3>
+<p>In Section 7.7, it was mentioned that GAMs are generally fit using a <em>backfitting</em> approach. The idea behind backfitting is actually quite simple. We will now explore backfitting in the context of multiple linear regression.</p>
+<p>Suppose that we would like to perform multiple linear regression, but we do not have software to do so. Instead, we only have software to perform simple linear regression. Therefore, we take the following iterative approach: we repeatedly hold all but one coefficient esti- mate fixed at its current value, and update only that coefficient estimate using a simple linear regression. The process is continued until <em>convergence</em> — that is, until the coefficient estimates stop changing.</p>
+<p>We now try this out on a toy example.</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<div class="sourceCode" id="cb164"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb164-1"><a href="moving-beyond-linearity.html#cb164-1"></a>n &lt;-<span class="st"> </span><span class="dv">100</span></span>
+<span id="cb164-2"><a href="moving-beyond-linearity.html#cb164-2"></a>X1 &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n)</span>
+<span id="cb164-3"><a href="moving-beyond-linearity.html#cb164-3"></a>X2 &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n)</span>
+<span id="cb164-4"><a href="moving-beyond-linearity.html#cb164-4"></a>betas &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">-0.8</span>)</span>
+<span id="cb164-5"><a href="moving-beyond-linearity.html#cb164-5"></a>Y &lt;-<span class="st"> </span>betas[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>betas[<span class="dv">2</span>] <span class="op">*</span><span class="st"> </span>X1 <span class="op">+</span><span class="st"> </span>betas[<span class="dv">3</span>] <span class="op">*</span><span class="st"> </span>X2 <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.5</span>)</span></code></pre></div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>Initialize <span class="math inline">\(\widehat{\beta}_1\)</span> has a random value.</p>
+<div class="sourceCode" id="cb165"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb165-1"><a href="moving-beyond-linearity.html#cb165-1"></a>beta1_hat &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span></code></pre></div>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>Assume <span class="math inline">\(\widehat{\beta}_1\)</span> fixed, fit the model
+<span class="math display">\[ Y - \widehat{\beta}_1X_1 = \beta_0 + \beta_2X_2 + \epsilon.\]</span></p>
+<div class="sourceCode" id="cb166"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb166-1"><a href="moving-beyond-linearity.html#cb166-1"></a>a &lt;-<span class="st"> </span>Y <span class="op">-</span><span class="st"> </span>beta1_hat <span class="op">*</span><span class="st"> </span>X1</span>
+<span id="cb166-2"><a href="moving-beyond-linearity.html#cb166-2"></a>beta2_hat &lt;-<span class="st"> </span><span class="kw">lm</span>(a <span class="op">~</span><span class="st"> </span>X2)<span class="op">$</span>coef[<span class="dv">2</span>] </span></code></pre></div>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>Assume <span class="math inline">\(\widehat{\beta}_2\)</span> fixed, fit the model
+<span class="math display">\[ Y - \widehat{\beta}_2X_2 = \beta_0 + \beta_1X_1 + \epsilon.\]</span></p>
+<div class="sourceCode" id="cb167"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb167-1"><a href="moving-beyond-linearity.html#cb167-1"></a>a &lt;-<span class="st"> </span>Y <span class="op">-</span><span class="st"> </span>beta2_hat <span class="op">*</span><span class="st"> </span>X2</span>
+<span id="cb167-2"><a href="moving-beyond-linearity.html#cb167-2"></a>beta1_hat &lt;-<span class="st"> </span><span class="kw">lm</span>(a <span class="op">~</span><span class="st"> </span>X1)<span class="op">$</span>coef[<span class="dv">2</span>]</span></code></pre></div>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<div class="sourceCode" id="cb168"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb168-1"><a href="moving-beyond-linearity.html#cb168-1"></a>betas0 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>)</span>
+<span id="cb168-2"><a href="moving-beyond-linearity.html#cb168-2"></a>betas1 &lt;-<span class="st"> </span><span class="kw">c</span>(beta1_hat)</span>
+<span id="cb168-3"><a href="moving-beyond-linearity.html#cb168-3"></a>betas2 &lt;-<span class="st"> </span><span class="kw">c</span>(beta2_hat)</span>
+<span id="cb168-4"><a href="moving-beyond-linearity.html#cb168-4"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">50</span>){</span>
+<span id="cb168-5"><a href="moving-beyond-linearity.html#cb168-5"></a>  a &lt;-<span class="st"> </span>Y <span class="op">-</span><span class="st"> </span>betas1[<span class="kw">length</span>(betas1)] <span class="op">*</span><span class="st"> </span>X1</span>
+<span id="cb168-6"><a href="moving-beyond-linearity.html#cb168-6"></a>  betas2 &lt;-<span class="st"> </span><span class="kw">c</span>(betas2, <span class="kw">lm</span>(a <span class="op">~</span><span class="st"> </span>X2)<span class="op">$</span>coef[<span class="dv">2</span>])</span>
+<span id="cb168-7"><a href="moving-beyond-linearity.html#cb168-7"></a>  a &lt;-<span class="st"> </span>Y <span class="op">-</span><span class="st"> </span>betas2[<span class="kw">length</span>(betas2)] <span class="op">*</span><span class="st"> </span>X2</span>
+<span id="cb168-8"><a href="moving-beyond-linearity.html#cb168-8"></a>  betas1 &lt;-<span class="st"> </span><span class="kw">c</span>(betas1, <span class="kw">lm</span>(a <span class="op">~</span><span class="st"> </span>X1)<span class="op">$</span>coef[<span class="dv">2</span>])</span>
+<span id="cb168-9"><a href="moving-beyond-linearity.html#cb168-9"></a>  betas0 &lt;-<span class="st"> </span><span class="kw">c</span>(betas0, <span class="kw">lm</span>(a <span class="op">~</span><span class="st"> </span>X1)<span class="op">$</span>coef[<span class="dv">1</span>])</span>
+<span id="cb168-10"><a href="moving-beyond-linearity.html#cb168-10"></a>}</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex11ei"></span>
+<img src="06-nonlinearity_files/figure-html/ex11ei-1.png" alt="Estimation of the coefficients" width="960" />
+<p class="caption">
+Figure 67: Estimation of the coefficients
+</p>
+</div>
+<ul>
+<li><em>Question (f)</em></li>
+</ul>
+<p>Let’s perform a simple multiple linear regression and we’ll compare the results with the ones found in the previous answer.</p>
+<div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb169-1"><a href="moving-beyond-linearity.html#cb169-1"></a>lm_model &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X1 <span class="op">+</span><span class="st"> </span>X2)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex11fii"></span>
+<img src="06-nonlinearity_files/figure-html/ex11fii-1.png" alt="Estimation of the coefficients by `lm`" width="960" />
+<p class="caption">
+Figure 68: Estimation of the coefficients by <code>lm</code>
+</p>
+</div>
+<ul>
+<li><em>Question (g)</em></li>
+</ul>
+<p>Two iterations seem to provide a rather good estimation of the coefficients. Moreover, after four iterations the algorithm appears to have converged.</p>
+</div>
+<div id="exercise-12.-2" class="section level3" number="7.2.7">
+<h3 number="7.2.7"><span class="header-section-number">7.2.7</span> Exercise 12.</h3>
+<p>This problem is a continuation of the previous exercise. In a toy example with <span class="math inline">\(p = 100\)</span>, show that one can approximate the multiple linear regression coefficient estimates by repeatedly performing simple linear regression in a backfitting procedure.</p>
+<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb170-1"><a href="moving-beyond-linearity.html#cb170-1"></a>n &lt;-<span class="st"> </span><span class="dv">1000</span></span>
+<span id="cb170-2"><a href="moving-beyond-linearity.html#cb170-2"></a>p &lt;-<span class="st"> </span><span class="dv">100</span></span>
+<span id="cb170-3"><a href="moving-beyond-linearity.html#cb170-3"></a>X &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(n <span class="op">*</span><span class="st"> </span>p), <span class="dt">ncol =</span> p, <span class="dt">nrow =</span> n)</span>
+<span id="cb170-4"><a href="moving-beyond-linearity.html#cb170-4"></a>betas &lt;-<span class="st"> </span><span class="kw">rnorm</span>(p)</span>
+<span id="cb170-5"><a href="moving-beyond-linearity.html#cb170-5"></a>Y &lt;-<span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>betas <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb171-1"><a href="moving-beyond-linearity.html#cb171-1"></a>d &lt;-<span class="st"> </span><span class="dv">50</span> <span class="co"># Number of iterations</span></span>
+<span id="cb171-2"><a href="moving-beyond-linearity.html#cb171-2"></a>betas_hat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, <span class="dt">ncol =</span> p, <span class="dt">nrow =</span> d)</span>
+<span id="cb171-3"><a href="moving-beyond-linearity.html#cb171-3"></a>MSE &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>, d)</span>
+<span id="cb171-4"><a href="moving-beyond-linearity.html#cb171-4"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>d){</span>
+<span id="cb171-5"><a href="moving-beyond-linearity.html#cb171-5"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>p){</span>
+<span id="cb171-6"><a href="moving-beyond-linearity.html#cb171-6"></a>      a &lt;-<span class="st">  </span>Y <span class="op">-</span><span class="st"> </span>(X[,<span class="op">-</span>j] <span class="op">%*%</span><span class="st"> </span>betas_hat[i,<span class="op">-</span>j])</span>
+<span id="cb171-7"><a href="moving-beyond-linearity.html#cb171-7"></a>      betas_hat[i<span class="op">:</span>d, j] =<span class="st"> </span><span class="kw">lm</span>(a <span class="op">~</span><span class="st"> </span>X[, j])<span class="op">$</span>coef[<span class="dv">2</span>]</span>
+<span id="cb171-8"><a href="moving-beyond-linearity.html#cb171-8"></a>  }</span>
+<span id="cb171-9"><a href="moving-beyond-linearity.html#cb171-9"></a>  MSE[i] &lt;-<span class="st"> </span><span class="kw">mean</span>((Y <span class="op">-</span><span class="st"> </span>(X <span class="op">%*%</span><span class="st"> </span>betas_hat[i, ]))<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb171-10"><a href="moving-beyond-linearity.html#cb171-10"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb172"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb172-1"><a href="moving-beyond-linearity.html#cb172-1"></a>lm_model &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span><span class="dv">-1</span> <span class="op">+</span><span class="st"> </span>X)</span>
+<span id="cb172-2"><a href="moving-beyond-linearity.html#cb172-2"></a>betas_lm &lt;-<span class="st"> </span><span class="kw">coef</span>(lm_model)</span>
+<span id="cb172-3"><a href="moving-beyond-linearity.html#cb172-3"></a>MSE_lm &lt;-<span class="st"> </span><span class="kw">mean</span>((Y <span class="op">-</span><span class="st"> </span>(X <span class="op">%*%</span><span class="st"> </span>betas_lm))<span class="op">**</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex12"></span>
+<img src="06-nonlinearity_files/figure-html/ex12-1.png" alt="MSE using the backfitting approach compare to the `lm` model" width="960" />
+<p class="caption">
+Figure 69: MSE using the backfitting approach compare to the <code>lm</code> model
+</p>
+</div>
+<p>After four iterations it appears that the backfiting approach has the same MSE than the linear model.</p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="linear-model-selection-and-regularization.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

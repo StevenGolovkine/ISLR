@@ -1,0 +1,782 @@
+# Moving Beyond Linearity
+
+```{r setup, include=FALSE}
+fig.process <- function(x) {
+  if (!grepl('[.]pdf$', x)) return(x) 
+  x2 = sub('pdf$', 'png', x)
+  magick::image_write(magick::image_read(x, density = 300), x2, format = 'png')
+  x2
+}
+
+knitr::opts_chunk$set(echo = TRUE, fig.process = fig.process)
+options(knitr.graphics.auto_pdf = TRUE)
+```
+
+```{r load_package, include=FALSE}
+library(boot)
+library(caret)
+library(class)
+library(gam)
+library(GGally)
+library(ggfortify)
+library(glmnet)
+library(gridExtra)
+library(ISLR)
+library(kableExtra)
+library(knitr)
+library(latex2exp)
+library(leaps)
+library(MASS)
+library(plotly)
+library(pls)
+library(reshape2)
+library(tidyverse)
+
+source('https://gist.githubusercontent.com/StevenGolovkine/55b9a2b6c849deadf86e051ed78ae149/raw/1452f33204a44c47b71bd22536594cce7e1e74e3/ggcustom.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/632632f470375390853529be54b9ebeb/raw/c07317788844d3d904aab7908e9cfe3d9df29931/summary_functions.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_df.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_summary_df.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/401f5c2edc8a04a294bfec38136adcb2f5f2e62d/print_summary_lm.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/c9a50e250666422da513db7da0fbb2eb007e9cc7/print_summary_glm.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggcriteria.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggcv.glmnet.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggregsubsets.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/eda0613d4880b3ef1d074625808d69b5dd81b466/gggam.R')
+```
+
+## Conceptual exercises
+
+### Exercise 1.
+
+A cubic regression spline with one knot at $\xi$ can be obtained using a basis of the form $x, x^2, x^3, (x - \xi)_+^3$, where $(x - \xi)_+^3 = (x - \xi)^3$ if $x > \xi$ and equals $0$ otherwise. We will now show that a function of the form
+$$ f(x) = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4(x - \xi)_+^3 $$
+is indeed a cubic regression spline, regardless of the values of $\beta_0, \beta_1, \beta_2, \beta_3$ and $\beta_4$.
+
+* *Question (a)*
+
+Let's define a function 
+$$ f_1(x) = a_1 + b_1x + c_1x^2 + d_1x^3, \quad\text{for some real numbers}\quad a_1, b_1, c_1, d_1. $$
+
+For all $x \leq \xi$, $(x - \xi)_+^3 = 0$, and so we have $f(x) = f_1(x)$ for all $x \leq \xi$. And $a_1 = \beta_0$, $b_1 = \beta_1$, $c_1 = \beta_2$ and $d_1 = \beta_3$.
+
+* *Question (b)*
+
+Let's define a function 
+$$ f_2(x) = a_2 + b_2x + c_2x^2 + d_2x^3, \quad\text{for some real numbers}\quad a_2, b_2, c_2, d_2. $$
+
+For all $x > \xi$, $(x - \xi)_+^3 = (x - \xi)^3 = x^3 - 3\xi x^2 + 3\xi^2 x - \xi^3$. Thus, we can rewrite $f(x)$ as:
+$$ f(x) = (\beta_0 - \beta_4\xi^3) + (\beta_1 + 3\beta_4\xi^2)x + (\beta_2 - 3\beta_4\xi)x^2 + (\beta_3 + \beta_4)x^3.$$
+
+Then, by identification, we found that $a_2 = \beta_0 - \beta_4\xi^3$, $b_2 = \beta_1 + 3\beta_4\xi^2$, $c_2 = \beta_2 - 3\beta_4\xi$ and $d_2 = \beta_3 + \beta_4$.
+
+* *Question (c)*
+
+We have that:
+\begin{align*}
+f_2(\xi) &=  (\beta_0 - \beta_4\xi^3) + (\beta_1 + 3\beta_4\xi^2)\xi + (\beta_2 - 3\beta_4\xi)\xi^2 + (\beta_3 + \beta_4)\xi^3 \\
+         &= \beta_0 + \beta_1\xi + \beta_2\xi^2 + \beta_3\xi^3 + (-\beta_4\xi^3 + 3\beta_4\xi^3 - 3\beta_4\xi^3 + \beta_4\xi^3) \\
+         &= f_1(\xi)
+\end{align*}
+
+So, $f(x)$ is continous at $\xi$.
+
+* *Question (d)*
+
+By taking the first derivatives:
+$$f_1^\prime(x) = \beta_1 + 2\beta_2x + 3\beta_3x^2 \quad\text{and}\quad f_2^\prime(x) = (\beta_1 + 3\beta_4\xi^2) + 2(\beta_2 - 3\beta_4\xi)x + 3(\beta_3 + \beta_4)x^2.$$
+
+And so, 
+\begin{align*}
+f_2^\prime(\xi) &= (\beta_1 + 3\beta_4\xi^2) + 2(\beta_2 - 3\beta_4\xi)\xi + 3(\beta_3 + \beta_4)\xi^2 \\
+              &= \beta_1 + 2\beta_2\xi + 3\beta_3\xi^2 + (3\beta_4\xi^2 - 6\beta_4\xi^2 + 3\beta_4\xi^2) \\
+              &= f_1^\prime(\xi)
+\end{align*}
+
+So, $f^\prime(x)$ is continuous at $\xi$.
+
+* *Question (e)*
+
+By taking the second derivatives:
+$$f_1^{\prime\prime}(x) = 2\beta_2 + 6\beta_3x \quad\text{and}\quad f_2^{\prime\prime}(x) =  2(\beta_2 - 3\beta_4\xi) + 6(\beta_3 + \beta_4)x.$$
+
+And so, 
+\begin{align*}
+f_2^{\prime\prime}(\xi) &=  2(\beta_2 - 3\beta_4\xi) + 6(\beta_3 + \beta_4)\xi \\
+                        &= 2\beta_2 + 6\beta_3\xi - 6\beta_4\xi + 6\beta_4\xi \\
+                        &= f_1^{\prime\prime}(\xi)
+\end{align*}
+
+So, $f^{\prime\prime}(x)$ is continuous at $\xi$.
+
+Therefore, $f(x)$ is indeed a cubic sline.
+
+### Exercise 2.
+
+Suppose that a curve $\widehat{g}$ is computed to smoothly fit a set of $n$ points using the following formula:
+
+$$ \widehat{g} = \arg\min_g \left(\sum_{i=1}^n \left(y_i - g(x_i)\right)^2 + \lambda\int \left[g^{(m)}(x)\right]^2dx\right),$$
+where $g^{(m)}$ represents the $m$th derivatives of $g$ (and $g^{(0)} = g$).
+
+* *Question (a)*
+
+When $\lambda = \infty$ and $m = 0$, $\widehat{g}$ will be perfectly smooth and so $\int \left[g^{(0)}(x)\right]^2dx$ should be very close to $0$. Thus, we find that $\widehat{g}$ will be equal to $0$.
+
+* *Question (b)*
+
+When $\lambda = \infty$ and $m = 1$, $\widehat{g}$ will be perfectly smooth and so $\int \left[g^{(1)}(x)\right]^2dx$ should be very close to $0$. Thus, we find that $\widehat{g}$ will be a constant function (of the form $\widehat{g}(x) = k$).
+
+* *Question (c)*
+
+When $\lambda = \infty$ and $m = 2$, $\widehat{g}$ will be perfectly smooth and so $\int \left[g^{(2)}(x)\right]^2dx$ should be very close to $0$. Thus, we find that $\widehat{g}$ will be a linear function (of the form $\widehat{g}(x) = ax + b$).
+
+* *Question (d)*
+
+When $\lambda = \infty$ and $m = 3$, $\widehat{g}$ will be perfectly smooth and so $\int \left[g^{(3)}(x)\right]^2dx$ should be very close to $0$. Thus, we find that $\widehat{g}$ will be equal a quadratic function (of the form $\widehat{g}(x) = ax^2 + bx + c$).
+
+* *Question (e)*
+
+When $\lambda = 0$ and $m = 3$, we do not put any constraints on $g(x_i)$, then $\widehat{g}$ will be such that it interpolates all of the $y_i$.
+
+### Exercise 3.
+
+Suppose we fit a curve with basis functions:
+\begin{align*}
+b_1(X) &= X \\
+b_2(X) &= (X - 1)^2\mathbf{1}(X \geq 1)
+\end{align*}
+
+We fit the linear regression model
+$$ Y = \beta_0 + \beta_1b_1(X) + \beta_2b_2(X) + \epsilon,$$
+and obtain coefficient estimates $\widehat{\beta}_0 = 1, \widehat{\beta}_1 = 1$ and $\widehat{\beta}_2 = -2$.
+
+```{r ex3}
+X <- seq(-2, 2, 0.1)
+Y <- 1 + X - 2 * (X - 1)**2 * (X > 1)
+```
+
+```{r ex3i, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Sketch of the estimated curve between $X = -2$ and $X = 2$', fig.align='center'}
+ggplot() +
+  geom_point(aes(x = X, y = Y)) +
+  theme_custom()
+```
+
+### Exercise 4. 
+
+Suppose we fit a curve with basis functions 
+\begin{align*}
+b_1(X) &= \mathbf{1}(0 \leq X \leq 2) - (X - 1)\mathbf{1}(1 \leq 2) \\
+b_2(X) &= (X - 3)\mathbf{1}(3 \leq X \leq 4) + \mathbf{1}(4 < X \leq 5)
+\end{align*}
+
+We fit the linear regression model
+$$ Y = \beta_0 + \beta_1b_1(X) + \beta_2b_2(X) + \epsilon,$$
+and obtain coefficient estimates $\widehat{\beta}_0 = 1, \widehat{\beta}_1 = 1$ and $\widehat{\beta}_2 = 3$.
+
+```{r ex4}
+b1 <- function(x) (x >= 0 & x <= 2) - (x - 1) * (x >= 1 & x <= 2)
+b2 <- function(x) (x - 3) * (x >= 3 & x <= 4) + (x > 4 & x <= 5)
+X <- seq(-5, 5, 0.1)
+Y <- 1 + b1(X) + 3 * b2(X)
+```
+
+```{r ex4i, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Sketch of the estimated curve between $X = -5$ and $X = 5$', fig.align='center'}
+ggplot() +
+  geom_point(aes(x = X, y = Y)) +
+  theme_custom()
+```
+
+### Exercise 5.
+
+Consider two curves, $\widehat{g}_1$ and $\widehat{g}_2$, defined by
+
+$$\widehat{g}_1 = \arg\min_g \left(\sum_{i=1}^n \left(y_i - g(x_i)\right)^2 + \lambda\int \left[g^{(3)}(x)\right]^2dx\right),$$
+
+$$\widehat{g}_2 = \arg\min_g \left(\sum_{i=1}^n \left(y_i - g(x_i)\right)^2 + \lambda\int \left[g^{(4)}(x)\right]^2dx\right)$$
+
+where $g^{(m)}$ represents the $m$th derivative of $g$.
+
+* *Question (a)*
+
+As $\lambda \rightarrow \infty$, $\widehat{g}_2$ will have the smaller training RSS because $\widehat{g}_2$ should be more flexible than $\widehat{g}_1$ (less constraints), so it should better fit the training data and lead to a smaller training RSS.
+
+* *Question (b)*
+
+As $\lambda \rightarrow \infty$,  we can not say which function will have the smaller test RSS because it depends on the true underlying function $g$. If the true function $g$ is a polynomial function with degree at most 2, then $\widehat{g}_1$ will likely have the smaller test RSS (because $\widehat{g}_2$ will overfit). Once, the true function is a polynomial function with degree larger than 3, it should be the other way round.
+
+* *Question (c)*
+
+For $\lambda = 0$, $\widehat{g}_1$ and $\widehat{g}_2$ become the same function, so they will have the same training and test RSS.
+
+## Applied exercises
+
+### Exercise 6.
+
+```{r ex6load}
+wage <- as_tibble(Wage)
+X <- wage$age; Y <- wage$wage
+```
+
+* *Question (a)*
+
+We aim to predict `wage` using `age` with polynomial regression of degree $d$. The degree will be chosen by cross-validation.
+
+```{r ex6a, message=FALSE, warning=FALSE, paged.print=FALSE}
+fits <- list()
+cv_error <- vector(length = 10)
+
+set.seed(42)
+for(d in 1:10){
+  fits[d] <- list(lm(wage ~ poly(age, d), data = wage))
+  fit <- glm(wage ~ poly(age, d), data = wage)
+  cv_error[d] <- cv.glm(wage, fit, K = 10)$delta[2]
+}
+```
+
+```{r ex6ai, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Cross-validation errors according to the considered degree.', fig.align='center'}
+ggplot() +
+  geom_point(aes(x = as.factor(1:10), y = cv_error)) +
+  xlab('Degree of the considered polynomial') +
+  ylab('CV error') +
+  theme_custom()
+```
+
+So, according to cross-validation, the best degree to fit the wage is `r which.min(cv_error)`.
+
+Now, we will compare the chosen degree with the one obtained by hypothesis testing using ANOVA. ANOVA tests the null hypothesis that a model $\mathcal{M}_1$ is sufficient to explain the data against the alternative hypothesis that a more complex model $\mathcal{M}_2$ is required. Careful, $\mathcal{M}_1$ and $\mathcal{M}_2$ must be nested. 
+
+```{r ex6aii, message=FALSE, warning=FALSE, paged.print=FALSE}
+do.call(anova, fits)
+```
+
+Then, the results are the same than the ones from the book (p. 270). The p-value comparing the linear model to the quadratic model is essentially zero ($< 10^{-15}$), indicating that a linear fit is not sufficient. Similarly the p-value comparing the quadratic model to the cubic model is very low, so the quadratic fit is also insufficient. The p-value comparing the cubic and the quadric models is approximately $5\%$ while the degree-5 polynomial seems unnecessary because its high p-value. Hence, either a cubic or a quartic polynomial appear to provide a reasonable fit to the data, but lower- or higher-order models are not justified. These results are quite similar to the cross-validation ones. Even if the cubic or quartic polynomial have not the smallest CV errors, they are quite close to the best.
+
+Finally, let's fit the data with a degree-4 polynomial and plot it.
+
+```{r ex6aiii, message=FALSE, warning=FALSE, paged.print=FALSE}
+fit_final <- glm(wage ~ poly(age, 4), data = wage)
+pred <- predict(fit_final, newdata = list(age = X), se.fit = TRUE)
+```
+
+```{r ex6aiv, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Quadric polynomial model.', fig.align='center'}
+ggplot(aes(x = age, y = wage), data = wage) +
+  geom_point(alpha = 0.5) +
+  geom_ribbon(aes(ymin = pred$fit - 2*pred$se.fit, ymax = pred$fit + 2*pred$se.fit), alpha = 0.7, fill = 'blue') +
+  geom_line(aes(x = X, y = pred$fit), col = 'red', lwd = 2) +
+  xlab('Age') +
+  ylab('Wage') +
+  theme_custom()
+```
+
+* *Question (b)*
+
+Let's fit a step function to predict `wage` using `age`, and perform cross-validation to choose the optimal number of cuts.
+
+```{r ex6b, message=FALSE, warning=FALSE, paged.print=FALSE}
+cv_error <- vector()
+
+set.seed(42)
+for(d in 2:15){
+  wage$age_cut <- cut(wage$age, d)
+  fit <- glm(wage ~ age_cut, data = wage)
+  cv_error[d-1] <- cv.glm(wage, fit, K = 10)$delta[2]
+}
+```
+
+```{r ex6bi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Cross-validation errors according to the considered number of cuts.', fig.align='center'}
+ggplot() +
+  geom_point(aes(x = as.factor(2:15), y = cv_error)) +
+  xlab('Number of cuts') +
+  ylab('CV error') +
+  theme_custom()
+```
+
+So, according to cross-validation, the best number of cuts to fit the wage is `r which.min(cv_error) + 1`.
+
+Finally, let's fit the data with `r which.min(cv_error) + 1` cuts for the `age` and plot it.
+
+```{r ex6bii, message=FALSE, warning=FALSE, paged.print=FALSE}
+wage$age_cut <- cut(wage$age, which.min(cv_error) + 1)
+fit_final <- glm(wage ~ age_cut, data = wage)
+pred <- predict(fit_final, newdata = list(age_cut = cut(X, which.min(cv_error) + 1)), se.fit = TRUE)
+```
+
+```{r ex6biii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Step model.', fig.align='center'}
+ggplot(aes(x = age, y = wage), data = wage) +
+  geom_point(alpha = 0.5) +
+  geom_ribbon(aes(ymin = pred$fit - 2*pred$se.fit, ymax = pred$fit + 2*pred$se.fit), alpha = 0.7, fill = 'blue') +
+  geom_line(aes(x = X, y = pred$fit), col = 'red', lwd = 2) +
+  xlab('Age') +
+  ylab('Wage') +
+  theme_custom()
+```
+
+### Exercise 7.
+
+```{r ex7load}
+wage <- as_tibble(Wage)
+X <- wage$age; Y <- wage$wage
+```
+
+Let's explore relationships between the different variables in the `wage` dataset. For that, first, we are going to compute the correlation between the features and the ouput `wage`.
+
+```{r ex7ii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Correlation plot.', fig.align='center'}
+wage <- wage %>% select(age, maritl, race, education, jobclass, health, wage)
+ggpairs(wage, axisLabels = 'none') + theme_custom()
+```
+
+```{r ex7iii, message=FALSE, warning=FALSE, paged.print=FALSE}
+fit_gam <- gam(wage ~ ns(age, 5) + maritl + race + education + jobclass + health, data = wage)
+```
+
+
+```{r ex7iv, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='png', fig.dim=c(20, 10), fig.cap='Results of the GAM.', fig.align='center'}
+p <- gggam(fit_gam)
+grid.arrange(grobs = p, ncol = 2, nrow = 3)
+```
+
+The results are pretty intuitive. With other variables being fixed, `wage` tends to be highest for intermediate values of `age`, and lowest for the very young and the very old. With other variables being fixed, `wage` tends to increase with `education`. The more educated a person is, the higher their salary, on average. Same, people with very good `health` have a higher `wage` than the one with less good `health`. Moreover, information jobs are more paid than industrial ones. Finally, white and married people seems to earn more money.
+
+### Exercise 8.
+
+```{r ex8load}
+auto <- as_tibble(Auto)
+```
+
+Let's explore relationship between the different variables in the `wage` dataset. For that, first, we are going to compute the correlation between the variables.
+
+```{r ex8ii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Correlation plot.', fig.align='center'}
+auto <- auto %>% select(-name)
+ggpairs(auto, axisLabels = 'none') + theme_custom()
+```
+
+We are going to use the `mpg` variable as a output. Most of the other variables seem to have a non-linear relationship with the variable `mpg`. Let's use the `displacement` in order to predict the `mpg` variable.
+
+```{r ex8iii, message=FALSE, warning=FALSE, paged.print=FALSE}
+fits <- list()
+cv_error <- vector(length = 10)
+
+set.seed(42)
+for(d in 1:10){
+  fits[d] <- list(lm(mpg ~ bs(displacement, df = d), data = auto))
+  fit <- glm(mpg ~ bs(displacement, df = d), data = auto)
+  cv_error[d] <- cv.glm(auto, fit, K = 10)$delta[2]
+}
+```
+
+```{r ex8iv, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Cross-validation errors according to the degree of freedom of the B-splines.', fig.align='center'}
+ggplot() +
+  geom_point(aes(x = as.factor(1:10), y = cv_error)) +
+  xlab('Degree of the freedom of the B-splines') +
+  ylab('CV error') +
+  theme_custom()
+```
+
+```{r ex8v, message=FALSE, warning=FALSE, paged.print=FALSE}
+fit_final <- glm(mpg ~ bs(displacement, df = 7), data = auto)
+pred <- predict(fit_final, newdata = list(displacement = auto$displacement), se.fit = TRUE)
+```
+
+```{r ex8vi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='B-spline model with 7 degree of freedom.', fig.align='center'}
+ggplot(aes(x = displacement, y = mpg), data = auto) +
+  geom_point(alpha = 0.5) +
+  geom_ribbon(aes(ymin = pred$fit - 2*pred$se.fit, ymax = pred$fit + 2*pred$se.fit), alpha = 0.7, fill = 'blue') +
+  geom_line(aes(x = auto$displacement, y = pred$fit), col = 'red', lwd = 2) +
+  xlab('Engine displacement (cu. inches)') +
+  ylab('Miles per gallon') +
+  theme_custom()
+```
+
+### Exercise 9.
+
+```{r ex9load}
+boston <- as_tibble(Boston)
+```
+
+We uses the variables `dis` (the weighted mean of distances to five Boston employment centers) and `nox` (nitrogen oxides concentration in parts per 10 million) from the `Boston` data. We will treat `dis` as the predictor and `nox` as the response.
+
+* *Question (a)*
+
+```{r ex9a}
+model_poly <- lm(nox ~ poly(dis, 3), data = boston)
+```
+
+```{r ex9ai, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+model_poly %>% summary() %>% print_summary_lm()
+```
+
+```{r ex9aii, message=FALSE, warning=FALSE, paged.print=FALSE}
+pred <- predict(model_poly, newdata = list(dis = boston$dis), se.fit = TRUE)
+```
+
+```{r ex9aiv, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Cubic polynomial regression model', fig.align='center'}
+ggplot(aes(x = dis, y = nox), data = boston) +
+  geom_point(alpha = 0.5) +
+  geom_ribbon(aes(ymin = pred$fit - 2*pred$se.fit, ymax = pred$fit + 2*pred$se.fit), alpha = 0.7, fill = 'blue') +
+  geom_line(aes(x = boston$dis, y = pred$fit), col = 'red', lwd = 2) +
+  xlab('Weighted mean of distances to five Boston employment centres') +
+  ylab('Nitrogen oxides concentration') +
+  theme_custom()
+```
+
+* *Question (b)*
+
+```{r ex9b, message=FALSE, warning=FALSE, paged.print=FALSE}
+res <- list()
+
+set.seed(42)
+for(d in 2:10){
+  fit <- lm(nox ~ poly(dis, d), data = boston)
+  res[[d-1]] <- list(d = d, pred = predict(fit, newdata = list(dis = boston$dis), se.fit = TRUE))
+}
+
+ggfit <- function(d, pred){
+  ggplot(aes(x = dis, y = nox), data = boston) +
+    geom_point(alpha = 0.5) +
+    geom_ribbon(aes(ymin = pred$fit - 2*pred$se.fit, ymax = pred$fit + 2*pred$se.fit), alpha = 0.7, fill = 'blue') +
+    geom_line(aes(x = boston$dis, y = pred$fit), col = 'red', lwd = 2) +
+    ggtitle(paste('Degree: ', d, '(RSS = ', round(sum((boston$nox - pred$fit)**2), 2), ')')) +
+    xlab('Weighted mean of distances to five Boston employment centres') +
+    ylab('Nitrogen oxides concentration') +
+    theme_custom()
+}
+
+plot_list <- res %>% map(~ ggfit(.x$d, .x$pred))
+```
+
+```{r ex9bi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='png', fig.dim=c(15, 15), fig.cap='Results of polynomial fits.', fig.align='center'}
+grid.arrange(grobs = plot_list, ncol = 3, nrow = 3)
+```
+
+* *Question (c)*
+
+```{r ex9c, message=FALSE, warning=FALSE, paged.print=FALSE}
+fits <- list()
+cv_error <- vector(length = 10)
+
+set.seed(42)
+for(d in 1:10){
+  fits[d] <- list(lm(nox ~ poly(dis, d), data = boston))
+  fit <- glm(nox ~ poly(dis, d), data = boston)
+  cv_error[d] <- cv.glm(boston, fit, K = 10)$delta[2]
+}
+```
+
+```{r ex9ci, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Cross-validation errors according to the considered degree.', fig.align='center'}
+ggplot() +
+  geom_point(aes(x = as.factor(1:10), y = cv_error)) +
+  xlab('Degree of the considered polynomial') +
+  ylab('CV error') +
+  theme_custom()
+```
+
+* *Question (d)*
+
+We fit a regression spline using four degrees of freedom to predict `nox` using `dis`. We choose the knots to be the quantile of `dis`.
+
+```{r ex9d}
+model_spline <- lm(nox ~ bs(dis, df = 4), data = boston)
+```
+
+```{r ex9di, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, results='asis'}
+model_spline %>% summary() %>% print_summary_lm()
+```
+
+```{r ex9dii, message=FALSE, warning=FALSE, paged.print=FALSE}
+pred <- predict(model_spline, newdata = list(dis = boston$dis), se.fit = TRUE)
+```
+
+```{r ex9div, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Four degrees of freedom spline regression model', fig.align='center'}
+ggplot(aes(x = dis, y = nox), data = boston) +
+  geom_point(alpha = 0.5) +
+  geom_ribbon(aes(ymin = pred$fit - 2*pred$se.fit, ymax = pred$fit + 2*pred$se.fit), alpha = 0.7, fill = 'blue') +
+  geom_line(aes(x = boston$dis, y = pred$fit), col = 'red', lwd = 2) +
+  xlab('Weighted mean of distances to five Boston employment centres') +
+  ylab('Nitrogen oxides concentration') +
+  theme_custom()
+```
+
+* *Question (e)*
+
+```{r ex9e, message=FALSE, warning=FALSE, paged.print=FALSE}
+res <- list()
+
+set.seed(42)
+for(d in 2:10){
+  fit <- lm(nox ~ bs(dis, df = d), data = boston)
+  res[[d-1]] <- list(d = d, pred = predict(fit, newdata = list(dis = boston$dis), se.fit = TRUE))
+}
+
+plot_list <- res %>% map(~ ggfit(.x$d, .x$pred))
+```
+
+```{r ex9ei, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='png', fig.dim=c(15, 15), fig.cap='Results of splines fits.', fig.align='center'}
+grid.arrange(grobs = plot_list, ncol = 3, nrow = 3)
+```
+
+* *Question (f)*
+
+```{r ex9f, message=FALSE, warning=FALSE, paged.print=FALSE}
+fits <- list()
+cv_error <- vector(length = 10)
+
+set.seed(42)
+for(d in 1:10){
+  fits[d] <- list(lm(nox ~ bs(dis, df = d), data = boston))
+  fit <- glm(nox ~ bs(dis, df = d), data = boston)
+  cv_error[d] <- cv.glm(boston, fit, K = 10)$delta[2]
+}
+```
+
+```{r ex9fi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Cross-validation errors according to the considered degree.', fig.align='center'}
+ggplot() +
+  geom_point(aes(x = as.factor(1:10), y = cv_error)) +
+  xlab('Degree of the considered polynomial') +
+  ylab('CV error') +
+  theme_custom()
+```
+
+### Exercise 10.
+
+We are going to analize the `College` data set.
+
+```{r ex10load}
+college <- as_tibble(College)
+```
+
+* *Question (a)*
+
+Let's split the data set into training set and test set.
+
+```{r ex10a}
+idx <- sample(1:nrow(college), size = round(0.5 * nrow(college)))
+train <- college %>% slice(idx)
+test <- college %>% slice(-idx)
+```
+
+```{r ex10ai, message=FALSE, warning=FALSE}
+reg_subset <- regsubsets(Outstate ~ ., data = train, nvmax = 10, method = 'forward')
+```
+
+```{r ex10aii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 5), fig.cap='Selected variables for each criteria for forward selection.', fig.align='center'}
+ggregsubsets(reg_subset, criterion = c('adjr2', 'cp', 'bic')) + theme_custom()
+```
+
+```{r ex10aiii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Best models according to $C_p$, $BIC$ and adjusted $R^2$ for forward selection.', fig.align='center'}
+p1 <- ggcriteria(reg_subset, criterion = 'bic') + theme_custom()
+p2 <- ggcriteria(reg_subset, criterion = 'cp') + theme_custom()
+p3 <- ggcriteria(reg_subset, criterion = 'adjr2') + theme_custom()
+grid.arrange(p1, p2, p3, layout_matrix = matrix(c(1, 2, 3), ncol = 3))
+```
+
+<div style="overflow-x:auto;">
+```{r ex10aiv, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.min(summary(reg_subset)$bic)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to $BIC$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+<div style="overflow-x:auto;">
+```{r ex10av, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.min(summary(reg_subset)$cp)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to $C_p$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+<div style="overflow-x:auto;">
+```{r ex10avi, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+coef(reg_subset, which.max(summary(reg_subset)$adjr2)) %>% t() %>% as_tibble() %>%
+    kable(format = 'html', digits = 5, caption = 'Coefficients for the best model according to Adjusted $R^2$.') %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+    print()
+```
+</div>
+
+According to BIC, a satisfactory model that uses just a subset of the predictors contatins the variables `Private`, `Top10perc`, `Room.Board`, `PhD`, `perc.alumni`, `Expend` and `Grad.Rate`.
+
+* *Question (b)*
+
+Let's a GAM on the training data, using out-of-state tuition as the response and the features selected in the previous question as the predictors.
+
+```{r ex10b, message=FALSE, warning=FALSE}
+gam_model <- gam(Outstate ~ Private + ns(Top10perc, 4) + ns(Room.Board, 4) + 
+                   ns(PhD, 4) + ns(perc.alumni, 4) + ns(Expend, 4) + ns(Grad.Rate, 4), data = train)
+```
+
+```{r ex10bii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='png', fig.dim=c(20, 10), fig.cap='Results of the GAM.', fig.align='center'}
+p <- gggam(gam_model)
+grid.arrange(grobs = p, ncol = 3, nrow = 3)
+```
+
+We found the following results:
+
+  * Private schools have higher of state tuition.
+  * Universities that enroll the most students from top 10\% of high school class appear to have slighly less tuition than the other ones.
+  * The higher the room and board costs the higher the tuition.
+  * The higher the number of PhD the higher the tuition.
+  * The higher the percentage of alumni the higher the tuition.
+  * The tuition is the highest for universities with not to low and not to high instructional expenditure per student.
+  * The tuition appears to be almost linear with the graduation rate. The more we paid to enter the university the more likely we obtain the degree.
+  
+* *Question (c)*
+
+```{r ex10c, message=FALSE, warning=FALSE, paged.print=FALSE}
+pred <- predict(gam_model, newdata = test, se.fit = TRUE)
+```
+
+We found out the GAM model have a MSE of `r mean((test$Outstate - pred$fit)**2)`. Let's compare the results with a linear model.
+
+```{r ex10ci, message=FALSE, warning=FALSE, paged.print=FALSE}
+lm_model <- lm(Outstate ~ ., data = train)
+pred_lm <- predict(lm_model, newdata = test, se.fit = TRUE)
+```
+
+The MSE for the linear model is `r mean((test$Outstate - pred_lm$fit)**2)`. So, the GAM model is significally better than the linear model.
+
+* *Question (d)*
+
+According to the plots, most of the variables seems to have non-linear relationship with the response. `Expend` appears to be the variable with the most evidence of non-linear relationship with the response.
+
+### Exercise 11.
+
+In Section 7.7, it was mentioned that GAMs are generally fit using a *backfitting* approach. The idea behind backfitting is actually quite simple. We will now explore backfitting in the context of multiple linear regression.
+
+Suppose that we would like to perform multiple linear regression, but we do not have software to do so. Instead, we only have software to perform simple linear regression. Therefore, we take the following iterative approach: we repeatedly hold all but one coefficient esti- mate fixed at its current value, and update only that coefficient estimate using a simple linear regression. The process is continued until *convergence* — that is, until the coefficient estimates stop changing.
+
+We now try this out on a toy example.
+
+* *Question (a)*
+
+```{r ex11a, message=FALSE, warning=FALSE}
+n <- 100
+X1 <- rnorm(n)
+X2 <- rnorm(n)
+betas <- c(0.2, 0.3, -0.8)
+Y <- betas[1] + betas[2] * X1 + betas[3] * X2 + rnorm(n, 0, 0.5)
+```
+
+* *Question (b)*
+
+Initialize $\widehat{\beta}_1$ has a random value.
+
+```{r ex11b, message=FALSE, warning=FALSE}
+beta1_hat <- runif(1, 0, 1)
+```
+
+* *Question (c)*
+
+Assume $\widehat{\beta}_1$ fixed, fit the model
+$$ Y - \widehat{\beta}_1X_1 = \beta_0 + \beta_2X_2 + \epsilon.$$
+
+```{r ex11c, message=FALSE, warning=FALSE}
+a <- Y - beta1_hat * X1
+beta2_hat <- lm(a ~ X2)$coef[2] 
+```
+
+* *Question (d)*
+
+Assume $\widehat{\beta}_2$ fixed, fit the model
+$$ Y - \widehat{\beta}_2X_2 = \beta_0 + \beta_1X_1 + \epsilon.$$
+
+```{r ex11d, message=FALSE, warning=FALSE}
+a <- Y - beta2_hat * X2
+beta1_hat <- lm(a ~ X1)$coef[2]
+```
+
+* *Question (e)*
+
+```{r ex11e, message=FALSE, warning=FALSE}
+betas0 <- c(0)
+betas1 <- c(beta1_hat)
+betas2 <- c(beta2_hat)
+for(i in 1:50){
+  a <- Y - betas1[length(betas1)] * X1
+  betas2 <- c(betas2, lm(a ~ X2)$coef[2])
+  a <- Y - betas2[length(betas2)] * X2
+  betas1 <- c(betas1, lm(a ~ X1)$coef[2])
+  betas0 <- c(betas0, lm(a ~ X1)$coef[1])
+}
+```
+
+```{r ex11ei, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Estimation of the coefficients', fig.align='center'}
+df <- tibble(idx = 0:50, beta0 = betas0, beta1 = betas1, beta2 = betas2) %>% melt(id = 'idx')
+ggplot(df, aes(x = idx, y = value, group = variable, colour = variable)) +
+  geom_line() +
+  xlab('Index') +
+  ylab('Coefficients estimates') +
+  scale_color_discrete(name = "Coefficients",
+                     labels = c("$\\beta_0$", "$\\beta_1$", "$\\beta_2$")) +
+  theme_custom()
+```
+
+* *Question (f)*
+
+Let's perform a simple multiple linear regression and we'll compare the results with the ones found in the previous answer.
+
+```{r ex11f}
+lm_model <- lm(Y ~ X1 + X2)
+```
+
+```{r ex11fii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Estimation of the coefficients by `lm`', fig.align='center'}
+df <- tibble(idx = 0:50, beta0 = betas0, beta1 = betas1, beta2 = betas2) %>% melt(id = 'idx')
+ggplot(df, aes(x = idx, y = value, group = variable, colour = variable)) +
+  geom_line() +
+  geom_hline(aes(yintercept = lm_model$coefficients[1]), colour = 'red', linetype = 2) +
+  geom_hline(aes(yintercept = lm_model$coefficients[2]), colour = 'green', linetype = 2) +
+  geom_hline(aes(yintercept = lm_model$coefficients[3]), colour = 'blue', linetype = 2) +
+  xlab('Number of iterations') +
+  ylab('Coefficients estimates') +
+  scale_color_discrete(name = "Coefficients",
+                     labels = c("$\\beta_0$", "$\\beta_1$", "$\\beta_2$")) +
+  theme_custom()
+```
+
+* *Question (g)*
+
+Two iterations seem to provide a rather good estimation of the coefficients. Moreover, after four iterations the algorithm appears to have converged.
+
+### Exercise 12.
+
+This problem is a continuation of the previous exercise. In a toy example with $p = 100$, show that one can approximate the multiple linear regression coefficient estimates by repeatedly performing simple linear regression in a backfitting procedure.
+
+```{r ex12gendata, message=FALSE, warning=FALSE}
+n <- 1000
+p <- 100
+X <- matrix(rnorm(n * p), ncol = p, nrow = n)
+betas <- rnorm(p)
+Y <- X %*% betas + rnorm(n, 0, 0.2)
+```
+
+```{r ex12backfit, message=FALSE, warning=FALSE}
+d <- 50 # Number of iterations
+betas_hat <- matrix(0, ncol = p, nrow = d)
+MSE <- rep(0, d)
+for(i in 1:d){
+  for(j in 1:p){
+      a <-  Y - (X[,-j] %*% betas_hat[i,-j])
+      betas_hat[i:d, j] = lm(a ~ X[, j])$coef[2]
+  }
+  MSE[i] <- mean((Y - (X %*% betas_hat[i, ]))^2)
+}
+```
+
+```{r ex12lm, message=FALSE, warning=FALSE}
+lm_model <- lm(Y ~ -1 + X)
+betas_lm <- coef(lm_model)
+MSE_lm <- mean((Y - (X %*% betas_lm))**2)
+```
+
+```{r ex12, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='MSE using the backfitting approach compare to the `lm` model', fig.align='center'}
+df <- tibble(idx = 1:d, MSE = MSE)
+ggplot(df, aes(x = idx, y = MSE)) +
+  geom_line() +
+  geom_hline(aes(yintercept = MSE_lm), colour = 'red', linetype = 2) +
+  ylab('MSE') +
+  xlab('Number of iterations') +
+  theme_custom()
+```
+
+After four iterations it appears that the backfiting approach has the same MSE than the linear model.
