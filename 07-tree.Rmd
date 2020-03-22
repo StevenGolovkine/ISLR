@@ -1,0 +1,812 @@
+# Tree-based methods
+
+```{r setup, include=FALSE}
+fig.process <- function(x) {
+  if (!grepl('[.]pdf$', x)) return(x) 
+  x2 = sub('pdf$', 'png', x)
+  magick::image_write(magick::image_read(x, density = 300), x2, format = 'png')
+  x2
+}
+
+knitr::opts_chunk$set(echo = TRUE, fig.process = fig.process)
+options(knitr.graphics.auto_pdf = TRUE)
+```
+
+```{r load_package, include=FALSE}
+library(boot)
+library(caret)
+library(class)
+library(gam)
+library(gbm)
+library(GGally)
+library(ggdendro)
+library(ggfortify)
+library(glmnet)
+library(gridExtra)
+library(ISLR)
+library(kableExtra)
+library(knitr)
+library(latex2exp)
+library(leaps)
+library(MASS)
+library(plotly)
+library(pls)
+library(randomForest)
+library(reshape2)
+library(rpart)
+library(tidyverse)
+library(tree)
+
+source('https://gist.githubusercontent.com/StevenGolovkine/55b9a2b6c849deadf86e051ed78ae149/raw/4c977755502118118f64cff3b62ece3ef21fd8ec/ggcustom.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/632632f470375390853529be54b9ebeb/raw/c07317788844d3d904aab7908e9cfe3d9df29931/summary_functions.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_df.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_summary_df.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/401f5c2edc8a04a294bfec38136adcb2f5f2e62d/print_summary_lm.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/c9a50e250666422da513db7da0fbb2eb007e9cc7/print_summary_glm.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggcriteria.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggcv.glmnet.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggregsubsets.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/eda0613d4880b3ef1d074625808d69b5dd81b466/gggam.R')
+
+plot_confusion_matrix <- function(confusion_matrix){
+  confusion_matrix %>%
+    as.data.frame(optional = TRUE) %>% 
+    rownames_to_column() %>%
+    rename('Var1' = '.') %>%
+    ggplot() +
+    geom_text(aes(x = Var1, y = Var2, label = Freq), size = 4) +
+    xlab('Prediction') +
+    ylab('True') +
+    geom_hline(aes(yintercept = 1.5), size = 0.2) +
+    geom_vline(aes(xintercept = 1.5), size = 0.2) +
+    theme_bw() +
+    scale_x_discrete(position = "top") +
+    theme(panel.grid = element_blank(),
+          axis.ticks = element_blank())
+}
+
+labels_tree <- function(object, pretty = TRUE, collapse = TRUE, ...)
+{
+    if(!inherits(object, "tree")) stop("not legitimate tree")
+    frame <- object$frame
+    xlevels <- attr(object, "xlevels")
+    var <- as.character(frame$var)
+    splits <- matrix(sub("^>", " > ", sub("^<", " < ", frame$splits)),, 2L)
+    lt <- c(letters, 0:5) # max 32 levels
+    if(!is.null(pretty)) {
+        if(pretty) xlevels <- lapply(xlevels, abbreviate, minlength=pretty)
+        for(i in grep("^:", splits[, 1L],))
+            for(j in 1L:2L) {
+                sh <- splits[i, j]
+                nc <- nchar(sh)
+                sh <- substring(sh, 2L:nc, 2L:nc)
+                xl <- xlevels[[var[i]]][match(sh, lt)]
+                splits[i, j] <- paste0(": ", paste(as.vector(xl), collapse=","))
+
+            }
+    }
+    if(!collapse) return(array(paste0(var, splits), dim(splits)))
+    node <- as.integer(row.names(frame))
+    parent <- match((node %/% 2L), node)
+    odd <- as.logical(node %% 2L)
+    node[odd] <- paste0(var[parent[odd]], splits[parent[odd], 2L])
+    node[!odd] <- paste0(var[parent[!odd]], splits[parent[!odd], 1L])
+    node[1L] <- "root"
+    node
+}
+
+split_tree <- function(object, pretty = NULL){
+  if(!inherits(object, "tree")) stop("not legitimate tree")
+  frame <- object$frame
+  node <- as.integer(row.names(frame))
+  left.child <- match(2 * node, node)
+  rows <- labels_tree(object, pretty = pretty)[left.child]
+  ind <- !is.na(rows)
+  rows[ind]
+}
+
+
+```
+
+## Conceptual exercises
+
+### Exercise 1.
+
+```{r ex1, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Example of results from binary splitting.', fig.align='center'}
+# Generate some data
+n <- 50
+a <- cbind(rep('A', n), mvrnorm(n, mu = c(2, 2.5), Sigma = matrix(c(0.1, 0, 0, 0.1), nrow = 2)))
+b <- cbind(rep('B', n), mvrnorm(n, mu = c(3, 7), Sigma = matrix(c(0.1, 0, 0, 0.1), nrow = 2)))
+c <- cbind(rep('C', n), mvrnorm(n, mu = c(6, 5), Sigma = matrix(c(0.1, 0, 0, 0.1), nrow = 2)))
+d <- cbind(rep('D', n), mvrnorm(n, mu = c(4, 4), Sigma = matrix(c(0.1, 0, 0, 0.1), nrow = 2)))
+e <- cbind(rep('E', n), mvrnorm(n, mu = c(4, 1), Sigma = matrix(c(0.1, 0, 0, 0.1), nrow = 2)))
+f <- cbind(rep('F', n), mvrnorm(n, mu = c(7, 2), Sigma = matrix(c(0.1, 0, 0, 0.1), nrow = 2)))
+df <- rbind(a, b, c, d, e, f) %>% 
+  as_tibble(.name_repair = "universal") %>% 
+  mutate_at(-1, as.numeric) %>%
+  mutate_at(1, as.factor) %>% 
+  rename(Y = ...1, X1 = ...2, X2 = ...3)
+
+t <- rpart(Y ~ ., data = df)
+
+t_data <- dendro_data(t, type = 'rectangle')
+t_data$labels <-  t_data$labels %>% mutate(label_tex = paste0('$', label, '$'))
+
+p <- ggplot(t_data$segments) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_text(data = t_data$labels, aes(x, y, label = label_tex),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  geom_text(data = t_data$leaf_labels, 
+            aes(x = x, y = y, label = label, color = label),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  theme_custom() +
+  theme(axis.text = element_blank(),
+        axis.title = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = 'none')
+
+q <- ggplot(df) +
+  geom_point(aes(x = X1, y = X2, colour = Y)) +
+  labs(x = '$X_1$', y = '$Y_1$') +
+  geom_segment(aes(x = 5.023, xend = 5.023, y = min(X2), yend = max(X2))) +
+  geom_segment(aes(x = 5.023, xend = max(X1), y = 3.56, yend = 3.56)) +
+  geom_segment(aes(x = min(X1), xend = 5.023, y = 5.591, yend = 5.591)) +
+  geom_segment(aes(x = 2.917, xend = 2.917, y = min(X2), yend = 5.591)) +
+  geom_segment(aes(x = 2.917, xend = 5.023, y = 2.49, yend = 2.49)) +
+  annotate(geom = 'text', x = 1.5, y = 1.5, label = 'A', size = 7) +
+  annotate(geom = 'text', x = 4, y = 7, label = 'B', size = 7) +
+  annotate(geom = 'text', x = 7, y = 6, label = 'C', size = 7) +
+  annotate(geom = 'text', x = 4.5, y = 5, label = 'D', size = 7) +
+  annotate(geom = 'text', x = 4.5, y = 2, label = 'E', size = 7) +
+  annotate(geom = 'text', x = 6, y = 2, label = 'F', size = 7) +
+  theme_custom() +
+  theme(legend.position = 'none')
+
+grid.arrange(p, q, layout_matrix = matrix(c(1, 2), ncol = 2))
+```
+
+### Exercise 2.
+
+Boosting using depth-one trees (or *stumps*) leads to an *additive* model: that is, a model of the form
+$$ f(x) = \sum_{j = 1}^p f_j(X_j).$$
+
+Consider only two predictive variables ($x = (X_1~ X_2)^\top$) and let's go through the algorithm 8.2.
+
+Set $\widehat{f}(x) = 0$ and $r_i = y_i$ for all $i$ in the training set. As we want depth-one trees (the number of split is one) and use all the variable, $B$ (the number of trees) will going to be equal to $2$.
+
+The first tree leads to 
+$$ \widehat{f}^1(x) = a_1\mathbb{1}(X_1 < c_1) + b_1.$$
+So, 
+$$ \widehat{f}(x) = 0 + \lambda\widehat{f}^1(x) $$
+and
+$$ r_i = y_i - \lambda\widehat{f}^1(x_i). $$
+
+We can do the same things with the other variable, and we found out 
+$$ \widehat{f}^2(x) = a_2\mathbb{1}(X_2 < c_2) + b_2.$$
+So, 
+$$ \widehat{f}(x) = \lambda\left(\widehat{f}^1(x) + \widehat{f}^2(x)\right) $$
+and
+$$ r_i = y_i - \lambda\left(\widehat{f}^1(x_i) + \widehat{f}^2(x)\right). $$
+
+Finally, by induction, we can extend this results to model with $p$ features, and so, leads to an additive model.
+
+### Exercise 3.
+
+Recall the following definition. Denote by $K$ the number of classes.
+
+Gini index:
+$$ G = \sum_{k = 1}^K \widehat{p}_{mk}(1 - \widehat{p}_{mk})$$
+
+Classification error:
+$$ E = 1 - \max_k \widehat{p}_{mk}$$
+
+Cross-entropy:
+$$ D = -\sum_{k = 1}^K \widehat{p}_{mk}\log\widehat{p}_{mk}$$
+
+```{r ex3, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Error measures', fig.align='center'}
+p <- seq(0, 1, length.out = 101)
+gini <- 2 * p * (1 - p)
+classif_error <- 1 - pmax(p, 1 - p)
+cross_entropy <- - (p * log(p) + (1 - p) * log(1 - p))
+
+df <- tibble(p, gini, classif_error, cross_entropy) %>% 
+  reshape2::melt(id = p)
+ggplot(df, aes(x = p, y = value, color = variable)) +
+  geom_line() +
+  xlab('Probabilities') +
+  ylab('') +
+  scale_color_discrete(
+    name = '',
+    breaks = c('gini', 'classif_error', 'cross_entropy'),
+    labels = c('Gini index', 'Classification error', 'Cross-entropy')) +
+  theme_custom()
+```
+
+### Exercise 4.
+
+* *Question (a)*
+
+```{r ex4a, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Tree', fig.align='center'}
+# Generate some data
+n <- 50
+a <- mvrnorm(n, mu = c(2, 1, 5), Sigma = diag(c(0.1, 0.1, 0.1)))
+b <- mvrnorm(n, mu = c(0, 2, 15), Sigma = diag(c(0.1, 0.1, 0.1)))
+c <- mvrnorm(n, mu = c(-0.5, 0, 3), Sigma = diag(c(0.1, 0.1, 0.1)))
+d <- mvrnorm(n, mu = c(0.5, 0.5, 0), Sigma = diag(c(0.1, 0.1, 0.1)))
+e <- mvrnorm(n, mu = c(0.5, -0.5, 10), Sigma = diag(c(0.1, 0.1, 0.1)))
+
+df <- rbind(a, b, c, d, e) %>% 
+  as_tibble(.name_repair = 'unique') %>% 
+  rename(X1 = ...1, X2 = ...2, Y = ...3)
+
+t <- rpart(Y ~ ., data = df)
+
+t_data <- dendro_data(t, type = 'rectangle')
+t_data$labels <-  t_data$labels %>% mutate(label_tex = paste0('$', label, '$'))
+
+ggplot(t_data$segments) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_text(data = t_data$labels, aes(x, y, label = label_tex),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  geom_text(data = t_data$leaf_labels, 
+            aes(x = x, y = y, label = label, color = label),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  theme_custom() +
+  theme(axis.text = element_blank(),
+        axis.title = element_blank(), 
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = 'none')
+```
+
+* *Question (b)*
+
+```{r ex4b, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Tree', fig.align='center'}
+# Generate some data
+n <- 50
+a <- mvrnorm(n, mu = c(1, 2.5, 2.49), Sigma = diag(c(0.1, 0.1, 0.1)))
+b <- mvrnorm(n, mu = c(-1, 1.5, -1.06), Sigma = diag(c(0.1, 0.1, 0.1)))
+c <- mvrnorm(n, mu = c(1, 1.5, 0.21), Sigma = diag(c(0.1, 0.1, 0.1)))
+d <- mvrnorm(n, mu = c(-1, 0, -1.8), Sigma = diag(c(0.1, 0.1, 0.1)))
+e <- mvrnorm(n, mu = c(2, 0, 0.63), Sigma = diag(c(0.1, 0.1, 0.1)))
+
+df <- rbind(a, b, c, d, e) %>% 
+  as_tibble(.name_repair = 'unique') %>% 
+  rename(X1 = ...1, X2 = ...2, Y = ...3)
+
+ggplot(df) +
+  geom_point(aes(x = X1, y = X2, colour = Y)) +
+  labs(x = '$X_1$', y = '$X_2$') +
+  geom_segment(aes(x = min(X1), xend = max(X1), y = 1, yend = 1)) +
+  geom_segment(aes(x = 1, xend = 1, y = min(X2), yend = 1)) +
+  geom_segment(aes(x = min(X1), xend = max(X1), y = 2, yend = 2)) +
+  geom_segment(aes(x = 0, xend = 0, y = 1, yend = 2)) +
+  annotate(geom = 'text', x = 0, y = 0, label = '-1.8', size = 7, col = 'red') +
+  annotate(geom = 'text', x = 1.5, y = -0.25, label = '0.63', size = 7, col = 'red') +
+  annotate(geom = 'text', x = -0.5, y = 2.5, label = '2.49', size = 7, col = 'red') +
+  annotate(geom = 'text', x = -1, y = 1.5, label = '-1.06', size = 7, col = 'red') +
+  annotate(geom = 'text', x = 2, y = 1.5, label = '0.21', size = 7, col = 'red') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+### Exercise 5.
+
+Suppose we produce ten bootstrapped samples from a dataset containing red and green classes. We then apply a classification tree to each bootstrapped sample and, for a specific value of $X$, produce $10$ estimates of $\mathbb{P}(Red | X)$:
+$$ 0.1, 0.15, 0.2, 0.2, 0.55, 0.6, 0.6, 0.65, 0.7, 0.75.$$
+
+By majority vote, we found that the class is `Red` (four out six bootstrapped samples have $\mathbb{P}(Red | X) > 0.5$). By average probability, we found that the class is `Green` (because the mean probability among the bootstrapped samples is `r round(mean(c(0.1, 0.15, 0.2, 0.2, 0.55, 0.6, 0.6, 0.65, 0.7, 0.75)), 3)`.
+
+### Exercise 6.
+
+1. Use recursive binary splitting to grow a large tree on the training data, stopping only when each terminal node has fewer than some minimum number of observations.
+
+In order to perform recursive binary splitting, we consider all predictors $X_1, \dots, X_p$, and all possible values of the cutpoint $s$ for each of the predictors, and then choose the predictor and cutpoint such that the resulting tree has the lowest RSS. For any $j$ and $s$, we define the pair of half-planes
+$$ R_1(j, s) = \{X | X_j < s\} \quad\text{and}\quad R_2(j,s) = \{X | X_j \geq s\},$$
+and we seek the value of $j$ and $s$ that minimize the equation
+$$ \sum_{i : x_i \in R_1(j, s)}(y_i - \widehat{y}_{R_1})^2 + \sum_{i : x_i \in R_2(j, s)}(y_i - \widehat{y}_{R_2})^2$$,
+where $\widehat{y}_{R_1}$ is the mean response for the training observations in $R_1(j, s)$, and $\widehat{y}_{R_2}$ is the mean response for the training observations in $R_2(j, s)$.
+
+Next, we repeat the process, looking for the best predictor and best cutpoint in order to split the data further so as to mnimize the RSS within each of the resulting regions. However, instead of splitting the entire predictor space, we split one of the two previously identified regions. The process continues until a stopping criterion is reached (*e.g* no region contains more than five observations).
+
+2. Apply cost complexity pruning to the large tree in order to obtain a sequence of best subtrees, as a function of $\alpha$.
+
+Rather than considering every possible subtree, we consider a sequence of trees indexed by a nonnegative tuning parameter $\alpha$. For each value of $\alpha$ there corresponds a subtree $T \subset T_0$ such that 
+$$ \sum_{m = 1}^{|T|}\sum_{i: x_i \in R_m} (y_i - \widehat{y}_{R_m})^2 + \alpha|T|$$
+is as small as possible. $|T|$ indicates the number of terminal nodes of the tree $T$, $R_m$ is the rectangle (*i.e* the subset of predictor space) corresponding to the $m$th terminal node, and $\widehat{y}_{R_m}$ is the predicted response associated with $R_m$. The tuning parameter $\alpha$ controls a trade-off between the subtree's complexity and its fit to the training data.
+
+3. Use $K$-fold cross-validation to choose $\alpha$. That is, diivide the training observations into $K$ folds. For each $k = 1, \dots, K$:
+  * Repeat steps 1 and 2 on all but the $k$th fold of the training data.
+  * Evaluate the mean squared prediction error on the data in the left-out $k$th fold, as a function of $\alpha$.
+Average the results for each value of $\alpha$, and pick $\alpha$ to minimize the average error.
+
+4. Return the subtree from step 2 that corresponds to the chosen value of $\alpha$.
+
+
+## Applied exercises
+
+### Exercise 7.
+
+```{r ex7, message=FALSE, warning=FALSE, cache=TRUE}
+set.seed(42)
+boston <- as_tibble(Boston)
+train <- sample(1:nrow(boston), size = nrow(boston)/2)
+p <- ncol(boston) - 1
+mtry <- c(p, p/3, round(sqrt(p), 0))
+
+MSE <- matrix(rep(0, length(mtry) * 500), ncol = length(mtry))
+for(m in 1:length(mtry)){
+    t_boston <- randomForest(medv ~ .,data = boston, subset = train,
+                             xtest = select(slice(boston, -train), -medv),
+                             ytest = pull(slice(boston, -train), medv),
+                             mtry = mtry[m], ntree = 500)
+    MSE[, m] <- t_boston$test$mse
+}
+```
+
+```{r ex7i, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Test error resulting from random forests', fig.align='center'}
+df <- as_tibble(MSE, .name_repair = 'unique') %>% 
+  add_column(number = 1:500) %>% 
+  reshape2::melt(id.vars = 'number')
+
+ggplot(df, aes(x = number, y = value, color = variable)) +
+  geom_line() +
+  xlab('Number of trees') +
+  ylab('MSE') +
+  ylim(c(7, 20)) +
+  scale_color_discrete(name = '', 
+                       breaks = c('...1', '...2', '...3'), labels = c('$m = p$', '$m = p/3$', '$m = \\sqrt{p}$')) +
+  theme_custom()
+```
+
+The MSE decreaeses quickly with the number of trees. Then, the three values for `mtry` give quite the same results and have a MSE around 10 after 100 trees.
+
+### Exercise 8.
+
+We will seek to predict `Sales`, from `Carseats` dataset, using regression trees and related approaches, treating the response a quantitative variable.
+
+```{r ex8loaddata, message=FALSE, warning=FALSE}
+carseats <- as_tibble(Carseats)
+```
+
+
+* *Question (a)*
+
+```{r ex8a, message=FALSE, warning=FALSE}
+idx <- sample(1:nrow(carseats), size = nrow(carseats)/3)
+train <- carseats %>% slice(-idx)
+test <- carseats %>% slice(idx)
+```
+
+* *Question (b)*
+
+```{r ex8b, message=FALSE, warning=FALSE}
+tree_carseat <- tree(Sales ~ ., data = train)
+sales_hat <- predict(tree_carseat, newdata = test)
+MSE_test <- mean((test$Sales - sales_hat)**2)
+```
+
+```{r ex8bi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 10), fig.cap='Regression tree fit on the training data', fig.align='center'}
+t_data <- dendro_data(tree_carseat, type = 'proportional')
+l <- split_tree(tree_carseat)
+t_data$labels <-  t_data$labels %>% mutate(label_tex = paste0('$', l, '$'))
+
+ggplot(segment(t_data)) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_text(data = t_data$labels, aes(x, y, label = label_tex),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  geom_text(data = t_data$leaf_labels, 
+            aes(x = x, y = y, label = label, color = label),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  theme_custom() +
+  theme(axis.text = element_blank(),
+        axis.title = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = 'none')
+```
+
+The MSE on the test set is `r round(MSE_test, 3)` with regression tree.
+
+* *Question (c)*
+
+We use cross-validation in order to determine the optimal level of tree complexity. 
+
+```{r ex8c, message=FALSE, warning=FALSE}
+cv_carseat <- cv.tree(tree_carseat, FUN = prune.tree)
+tree_pruned_carseat <- prune.tree(tree_carseat, best = cv_carseat$size[which.min(cv_carseat$dev)])
+sales_hat_pruned <- predict(tree_pruned_carseat, newdata = test)
+MSE_pruned_test <- mean((test$Sales - sales_hat_pruned)**2)
+```
+
+```{r ex8ci, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 10), fig.cap='Pruned regression tree fit on the training data', fig.align='center'}
+t_data <- dendro_data(tree_pruned_carseat, type = 'proportional')
+l <- split_tree(tree_pruned_carseat)
+t_data$labels <-  t_data$labels %>% mutate(label_tex = paste0('$', l, '$'))
+
+ggplot(segment(t_data)) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_text(data = t_data$labels, aes(x, y, label = label_tex),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  geom_text(data = t_data$leaf_labels, 
+            aes(x = x, y = y, label = label, color = label),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  theme_custom() +
+  theme(axis.text = element_blank(),
+        axis.title = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = 'none')
+```
+
+The MSE on the test set is `r round(MSE_pruned_test, 3)` with pruned regression tree. It does not improve the test MSE.
+
+* *Question (d)*
+
+Then, we use the bagging approach in order to analyze this data. Recall that bagging is simply a special case of a random forest with $m = p$.
+
+```{r ex8d, message=FALSE, warning=FALSE}
+set.seed(42)
+bagging_carseat <- randomForest(Sales ~ ., data = train, mtry = ncol(carseats)-1, importance = TRUE)
+sales_hat_bagging <- predict(bagging_carseat, newdata = test)
+MSE_bagging_test <- mean((test$Sales - sales_hat_bagging)**2)
+```
+
+The MSE on the test set is `r round(MSE_bagging_test, 3)` with bagging.
+
+```{r ex8di, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 10), fig.cap='Importance plot', fig.align='center'}
+imp_df <- data.frame(bagging_carseat$importance) %>% rownames_to_column
+
+p <- ggplot(imp_df, aes(x = rowname, y = X.IncMSE)) +
+  geom_segment(aes(x = rowname, xend = rowname, y = 0, yend = X.IncMSE), color = 'skyblue') +
+  geom_point(color = 'skyblue', size = 4) +
+  xlab('') +
+  ylab('Mean decrease in MSE') +
+  theme_custom() +
+  coord_flip() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+
+q <- ggplot(imp_df, aes(x = rowname, y = IncNodePurity)) +
+  geom_segment(aes(x = rowname, xend = rowname, y = 0, yend = IncNodePurity), color = 'skyblue') +
+  geom_point(color = 'skyblue', size = 4) +
+  xlab('') +
+  ylab('Mean decrease in accuracy') +
+  theme_custom() +
+  coord_flip() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+
+grid.arrange(p, q, layout_matrix = matrix(c(1, 2), ncol = 2))
+```
+
+* *Question (e)*
+
+Finally, we use the random forest to analyze the data.
+
+```{r ex8e, message=FALSE, warning=FALSE, cache=TRUE}
+set.seed(42)
+m_try <- seq(1, ncol(carseats)-1, by = 1)
+rf_carseat <- m_try %>% map(function(m) randomForest(Sales ~ ., data = train, mtry = m, importance = TRUE))
+sales_hat_rf <- rf_carseat %>% map(function(rf) predict(rf, newdata = test))
+MSE_rf_test <- sales_hat_rf %>% map_dbl(function(predict) mean((test$Sales - predict)**2))
+```
+
+```{r ex8ei, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(5, 5), fig.cap='MSE with respect to $m$', fig.align='center'}
+MSE_res <- tibble(m_try = m_try, MSE = MSE_rf_test)
+
+ggplot(MSE_res, aes(x = m_try, y = MSE)) +
+  geom_line(color = 'skyblue') +
+  geom_point(color = 'skyblue', size = 4) +
+  scale_x_continuous(breaks = seq(0, 11, 1)) +
+  xlab('$m$') +
+  ylab('Mean Square Error') +
+  theme_custom()
+```
+
+The best $m$ is `r which.min(MSE_rf_test)` for the random forest. It leads to a MSE of `r min(MSE_rf_test)`.
+
+### Exercise 9.
+
+We will seek to predict `Purchase`, from `OJ` dataset, using regression trees and related approaches, treating the response a qualitative variable.
+
+```{r ex9loaddata, message=FALSE, warning=FALSE}
+OJ <- as_tibble(OJ)
+```
+
+* *Question (a)*
+
+```{r ex9a, message=FALSE, warning=FALSE}
+idx <- sample(1:nrow(OJ), size = 800)
+train <- OJ %>% slice(idx)
+test <- OJ %>% slice(-idx)
+```
+
+* *Question (b)*
+
+```{r ex9b, message=FALSE, warning=FALSE, cache=TRUE}
+set.seed(42)
+tree_OJ <- tree(Purchase ~ ., data = train)
+```
+
+The training error rate is `r round(100*summary(tree_OJ)$misclass[1] / summary(tree_OJ)$misclass[2], 3)`%. The tree has `r summary(tree_OJ)$size` terminal nodes. The used variables to grown the tree are `r paste(as.vector(summary(tree_OJ)$used), collapse = ', ')`.
+
+* *Question (c)*
+
+```{r ex9c, message=FALSE, warning=FALSE, cache=TRUE}
+tree_OJ
+```
+
+Consider the final node $27$. The splitting variable at this node is `PriceDiff`. The splitting value at this node is $0.265$. There are $96$ points in the subtree below this node. The deviance for all points contained in region below this node is $50.13$. The prediction at this node is `Purchase = CH`. About $93\%$ of the points in this node have `Sales = CH` and the remaining points have `Purchase = MM`.
+
+* *Question (d)*
+
+```{r ex9d, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 10), fig.cap='Classification tree fit on the training data', fig.align='center'}
+t_data <- dendro_data(tree_OJ, type = 'proportional')
+l <- split_tree(tree_OJ)
+t_data$labels <-  t_data$labels %>% mutate(label_tex = paste0('$', l, '$'))
+
+ggplot(segment(t_data)) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_text(data = t_data$labels, aes(x, y, label = label_tex),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  geom_text(data = t_data$leaf_labels, 
+            aes(x = x, y = y, label = label, color = label),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  theme_custom() +
+  theme(axis.text = element_blank(),
+        axis.title = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = 'none')
+```
+
+`LoyalCH` is the most importante variable of the tree. If `LoyalCH < 0.03`, the tree predicts `MM`. If `LoyalCH > 0.76`, the tree predict `CH`. If `LoyalCH` lies between $0.03$ and $0.76$, the result depends on `PriceDiff`, `SpecialCh` and `ListPriceDiff`.
+
+* *Question (e)*
+
+```{r ex9e, message=FALSE, warning=FALSE}
+purchase_hat <- predict(tree_OJ, newdata = test, type = 'class')
+MSE_test <- mean(test$Purchase != purchase_hat)
+```
+
+The test error rate is `r round(100*MSE_test, 2)`%.
+
+```{r ex9ei, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, fig.dim=c(2, 2), fig.cap='Confusion matrix for the tree model on the test set.', fig.align='center'}
+purchase_hat %>% 
+  table(test$Purchase) %>% 
+  plot_confusion_matrix()
+```
+
+* *Question (f)*
+
+```{r ex9f, message=FALSE, warning=FALSE}
+set.seed(42)
+cv_OJ <- cv.tree(tree_OJ, FUN = prune.tree)
+```
+
+* *Question (g)*
+
+```{r ex9g, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 10), fig.cap='Cross-validation error rate with respect to the tree size', fig.align='center'}
+res <- tibble(x = cv_OJ$size, y = cv_OJ$dev)
+ggplot(res, aes(x = x, y = y)) +
+  geom_line(color = 'skyblue') +
+  geom_point(color = 'skyblue') +
+  xlab('Tree size') +
+  ylab('Cross-validated error rate') +
+  theme_custom()
+
+```
+
+* *Question (h)*
+
+The tree that corresponds to the lowest cross-validated classification error rate is of the size `r cv_OJ$size[which.min(cv_OJ$dev)]`.
+
+* *Question (i)*
+
+```{r ex9i, message=FALSE, warning=FALSE}
+tree_pruned_OJ <- prune.tree(tree_OJ, best = 5)
+```
+
+* *Question (j)*
+
+The training error rate is `r round(100*summary(tree_pruned_OJ)$misclass[1] / summary(tree_pruned_OJ)$misclass[2], 3)`% of the pruned tree.
+
+* *Question (k)*
+
+```{r}
+purchase_hat_pruned <- predict(tree_pruned_OJ, newdata = test, type = 'class')
+MSE_pruned_test <- mean(test$Purchase != purchase_hat_pruned)
+```
+
+The test error rate is `r round(100*MSE_pruned_test, 2)`% on the pruned tree.
+
+### Exercise 10.
+
+We now use boosting to predict `Salary` in the `Hitters` data set.
+
+* *Question (a)*
+
+```{r ex10a, message=FALSE, warning=FALSE}
+hitters <- as_tibble(Hitters)
+hitters <- hitters %>% 
+  filter(!is.na(hitters$Salary)) %>% 
+  mutate(log_Salary = log(Salary))
+```
+
+* *Question (b)*
+
+```{r ex10b, message=FALSE, warning=FALSE}
+train <- hitters %>% slice(1:200)
+test <- hitters %>% slice(201:263)
+```
+
+* *Question (c)* and *Question (d)*
+
+```{r ex10c, message=FALSE, warning=TRUE, cache=TRUE}
+set.seed(42)
+
+lambda <- 10**seq(-5, 0, by = 0.1)
+MSE_train <- rep(0, length(lambda))
+MSE_test <- rep(0, length(lambda))
+for(i in 1:length(lambda)){
+  boost_hitters <- gbm(log_Salary ~ ., data = select(train, -Salary), 
+                       distribution = 'gaussian', n.trees = 1000, shrinkage = lambda[i])
+  train_pred <- predict(boost_hitters, train, n.tree = 1000)
+  MSE_train[i] <- mean((train$log_Salary - train_pred)**2)
+  
+  test_pred <- predict(boost_hitters, test, n.tree = 1000)
+  MSE_test[i] <- mean((test$log_Salary - test_pred)**2)
+}
+```
+
+```{r ex10d, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 10), fig.cap='Mean Square Error', fig.align='center'}
+MSE <- tibble(lambda = lambda, train = MSE_train, test = MSE_test) %>% 
+  reshape2::melt(lambda)
+
+ggplot(MSE, aes(x = lambda, y = value, color = variable)) +
+  geom_line() +
+  xlab('Shrinkage parameter') +
+  ylab('Mean Square Error') +
+  theme_custom() +
+  theme(legend.position = 'bottom', legend.title = element_blank())
+```
+
+The minimum test error which is `r MSE_test[which.min(MSE_test)]` is obtained at $\lambda = `r lambda[which.min(MSE_test)]`$.
+
+* *Question (e)*
+
+```{r ex10e, message=FALSE, warning=FALSE}
+lm_hitters <- lm(log_Salary ~ ., data = select(train, -Salary))
+lm_pred <- predict(lm_hitters, data = test)
+MSE_lm <- mean((test$log_Salary - lm_pred)**2)
+```
+
+The test MSE of the linear regression model is `r MSE_lm`.
+
+```{r ex10ei, message=FALSE, warning=FALSE}
+X <- model.matrix(log_Salary ~ ., data = select(train, -Salary))
+Y <- train$log_Salary
+X_test <- model.matrix(log_Salary ~ ., data = select(test, -Salary))
+cv_out <- cv.glmnet(X, Y, alpha = 0)
+ridge_hitters <- glmnet(X, Y, alpha = 0, lambda = cv_out$lambda.min)
+ridge_pred <- predict(ridge_hitters, newx = X_test)
+MSE_ridge <- mean((test$log_Salary - ridge_pred)**2)
+```
+
+The test MSE of the ridge regression model is `r MSE_ridge`.
+
+The boosting model is way better than linear and ridge regression models.
+
+* *Question (f)*
+
+```{r ex10f, message=FALSE, warning=FALSE, include=FALSE}
+boost_hitters <- gbm(log_Salary ~ ., data = select(train, -Salary), 
+                       distribution = 'gaussian', n.trees = 1000, 
+                     shrinkage = lambda[which.min(MSE_test)])
+importance_boost <- summary(boost_hitters)
+```
+
+```{r ex10fi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 10), fig.cap='Importance plot', fig.align='center'}
+ggplot(importance_boost, aes(x = var, y = rel.inf)) +
+  geom_segment(aes(x = var, xend = var, y = 0, yend = rel.inf), color = 'skyblue') +
+  geom_point(color = 'skyblue', size = 4) +
+  xlab('') +
+  ylab('Relative influence') +
+  theme_custom() +
+  coord_flip() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+```
+
+* *Question (g)*
+
+```{r ex10g, message=FALSE, warning=FALSE}
+set.seed(42)
+bagging_hitters <- randomForest(log_Salary ~ ., data = select(train, -Salary), 
+                                mtry = ncol(hitters)-2, importance = TRUE)
+salary_hat_bagging <- predict(bagging_hitters, newdata = test)
+MSE_bagging_test <- mean((test$log_Salary - salary_hat_bagging)**2)
+```
+
+The MSE on the test set is `r round(MSE_bagging_test, 3)` with bagging.
+
+### Exercise 11.
+
+* *Question (a)*
+
+```{r ex11a, message=FALSE, warning=FALSE}
+caravan <- as_tibble(Caravan)
+caravan$Purchase <- ifelse(caravan$Purchase == 'Yes', 1, 0)
+train <- caravan %>% slice(1:1000)
+test <- caravan %>% slice(1001:5822)
+```
+
+* *Question (b)*
+
+```{r ex11b, message=FALSE, warning=FALSE, include=FALSE}
+boost_caravan <- gbm(Purchase ~ ., data = train, 
+                       distribution = 'bernoulli', n.trees = 1000, shrinkage = 0.01)
+importance_boost <- summary(boost_caravan)
+```
+
+```{r ex11bi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 20), fig.cap='Importance plot', fig.align='center'}
+ggplot(importance_boost, aes(x = var, y = rel.inf)) +
+  geom_segment(aes(x = var, xend = var, y = 0, yend = rel.inf), color = 'skyblue') +
+  geom_point(color = 'skyblue', size = 4) +
+  xlab('') +
+  ylab('Relative influence') +
+  theme_custom() +
+  coord_flip() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.border = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+```
+
+* *Question (c)*
+
+```{r ex11c, message=FALSE, warning=FALSE}
+test_pred <- predict(boost_caravan, test, n.tree = 1000, type = 'response')
+test_pred <- ifelse(test_pred > 0.2, 1, 0)
+```
+
+```{r ex11ci, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, fig.dim=c(2, 2), fig.cap='Confusion matrix for the boosting model on the test set.', fig.align='center'}
+test_pred %>% 
+  table(test$Purchase) %>% 
+  plot_confusion_matrix()
+```
+
+`r round(100 * sum((test_pred == 1) & (test$Purchase == 1)) / sum(test_pred), 2)`% of people who are predicted to make a purchase actually end up making one with the boosting model.
+
+```{r ex11cii, message=FALSE, warning=FALSE}
+knn_model <- knn(select(train, -Purchase), select(test, -Purchase), train$Purchase, k = 5)
+```
+
+```{r ex11ciii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, fig.dim=c(2, 2), fig.cap='Confusion matrix for the $k$NN model on the test set.', fig.align='center'}
+knn_model %>% 
+  table(test$Purchase) %>% 
+  plot_confusion_matrix()
+```
+
+`r round(100 * sum((knn_model == 1) & (test$Purchase == 1)) / sum(knn_model == 1), 2)`% of people who are predicted to make a purchase actually end up making one with the $k$NN model.
+
+### Exercise 12.
+
+Check out this [Kaggle kernel](https://www.kaggle.com/stevengolo/pima-indians-diabetes-model) for a comparison of boosting, bagging and random forests with logistic regression on a diabete dataset. 
