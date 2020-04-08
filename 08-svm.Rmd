@@ -1,0 +1,851 @@
+# Support Vector Machines
+
+```{r setup, include=FALSE}
+fig.process <- function(x) {
+  if (!grepl('[.]pdf$', x)) return(x) 
+  x2 = sub('pdf$', 'png', x)
+  magick::image_write(magick::image_read(x, density = 300), x2, format = 'png')
+  x2
+}
+
+knitr::opts_chunk$set(echo = TRUE, fig.process = fig.process)
+options(knitr.graphics.auto_pdf = TRUE)
+```
+
+```{r load_package, include=FALSE}
+library(boot)
+library(caret)
+library(class)
+library(e1071)
+library(gam)
+library(gbm)
+library(GGally)
+library(ggdendro)
+library(ggforce)
+library(ggfortify)
+library(glmnet)
+library(gridExtra)
+library(ISLR)
+library(kableExtra)
+library(knitr)
+library(latex2exp)
+library(leaps)
+library(MASS)
+library(plotly)
+library(pls)
+library(randomForest)
+library(reshape2)
+library(rpart)
+library(tidyverse)
+library(tree)
+
+source('https://gist.githubusercontent.com/StevenGolovkine/55b9a2b6c849deadf86e051ed78ae149/raw/4c977755502118118f64cff3b62ece3ef21fd8ec/ggcustom.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/632632f470375390853529be54b9ebeb/raw/c07317788844d3d904aab7908e9cfe3d9df29931/summary_functions.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_df.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_summary_df.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/401f5c2edc8a04a294bfec38136adcb2f5f2e62d/print_summary_lm.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/c9a50e250666422da513db7da0fbb2eb007e9cc7/print_summary_glm.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggcriteria.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggcv.glmnet.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggregsubsets.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/eda0613d4880b3ef1d074625808d69b5dd81b466/gggam.R')
+
+plot_confusion_matrix <- function(confusion_matrix){
+  confusion_matrix %>%
+    as.data.frame(optional = TRUE) %>% 
+    rownames_to_column() %>%
+    rename('Var1' = '.') %>%
+    ggplot() +
+    geom_text(aes(x = Var1, y = Var2, label = Freq), size = 4) +
+    xlab('Prediction') +
+    ylab('True') +
+    geom_hline(aes(yintercept = 1.5), size = 0.2) +
+    geom_vline(aes(xintercept = 1.5), size = 0.2) +
+    theme_bw() +
+    scale_x_discrete(position = "top") +
+    theme(panel.grid = element_blank(),
+          axis.ticks = element_blank())
+}
+
+labels_tree <- function(object, pretty = TRUE, collapse = TRUE, ...)
+{
+    if(!inherits(object, "tree")) stop("not legitimate tree")
+    frame <- object$frame
+    xlevels <- attr(object, "xlevels")
+    var <- as.character(frame$var)
+    splits <- matrix(sub("^>", " > ", sub("^<", " < ", frame$splits)),, 2L)
+    lt <- c(letters, 0:5) # max 32 levels
+    if(!is.null(pretty)) {
+        if(pretty) xlevels <- lapply(xlevels, abbreviate, minlength=pretty)
+        for(i in grep("^:", splits[, 1L],))
+            for(j in 1L:2L) {
+                sh <- splits[i, j]
+                nc <- nchar(sh)
+                sh <- substring(sh, 2L:nc, 2L:nc)
+                xl <- xlevels[[var[i]]][match(sh, lt)]
+                splits[i, j] <- paste0(": ", paste(as.vector(xl), collapse=","))
+
+            }
+    }
+    if(!collapse) return(array(paste0(var, splits), dim(splits)))
+    node <- as.integer(row.names(frame))
+    parent <- match((node %/% 2L), node)
+    odd <- as.logical(node %% 2L)
+    node[odd] <- paste0(var[parent[odd]], splits[parent[odd], 2L])
+    node[!odd] <- paste0(var[parent[!odd]], splits[parent[!odd], 1L])
+    node[1L] <- "root"
+    node
+}
+
+split_tree <- function(object, pretty = NULL){
+  if(!inherits(object, "tree")) stop("not legitimate tree")
+  frame <- object$frame
+  node <- as.integer(row.names(frame))
+  left.child <- match(2 * node, node)
+  rows <- labels_tree(object, pretty = pretty)[left.child]
+  ind <- !is.na(rows)
+  rows[ind]
+}
+
+
+```
+
+## Conceptual exercises
+
+### Exercise 1.
+
+This problem involves hyperplanes in two dimensions.
+
+The blue line correspond to the hyperplane $1 + 3X_1 - X_2 = 0$ and the purple line correspond to the hyperplane $-2 + X_1 + 2X_2 = 0$. 
+
+* The blue points are in the space where $1 + 3X_1 - X_2 > 0$ and $-2 + X_1 + 2X_2 > 0$. 
+* The red points are in the space where $1 + 3X_1 - X_2 > 0$ and $-2 + X_1 + 2X_2 < 0$. 
+* The green points are in the space where $1 + 3X_1 - X_2 < 0$ and $-2 + X_1 + 2X_2 < 0$. 
+* The yellow points are in the space where $1 + 3X_1 - X_2 < 0$ and $-2 + X_1 + 2X_2 > 0$.
+
+```{r ex1, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Example of hyperplanes in two dimensions.', fig.align='center'}
+df <- tibble(X1 = seq(-10, 10, 0.1), X2a = 1 + 3*X1, X2b = 1 - X1 / 2) %>% 
+  reshape2::melt('X1')
+
+grid_points <- as_tibble(expand.grid(x = seq(-10, 10, 1), y = seq(-30, 30, 5))) %>% 
+  mutate(a = if_else(1 + 3*x - y > 0, TRUE, FALSE)) %>% 
+  mutate(b = if_else(-2 + x + 2*y > 0, TRUE, FALSE)) %>% 
+  mutate(color = if_else(a & b, 'red', 
+                         if_else(a & !b, 'blue',
+                                 if_else(!a & b, 'green', 'orange'))))
+
+ggplot(df, aes(x = X1, y = value, color = variable)) +
+  geom_line(lwd = 2) +
+  geom_point(aes(x = x, y = y, color = color), data = grid_points) +
+  xlab('$X_1$') +
+  ylab('$X_2$') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+### Exercise 2.
+
+This problem involves non-linear decision boundary in two dimensions.
+
+* *Question (a)* and *Question (b)*
+
+Let's plot the curve $(1 + X_1)^2 + (2 - X_2)^2 = 4$. The blue points refer to the space where $(1 + X_1)^2 + (2 - X_2)^2 > 4$ and the red points to $(1 + X_1)^2 + (2 - X_2)^2 \leq 4$.
+
+```{r ex2, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Example of non-linear decision boundary', fig.align='center'}
+df <- as_tibble(expand.grid(x = seq(-4, 2, 0.5), y = seq(-1, 5, 0.5))) %>% 
+  mutate(circle = if_else((1 + x)**2 + (2 - y)**2 > 4, TRUE, FALSE))
+
+ggplot(df) +
+  geom_point(aes(x = x, y = y, color = circle)) +
+  geom_circle(aes(x0 = -1, y0 = 2, r = 2)) +
+  xlab('$X_1$') +
+  xlim(c(-4, 2)) +
+  ylab('$X_2$') +
+  ylim(c(-1, 5)) +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* *Question (c)*
+
+The observation $(0, 0)$ will be blue, $(-1, 1)$ red, $(2, 2)$ blue and $(3, 8)$ also blue.
+
+* *Question (d)*
+
+Let's expand the formula $(1 + X_1)^2 + (2 - X_2)^2$.
+
+$$(1 + X_1)^2 + (2 - X_2)^2 = 5 + 2X_1 + X_1^2 + 4 - 4X_2 + X_2^2$$
+
+This expression is linear in terms of $X_1$, $X_2$, $X_1^2$ and $X_2^2$.
+
+### Exercise 3.
+
+We explore the maximal margin classifier on a toy data set.
+
+* *Question (a)* and *Question (b)*
+
+The optimal separating hyperplane aims to separate the two classes by maximising the distance between the closest points of the different classes. So, it has to pass though the middle of the observations $2$ and $5$ which is the point $(2, 1.5)$ and $3$ and $6$ which is the point $(4, 3.5)$. Thus, it leads to the equation $y: x \mapsto x - 0.5$ 
+
+```{r ex3a, message=FALSE, warning=FALSE}
+df <- tibble(X1 = c(3, 2, 4, 1, 2, 4, 4),
+             X2 = c(4, 2, 4, 4, 1, 3, 1),
+             Y = c('R', 'R', 'R', 'R', 'B', 'B', 'B'))
+```
+
+```{r ex3b, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Example of toy dataset with a separating hyperplane', fig.align='center'}
+df_ <- tibble(x = seq(0, 5, 0.1), y = seq(0, 5, 0.1) - 0.5)
+
+ggplot(df) +
+  geom_point(aes(x = X1, y = X2, color = Y)) +
+  geom_line(aes(x = x, y = y), data = df_) +
+  xlab('$X_1$') +
+  xlim(c(0, 5)) +
+  ylab('$X_2$') +
+  ylim(c(0, 5)) +
+  scale_color_manual(values = c('blue', 'red')) +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* *Question (c)*
+
+We rewrite the equation found in the previous question as:
+$$0.5 - X_1 + X_2 = 0$$
+
+Then, classify to Red if $0.5 - X_1 + X_2 > 0$, and classify to Blue otherwise.
+
+* *Question (d)*
+
+```{r ex3d, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Example of the margins', fig.align='center'}
+df_ <- tibble(x = seq(0, 5, 0.1), y = seq(0, 5, 0.1) - 0.5)
+df_plus <- tibble(x = seq(0, 5, 0.1), y = seq(0, 5, 0.1))
+df_moins <- tibble(x = seq(0, 5, 0.1), y = seq(0, 5, 0.1) - 1)
+
+ggplot(df) +
+  geom_point(aes(x = X1, y = X2, color = Y)) +
+  geom_line(aes(x = x, y = y), data = df_) +
+  geom_line(aes(x = x, y = y), data = df_plus, linetype = 2) +
+  geom_line(aes(x = x, y = y), data = df_moins, linetype = 2) +
+  xlab('$X_1$') +
+  xlim(c(0, 5)) +
+  ylab('$X_2$') +
+  ylim(c(0, 5)) +
+  scale_color_manual(values = c('blue', 'red')) +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* *Question (e)*
+
+```{r ex3e, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Example of the support vectors', fig.align='center'}
+df_ <- tibble(x = seq(0, 5, 0.1), y = seq(0, 5, 0.1) - 0.5)
+df_plus <- tibble(x = seq(0, 5, 0.1), y = seq(0, 5, 0.1))
+df_moins <- tibble(x = seq(0, 5, 0.1), y = seq(0, 5, 0.1) - 1)
+
+ggplot(df) +
+  geom_point(aes(x = X1, y = X2, color = Y)) +
+  geom_line(aes(x = x, y = y), data = df_) +
+  geom_line(aes(x = x, y = y), data = df_plus, linetype = 2) +
+  geom_line(aes(x = x, y = y), data = df_moins, linetype = 2) +
+  geom_segment(aes(x = 2, y = 2, xend = 2.25, yend = 1.75), col = 'red', linetype = 6) +
+  geom_segment(aes(x = 4, y = 4, xend = 4.25, yend = 3.75), col = 'red', linetype = 6) +
+  geom_segment(aes(x = 2, y = 1, xend = 1.75, yend = 1.25), col = 'blue', linetype = 6) +
+  geom_segment(aes(x = 4, y = 3, xend = 3.75, yend = 3.25), col = 'blue', linetype = 6) +
+  xlab('$X_1$') +
+  xlim(c(0, 5)) +
+  ylab('$X_2$') +
+  ylim(c(0, 5)) +
+  scale_color_manual(values = c('blue', 'red')) +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* *Question (f)*
+
+The seventh observation, which is the point $(4, 1)$ do not affect the maximal margin hyperplane because it does not belong to the margins.
+
+* *Question (g)*
+
+A non-optimal separating hyperplane would be 
+$$0.1 - 0.8X_1 + X_2 = 0.$$
+```{r ex3g, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Example of the non-optimal hyperplane', fig.align='center'}
+df_ <- tibble(x = seq(0, 5, 0.1), y = 0.8*seq(0, 5, 0.1) - 0.1)
+
+ggplot(df) +
+  geom_point(aes(x = X1, y = X2, color = Y)) +
+  geom_line(aes(x = x, y = y), data = df_) +
+  xlab('$X_1$') +
+  xlim(c(0, 5)) +
+  ylab('$X_2$') +
+  ylim(c(0, 5)) +
+  scale_color_manual(values = c('blue', 'red')) +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* *Question (h)*
+
+```{r ex3h, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Example of the non-separable points', fig.align='center'}
+ggplot(df) +
+  geom_point(aes(x = X1, y = X2, color = Y)) +
+  geom_point(aes(x = 2, y = 3), col = 'blue') +
+  xlab('$X_1$') +
+  xlim(c(0, 5)) +
+  ylab('$X_2$') +
+  ylim(c(0, 5)) +
+  scale_color_manual(values = c('blue', 'red')) +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+## Applied exercises
+
+### Exercise 4.
+
+We simulate a two-class data set with $100$ observations and two features in which there is a visible but non-linear separation between the two classes.
+
+```{r ex4gen, message=FALSE, warning=FALSE}
+set.seed(42)
+t <- seq(0, 1, length.out = 50)
+X_1 <- sin(2*pi*t) + rnorm(50, 0, 0.25)
+X_2 <- sin(2*pi*t) + 1 + rnorm(50, 0, 0.25)
+df <- tibble(t = c(t, t), X = c(X_1, X_2), cl = as.factor(c(rep(-1, 50), rep(1, 50))))
+
+idx <- sample(1:nrow(df), 50)
+train <- df %>% slice(idx)
+test <- df %>% slice(-idx)
+```
+
+```{r ex4data, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Simulated data', fig.align='center'}
+ggplot(df) +
+  geom_point(aes(x = t, y = X, color = cl)) +
+  xlab('') + 
+  ylab('') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+The boundary between the two classes is clearly non-linear.
+
+* Linear SVM
+
+```{r ex4svmlinear, message=FALSE, warning=FALSE}
+svm_linear <- tune('svm', cl ~ ., data = train, 
+                       kernel = 'linear', 
+                       ranges = list(gamma = 2^(-1:1), cost = 2^(2:4)))
+svm_linear_best <- svm_linear$best.model
+preds_train <- predict(svm_linear_best, train)
+preds_test <- predict(svm_linear_best, test)
+```
+
+Around `r round(100*sum(train$cl != preds_train) / nrow(train), 2)`% of the train observations are misclassified and `r round(100*sum(test$cl != preds_test) / nrow(train), 2)`% of the test observations.
+
+```{r ex4plotlinear, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Results of linear SVM', fig.align='center'}
+grid_points <- expand_grid(t = seq(min(df$t), max(df$t), length.out = 100),
+                           X = seq(min(df$X), max(df$X), length.out = 100))
+preds <- predict(svm_linear_best, grid_points)
+df_svm <- cbind(grid_points, preds)
+
+ggplot(df) +
+  geom_tile(aes(x = t, y = X, fill = preds), data = df_svm, alpha = 0.5) +
+  geom_point(aes(x = t, y = X, color = cl)) +
+  xlab('') + 
+  ylab('') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* Polynomial SVM
+
+```{r ex4svmpoly, message=FALSE, warning=FALSE}
+svm_poly <- tune('svm', cl ~ ., data = train, 
+                       kernel = 'polynomial', 
+                       ranges = list(gamma = 2^(-1:1), cost = 2^(2:4), degree = 2:5))
+svm_poly_best <- svm_poly$best.model
+preds_train <- predict(svm_poly_best, train)
+preds_test <- predict(svm_poly_best, test)
+```
+
+Around `r round(100*sum(train$cl != preds_train) / nrow(train), 2)` of the train observations are misclassified and `r round(100*sum(test$cl != preds_test) / nrow(train), 2)`% of the test observations.
+
+```{r ex4plotpoly, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Results of polynomial SVM', fig.align='center'}
+grid_points <- expand_grid(t = seq(min(df$t), max(df$t), length.out = 100),
+                           X = seq(min(df$X), max(df$X), length.out = 100))
+preds <- predict(svm_poly_best, grid_points)
+df_svm <- cbind(grid_points, preds)
+
+ggplot(df) +
+  geom_tile(aes(x = t, y = X, fill = preds), data = df_svm, alpha = 0.5) +
+  geom_point(aes(x = t, y = X, color = cl)) +
+  xlab('') + 
+  ylab('') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* Radial SVM
+
+```{r ex4svmradial, message=FALSE, warning=FALSE}
+svm_radial <- tune('svm', cl ~ ., data = train, 
+                       kernel = 'radial', 
+                       ranges = list(gamma = 2^(-1:1), cost = 2^(2:4)))
+svm_radial_best <- svm_radial$best.model
+preds_train <- predict(svm_radial_best, train)
+preds_test <- predict(svm_radial_best, test)
+```
+
+Around `r round(100*sum(train$cl != preds_train) / nrow(train), 2)` of the train observations are misclassified and `r round(100*sum(test$cl != preds_test) / nrow(train), 2)`% of the test observations.
+
+```{r ex4plotradial, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Results of radial SVM', fig.align='center'}
+grid_points <- expand_grid(t = seq(min(df$t), max(df$t), length.out = 100),
+                           X = seq(min(df$X), max(df$X), length.out = 100))
+preds <- predict(svm_radial_best, grid_points)
+df_svm <- cbind(grid_points, preds)
+
+ggplot(df) +
+  geom_tile(aes(x = t, y = X, fill = preds), data = df_svm, alpha = 0.5) +
+  geom_point(aes(x = t, y = X, color = cl)) +
+  xlab('') + 
+  ylab('') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* Conclusion 
+
+Here, the radial kernel shows the best results in term of misclassification error rate. Of course, it was expected because the generating process was a sinus.
+
+### Exercise 5.
+
+We will now see that we can also obtain a non-linear decision boundary by performing logistic regression using non-linear transformations of the features.
+
+* *Question (a)*
+
+```{r ex5a, message=FALSE, warning=FALSE}
+X1 <- runif(500) - 0.5
+X2 <- runif(500) - 0.5
+Y <- as.factor(1 * (X1**2 - X2**2 > 0))
+df <- tibble(X1, X2, Y)
+```
+
+* *Question (b)*
+
+```{r ex5b, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Plot of the observations with true classes', fig.align='center'}
+ggplot(df) +
+  geom_point(aes(x = X1, y = X2, color = Y)) +
+  xlab('$X_1$') +
+  ylab('$X_2$') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* *Question (c)*
+
+```{r ex5c, message=FALSE, warning=FALSE}
+lm_model <- glm(Y ~ ., data = df, family = 'binomial')
+```
+
+* *Question (d)*
+
+```{r ex5d, message=FALSE, warning=FALSE}
+pred_lm <- predict(lm_model, df, type = 'response')
+```
+
+```{r ex5di, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Plot of the observations with predicted classes for LM model', fig.align='center'}
+df_plot <- df %>% mutate(Y_pred = as.factor(if_else(pred_lm > 0.52, 1, 0)))
+
+ggplot(df_plot) +
+  geom_point(aes(x = X1, y = X2, color = Y_pred)) +
+  xlab('$X_1$') +
+  ylab('$X_2$') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+The decision boundary is linear and do not fit to the true regression line.
+
+* *Question (e)*
+
+```{r ex5e, message=FALSE, warning=FALSE}
+glm_model <- glm(Y ~ poly(X1, 2) + poly(X2, 2) + I(X1 * X2), data = df, family = 'binomial')
+```
+
+* *Question (f)*
+
+```{r ex5f, message=FALSE, warning=FALSE}
+pred_glm <- predict(glm_model, df, type = 'response')
+```
+
+```{r ex5fi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Plot of the observations with predicted classes for GLM model', fig.align='center'}
+df_plot <- df %>% mutate(Y_pred = as.factor(if_else(pred_glm > 0.50, 1, 0)))
+
+ggplot(df_plot) +
+  geom_point(aes(x = X1, y = X2, color = Y_pred)) +
+  xlab('$X_1$') +
+  ylab('$X_2$') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+The decision boundary is not linear and looks like the true decision boundary.
+
+* *Question (g)*
+
+```{r ex5g, message=FALSE, warning=FALSE}
+svm_poly <- tune('svm', Y ~ ., data = df, 
+                       kernel = 'polynomial', 
+                       ranges = list(cost = 2^(2:4)))
+svm_poly_best <- svm_poly$best.model
+preds_svm <- predict(svm_poly_best, df)
+```
+
+```{r ex5gi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Results of polynomial SVM', fig.align='center'}
+df_plot <- df %>% mutate(Y_pred = preds_svm)
+
+ggplot(df_plot) +
+  geom_point(aes(x = X1, y = X2, color = Y_pred)) +
+  xlab('$X_1$') +
+  ylab('$X_2$') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+A linear kernel fails to find non linear boundary.
+
+* *Question (h)*
+
+```{r ex5h, message=FALSE, warning=FALSE}
+svm_radial <- tune('svm', Y ~ ., data = df, 
+                       kernel = 'radial', 
+                       ranges = list(cost = 2^(2:4)))
+svm_radial_best <- svm_radial$best.model
+preds_svm <- predict(svm_radial_best, df)
+```
+
+```{r ex5hi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Results of kernel SVM', fig.align='center'}
+df_plot <- df %>% mutate(Y_pred = preds_svm)
+
+ggplot(df_plot) +
+  geom_point(aes(x = X1, y = X2, color = Y_pred)) +
+  xlab('$X_1$') +
+  ylab('$X_2$') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+A radial kernel performs way better on this data. The prediction boundary seems to be quite close to the true boundary.
+
+* *Question (i)*
+
+So, the support vector machine, with radial kernel, appears to be very good to find non-linear decision boundary. However, even if logistic regression may also found out this kind of boundary, it requires to add non linear transformation of the features to find it. 
+
+### Exercise 6.
+
+* *Question (a)*
+
+```{r ex6a, message=FALSE, warning=FALSE}
+set.seed(42)
+X1 <- runif(500, 0, 1)
+X2 <- c(runif(250, X1[1:250] + 0.05), runif(250, 0, X1[251:500] - 0.05))
+noise_X1 <- runif(100, 0.1, 0.9)
+noise_X2 <- 0.8 * noise_X1 + 0.1
+
+Y <- as.factor(1 * (X1 - X2 > 0))
+noise_Y <- as.factor(sample(c(0, 1), size = 100, replace = TRUE))
+
+df <- tibble(X1, X2, Y) %>% 
+  bind_rows(tibble(X1 = sort(noise_X1), X2 = sort(noise_X2), Y = noise_Y)) %>% 
+  filter(!is.na(Y))
+```
+
+```{r ex6ai, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Plot of the observations with true classes', fig.align='center'}
+ggplot(df) +
+  geom_point(aes(x = X1, y = X2, color = Y)) +
+  xlab('$X_1$') +
+  ylab('$X_2$') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* *Question (b)*
+
+```{r ex6b, message=FALSE, warning=FALSE, cache=TRUE}
+svm_poly <- tune('svm', Y ~ ., data = df, 
+                       kernel = 'linear', 
+                       ranges = list(cost = 10^(-2:4)))
+```
+
+```{r ex6bi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Plot of the errors from cross-validation', fig.align='center'}
+ggplot(svm_poly$performances) +
+  geom_point(aes(x = cost, y = error)) +
+  geom_errorbar(aes(x = cost, ymin = error - dispersion, ymax = error + dispersion)) +
+  xlab('Cost') +
+  ylab('Error') +
+  scale_x_log10(n.breaks = 7) +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* *Question (c)*
+
+```{r ex6c, message=FALSE, warning=FALSE}
+set.seed(43)
+X1 <- runif(500, 0, 1)
+X2 <- runif(500, 0, 1)
+Y <- as.factor(1 * (X1 - X2 > 0))
+df_test <- tibble(X1, X2, Y)
+```
+
+```{r ex6ci, message=FALSE, warning=FALSE}
+costs = 10**(-2:4)
+errors_test <- rep(NA, length(costs))
+for(i in 1:length(costs)){
+  model_svm <- svm(Y ~ ., data = df, kernel = 'linear', cost = costs[i])
+  pred <- predict(model_svm, df_test)
+  errors_test[i] <- mean(df_test$Y != pred)
+}
+```
+
+```{r ex6cii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Plot of the errors on the test set', fig.align='center'}
+res <- tibble(cost = costs, error = errors_test)
+ggplot(res) +
+  geom_point(aes(x = cost, y = error)) +
+  xlab('Cost') +
+  ylab('Error') +
+  scale_x_log10(n.breaks = 7) +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* *Question (d)*
+
+Here, we see that a smaller cost performs better on the test dataset. But, we do not point out the overfitting phenomenon of a high cost on the train dataset.
+
+### Exercise 7.
+
+We will use support vector approaches in order to predict whether a given car gets high or low gas mileage based on the `Auto` dataset.
+
+```{r ex7load, message=FALSE, warning=FALSE}
+auto <- as_tibble(Auto) %>% select(-c('name', 'year', 'origin', 'weight', 'cylinders'))
+```
+
+* *Question (a)*
+
+We create a binary variable that takes on a $1$ for cars with gas mileage above the median, and a $0$ for cars with gas mileage below the median.
+
+```{r ex7a, message=FALSE, warning=FALSE}
+Y <- 1 * (auto$mpg > median(auto$mpg))
+auto <- auto %>% 
+  add_column(Y) %>% 
+  select(-c('mpg')) %>% 
+  mutate_at(vars(Y), funs(as.factor(.)))
+```
+
+* *Question (b)*
+
+```{r ex7b, message=FALSE, warning=FALSE, cache=TRUE}
+svm_linear <- tune('svm', Y ~ ., data = auto, 
+                       kernel = 'linear', 
+                       ranges = list(cost = 10^(-2:4)))
+```
+
+```{r ex7bi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Plot of the errors from cross-validation', fig.align='center'}
+ggplot(svm_linear$performances) +
+  geom_point(aes(x = cost, y = error)) +
+  geom_errorbar(aes(x = cost, ymin = error - dispersion, ymax = error + dispersion)) +
+  xlab('Cost') +
+  ylab('Error') +
+  scale_x_log10(n.breaks = 7) +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+The lowest cross-validation error is obtained for `cost = 0.1`.
+
+* *Question (c)*
+
+```{r ex7c, message=FALSE, warning=FALSE, cache=TRUE}
+svm_radial <- tune('svm', Y ~ ., data = auto, 
+                       kernel = 'radial', 
+                       ranges = list(cost = 10^(-2:4),
+                                     gamma = 10^(-2:4)))
+```
+
+```{r ex7ci, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Plot of the errors from cross-validation', fig.align='center'}
+ggplot(svm_radial$performances) +
+  geom_point(aes(x = cost, y = error, col = as.factor(gamma))) +
+  geom_errorbar(aes(x = cost, ymin = error - dispersion, ymax = error + dispersion, col = as.factor(gamma))) +
+  xlab('Cost') +
+  ylab('Error') +
+  scale_x_log10(n.breaks = 7) +
+  labs(color = '$\\gamma$') +
+  theme_custom()
+```
+
+The lowest cross-validation error is obtained for `cost = 10000` and `gamma = 0.01`.
+
+```{r ex7cii, message=FALSE, warning=FALSE, cache=TRUE}
+svm_poly <- tune('svm', Y ~ ., data = auto, 
+                       kernel = 'polynomial', 
+                       ranges = list(cost = 10^(-2:4),
+                                     degree = 1:4))
+```
+
+```{r ex7ciii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 10), fig.cap='Plot of the errors from cross-validation', fig.align='center'}
+ggplot(svm_poly$performances) +
+  geom_point(aes(x = cost, y = error, col = as.factor(degree))) +
+  geom_errorbar(aes(x = cost, ymin = error - dispersion, ymax = error + dispersion, col = as.factor(degree))) +
+  xlab('Cost') +
+  ylab('Error') +
+  scale_x_log10(n.breaks = 7) +
+  labs(color = 'Degree') +
+  theme_custom()
+```
+
+The lowest cross-validation error is obtained for `cost = 0.1` and `degree = 1`.
+
+* *Question (d)*
+
+```{r ex7d, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 10), fig.cap='Results based on displacement x horsepower', fig.align='center', cache=TRUE}
+grid_points <- expand_grid(displacement = seq(min(auto$displacement), max(auto$displacement), 
+                                              length.out = 10),
+                           horsepower = seq(min(auto$horsepower), max(auto$horsepower), 
+                                            length.out = 10),
+                           acceleration = seq(min(auto$acceleration), max(auto$acceleration), 
+                                              length.out = 10))
+preds <- predict(svm_linear$best.model, grid_points)
+df_svm <- cbind(grid_points, preds)
+
+preds_poly <- predict(svm_poly$best.model, grid_points)
+df_svm_poly <- cbind(grid_points, preds_poly)
+
+preds_radial <- predict(svm_radial$best.model, grid_points)
+df_svm_radial <- cbind(grid_points, preds_radial)
+
+
+p <- ggplot(auto) +
+  geom_tile(aes(x = displacement, y = horsepower, fill = preds), data = df_svm, alpha = 0.2) +
+  geom_point(aes(x = displacement, y = horsepower, color = Y)) +
+  xlab('Displacement') + 
+  ylab('Horsepower') +
+  ggtitle('Linear SVM') +
+  theme_custom() +
+  theme(legend.position = 'none')
+
+q <- ggplot(auto) +
+  geom_tile(aes(x = displacement, y = horsepower, fill = preds_poly), data = df_svm_poly, alpha = 0.2) +
+  geom_point(aes(x = displacement, y = horsepower, color = Y)) +
+  xlab('Displacement') + 
+  ylab('Horsepower') +
+  ggtitle('Polynomial SVM') +
+  theme_custom() +
+  theme(legend.position = 'none')
+
+r <- ggplot(auto) +
+  geom_tile(aes(x = displacement, y = horsepower, fill = preds_radial), data = df_svm_radial, alpha = 0.2) +
+  geom_point(aes(x = displacement, y = horsepower, color = Y)) +
+  xlab('Displacement') + 
+  ylab('Horsepower') +
+  ggtitle('Radial SVM') +
+  theme_custom() +
+  theme(legend.position = 'none')
+
+grid.arrange(p, q, r, ncol = 3)
+```
+
+### Exercise 8.
+
+The problem involves the `OJ` dataset.
+
+```{r ex8load, message=FALSE, warning=FALSE}
+df <- as_tibble(OJ)
+```
+
+* *Question (a)*
+
+```{r ex8a, message=FALSE, warning=FALSE}
+set.seed(42)
+idx <- sample(1:nrow(df), 800)
+train <- df %>% slice(idx)
+test <- df %>% slice(-idx)
+```
+
+* *Question (b)*
+
+Let's fit a support vector classifier to the training data using `cost = 0.01` with `Purchase` as the response and the other variables as predictors.
+
+```{r ex8b, message=FALSE, warning=FALSE}
+svm_linear <- svm(Purchase ~ ., data = train, kernel = 'linear', cost = 0.01)
+```
+
+Its prodoces `r svm_linear$tot.nSV` supports vectors out of $800$ training points. Out of these, `r svm_linear$nSV[1]` belong to level `r svm_linear$levels[1]` and `r svm_linear$nSV[2]` belong to level `r svm_linear$levels[2]`.
+
+* *Question (c)*
+
+```{r ex8c, message=FALSE, warning=FALSE}
+train_error <- mean(train$Purchase != predict(svm_linear, train))
+test_error <- mean(test$Purchase != predict(svm_linear, test))
+```
+
+The training error rate is `r round(100*train_error, 2)`% and the test error rate is `r round(100*test_error, 2)`%.
+
+* *Question (d)*
+
+```{r ex8d, message=FALSE, warning=FALSE, cache=TRUE}
+svm_linear <- tune('svm', Purchase ~ ., data = train, 
+                       kernel = 'linear', 
+                       ranges = list(cost = 10^(seq(-2, 1, by = 0.1))))
+```
+
+The optimal `cost` found is `r svm_linear$best.parameters$cost`.
+
+* *Question (e)*
+
+```{r ex8e, message=FALSE, warning=FALSE}
+train_error <- mean(train$Purchase != predict(svm_linear$best.model, train))
+test_error <- mean(test$Purchase != predict(svm_linear$best.model, test))
+```
+
+The training error rate is `r round(100*train_error, 2)`% and the test error rate is `r round(100*test_error, 2)`%.
+
+* *Question (f)*
+
+We do the same process using support vector machine with radial kernel.
+
+```{r ex8f, message=FALSE, warning=FALSE, cache=TRUE}
+svm_radial <- tune('svm', Purchase ~ ., data = train, 
+                       kernel = 'radial', 
+                       ranges = list(cost = 10^(seq(-2, 1, by = 0.1))))
+```
+
+The optimal `cost` found is `r svm_radial$best.parameters$cost`.
+
+```{r ex8fi, message=FALSE, warning=FALSE}
+train_error <- mean(train$Purchase != predict(svm_radial$best.model, train))
+test_error <- mean(test$Purchase != predict(svm_radial$best.model, test))
+```
+
+The training error rate is `r round(100*train_error, 2)`% and the test error rate is `r round(100*test_error, 2)`%.
+
+* *Question (f)*
+
+We do the same process using support vector machine with radial kernel.
+
+```{r ex8g, message=FALSE, warning=FALSE, cache=TRUE}
+svm_poly <- tune('svm', Purchase ~ ., data = train, 
+                       kernel = 'polynomial', 
+                       ranges = list(cost = 10^(seq(-2, 1, by = 0.1)),
+                                     degree = 2))
+```
+
+The optimal `cost` found is `r svm_poly$best.parameters$cost`.
+
+```{r ex8gi, message=FALSE, warning=FALSE}
+train_error <- mean(train$Purchase != predict(svm_poly$best.model, train))
+test_error <- mean(test$Purchase != predict(svm_poly$best.model, test))
+```
+
+The training error rate is `r round(100*train_error, 2)`% and the test error rate is `r round(100*test_error, 2)`%.
+
+* *Question (h)*
+
+In this case, it appears that the support vector classifier with radial kernel give the best results in terms of percentage error on the test set for this dataset. However, all the results are pretty close.

@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 9 Support Vector Machines | An Introduction to Statistical Learning</title>
+  <meta name="description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
+  <meta name="generator" content="bookdown 0.18 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 9 Support Vector Machines | An Introduction to Statistical Learning" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 9 Support Vector Machines | An Introduction to Statistical Learning" />
+  
+  <meta name="twitter:description" content="This book aims to provide my results to the different exercises of An Introduction to Statistical Learning, with Application in R, by James, Witten, Hastie and Tibshirani." />
+  
+
+<meta name="author" content="Steven Golovkine" />
+
+
+<meta name="date" content="2020-03-24" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="tree-based-methods.html"/>
+<link rel="next" href="references.html"/>
+<script src="libs/header-attrs-2.1/header-attrs.js"></script>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Introduction to Statistical Learning</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="overview.html"><a href="overview.html"><i class="fa fa-check"></i><b>2</b> An Overview of Statistical Learning</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="overview.html"><a href="overview.html#conceptual-exercises"><i class="fa fa-check"></i><b>2.1</b> Conceptual Exercises</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="overview.html"><a href="overview.html#exercise-1."><i class="fa fa-check"></i><b>2.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="2.1.2" data-path="overview.html"><a href="overview.html#exercise-2."><i class="fa fa-check"></i><b>2.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="2.1.3" data-path="overview.html"><a href="overview.html#exercise-3."><i class="fa fa-check"></i><b>2.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="2.1.4" data-path="overview.html"><a href="overview.html#exercise-4."><i class="fa fa-check"></i><b>2.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="2.1.5" data-path="overview.html"><a href="overview.html#exercise-5."><i class="fa fa-check"></i><b>2.1.5</b> Exercise 5.</a></li>
+<li class="chapter" data-level="2.1.6" data-path="overview.html"><a href="overview.html#exercise-6."><i class="fa fa-check"></i><b>2.1.6</b> Exercise 6.</a></li>
+<li class="chapter" data-level="2.1.7" data-path="overview.html"><a href="overview.html#exercise-7."><i class="fa fa-check"></i><b>2.1.7</b> Exercise 7.</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="overview.html"><a href="overview.html#applied-exercises"><i class="fa fa-check"></i><b>2.2</b> Applied Exercises</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="overview.html"><a href="overview.html#exercise-8."><i class="fa fa-check"></i><b>2.2.1</b> Exercise 8.</a></li>
+<li class="chapter" data-level="2.2.2" data-path="overview.html"><a href="overview.html#exercise-9."><i class="fa fa-check"></i><b>2.2.2</b> Exercise 9.</a></li>
+<li class="chapter" data-level="2.2.3" data-path="overview.html"><a href="overview.html#exercise-10."><i class="fa fa-check"></i><b>2.2.3</b> Exercise 10.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="linear-regression.html"><a href="linear-regression.html"><i class="fa fa-check"></i><b>3</b> Linear Regression</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="linear-regression.html"><a href="linear-regression.html#conceptual-exercises-1"><i class="fa fa-check"></i><b>3.1</b> Conceptual Exercises</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="linear-regression.html"><a href="linear-regression.html#exercise-1.-1"><i class="fa fa-check"></i><b>3.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="3.1.2" data-path="linear-regression.html"><a href="linear-regression.html#exercise-2.-1"><i class="fa fa-check"></i><b>3.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="3.1.3" data-path="linear-regression.html"><a href="linear-regression.html#exercise-3.-1"><i class="fa fa-check"></i><b>3.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="3.1.4" data-path="linear-regression.html"><a href="linear-regression.html#exercise-4.-1"><i class="fa fa-check"></i><b>3.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="3.1.5" data-path="linear-regression.html"><a href="linear-regression.html#exercise-5.-1"><i class="fa fa-check"></i><b>3.1.5</b> Exercise 5.</a></li>
+<li class="chapter" data-level="3.1.6" data-path="linear-regression.html"><a href="linear-regression.html#exercise-6.-1"><i class="fa fa-check"></i><b>3.1.6</b> Exercise 6.</a></li>
+<li class="chapter" data-level="3.1.7" data-path="linear-regression.html"><a href="linear-regression.html#exercise-7.-1"><i class="fa fa-check"></i><b>3.1.7</b> Exercise 7.</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="linear-regression.html"><a href="linear-regression.html#applied-exercises-1"><i class="fa fa-check"></i><b>3.2</b> Applied Exercises</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="linear-regression.html"><a href="linear-regression.html#exercise-8.-1"><i class="fa fa-check"></i><b>3.2.1</b> Exercise 8.</a></li>
+<li class="chapter" data-level="3.2.2" data-path="linear-regression.html"><a href="linear-regression.html#exercise-9.-1"><i class="fa fa-check"></i><b>3.2.2</b> Exercise 9.</a></li>
+<li class="chapter" data-level="3.2.3" data-path="linear-regression.html"><a href="linear-regression.html#exercise-10.-1"><i class="fa fa-check"></i><b>3.2.3</b> Exercise 10.</a></li>
+<li class="chapter" data-level="3.2.4" data-path="linear-regression.html"><a href="linear-regression.html#exercise-11."><i class="fa fa-check"></i><b>3.2.4</b> Exercise 11.</a></li>
+<li class="chapter" data-level="3.2.5" data-path="linear-regression.html"><a href="linear-regression.html#exercise-12."><i class="fa fa-check"></i><b>3.2.5</b> Exercise 12.</a></li>
+<li class="chapter" data-level="3.2.6" data-path="linear-regression.html"><a href="linear-regression.html#exercise-13."><i class="fa fa-check"></i><b>3.2.6</b> Exercise 13.</a></li>
+<li class="chapter" data-level="3.2.7" data-path="linear-regression.html"><a href="linear-regression.html#exercise-14."><i class="fa fa-check"></i><b>3.2.7</b> Exercise 14.</a></li>
+<li class="chapter" data-level="3.2.8" data-path="linear-regression.html"><a href="linear-regression.html#exercise-15."><i class="fa fa-check"></i><b>3.2.8</b> Exercise 15.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="classification.html"><a href="classification.html"><i class="fa fa-check"></i><b>4</b> Classification</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="classification.html"><a href="classification.html#conceptual-exercises-2"><i class="fa fa-check"></i><b>4.1</b> Conceptual Exercises</a>
+<ul>
+<li class="chapter" data-level="4.1.1" data-path="classification.html"><a href="classification.html#exercise-1.-2"><i class="fa fa-check"></i><b>4.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="4.1.2" data-path="classification.html"><a href="classification.html#exercise-2.-2"><i class="fa fa-check"></i><b>4.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="4.1.3" data-path="classification.html"><a href="classification.html#exercise-3.-2"><i class="fa fa-check"></i><b>4.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="4.1.4" data-path="classification.html"><a href="classification.html#exercise-4.-2"><i class="fa fa-check"></i><b>4.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="4.1.5" data-path="classification.html"><a href="classification.html#exercise-5.-2"><i class="fa fa-check"></i><b>4.1.5</b> Exercise 5.</a></li>
+<li class="chapter" data-level="4.1.6" data-path="classification.html"><a href="classification.html#exercise-6.-2"><i class="fa fa-check"></i><b>4.1.6</b> Exercise 6.</a></li>
+<li class="chapter" data-level="4.1.7" data-path="classification.html"><a href="classification.html#exercise-7.-2"><i class="fa fa-check"></i><b>4.1.7</b> Exercise 7.</a></li>
+<li class="chapter" data-level="4.1.8" data-path="classification.html"><a href="classification.html#exercise-8.-2"><i class="fa fa-check"></i><b>4.1.8</b> Exercise 8.</a></li>
+<li class="chapter" data-level="4.1.9" data-path="classification.html"><a href="classification.html#exercise-9.-2"><i class="fa fa-check"></i><b>4.1.9</b> Exercise 9.</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="classification.html"><a href="classification.html#applied-exercises-2"><i class="fa fa-check"></i><b>4.2</b> Applied Exercises</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="classification.html"><a href="classification.html#exercise-10.-2"><i class="fa fa-check"></i><b>4.2.1</b> Exercise 10.</a></li>
+<li class="chapter" data-level="4.2.2" data-path="classification.html"><a href="classification.html#exercise-11.-1"><i class="fa fa-check"></i><b>4.2.2</b> Exercise 11.</a></li>
+<li class="chapter" data-level="4.2.3" data-path="classification.html"><a href="classification.html#exercise-12.-1"><i class="fa fa-check"></i><b>4.2.3</b> Exercise 12.</a></li>
+<li class="chapter" data-level="4.2.4" data-path="classification.html"><a href="classification.html#exercise-13.-1"><i class="fa fa-check"></i><b>4.2.4</b> Exercise 13.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="resampling-methods.html"><a href="resampling-methods.html"><i class="fa fa-check"></i><b>5</b> Resampling Methods</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="resampling-methods.html"><a href="resampling-methods.html#conceptual-exercises-3"><i class="fa fa-check"></i><b>5.1</b> Conceptual Exercises</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-1.-3"><i class="fa fa-check"></i><b>5.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="5.1.2" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-2.-3"><i class="fa fa-check"></i><b>5.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="5.1.3" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-3.-3"><i class="fa fa-check"></i><b>5.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="5.1.4" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-4.-3"><i class="fa fa-check"></i><b>5.1.4</b> Exercise 4.</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="resampling-methods.html"><a href="resampling-methods.html#applied-exercises-3"><i class="fa fa-check"></i><b>5.2</b> Applied Exercises</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-5.-3"><i class="fa fa-check"></i><b>5.2.1</b> Exercise 5.</a></li>
+<li class="chapter" data-level="5.2.2" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-6.-3"><i class="fa fa-check"></i><b>5.2.2</b> Exercise 6.</a></li>
+<li class="chapter" data-level="5.2.3" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-7.-3"><i class="fa fa-check"></i><b>5.2.3</b> Exercise 7.</a></li>
+<li class="chapter" data-level="5.2.4" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-8.-3"><i class="fa fa-check"></i><b>5.2.4</b> Exercise 8.</a></li>
+<li class="chapter" data-level="5.2.5" data-path="resampling-methods.html"><a href="resampling-methods.html#exercise-9.-3"><i class="fa fa-check"></i><b>5.2.5</b> Exercise 9.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html"><i class="fa fa-check"></i><b>6</b> Linear Model Selection and Regularization</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#conceptual-exercises-4"><i class="fa fa-check"></i><b>6.1</b> Conceptual Exercises</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-1.-4"><i class="fa fa-check"></i><b>6.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="6.1.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-2.-4"><i class="fa fa-check"></i><b>6.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="6.1.3" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-3.-4"><i class="fa fa-check"></i><b>6.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="6.1.4" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-4.-4"><i class="fa fa-check"></i><b>6.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="6.1.5" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-5.-4"><i class="fa fa-check"></i><b>6.1.5</b> Exercise 5.</a></li>
+<li class="chapter" data-level="6.1.6" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-6.-4"><i class="fa fa-check"></i><b>6.1.6</b> Exercise 6.</a></li>
+<li class="chapter" data-level="6.1.7" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-7.-4"><i class="fa fa-check"></i><b>6.1.7</b> Exercise 7.</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#applied-exercises-4"><i class="fa fa-check"></i><b>6.2</b> Applied Exercises</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-8.-4"><i class="fa fa-check"></i><b>6.2.1</b> Exercise 8.</a></li>
+<li class="chapter" data-level="6.2.2" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-9.-4"><i class="fa fa-check"></i><b>6.2.2</b> Exercise 9.</a></li>
+<li class="chapter" data-level="6.2.3" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-10.-3"><i class="fa fa-check"></i><b>6.2.3</b> Exercise 10.</a></li>
+<li class="chapter" data-level="6.2.4" data-path="linear-model-selection-and-regularization.html"><a href="linear-model-selection-and-regularization.html#exercise-11.-2"><i class="fa fa-check"></i><b>6.2.4</b> Exercise 11.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html"><i class="fa fa-check"></i><b>7</b> Moving Beyond Linearity</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#conceptual-exercises-5"><i class="fa fa-check"></i><b>7.1</b> Conceptual exercises</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-1.-5"><i class="fa fa-check"></i><b>7.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="7.1.2" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-2.-5"><i class="fa fa-check"></i><b>7.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="7.1.3" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-3.-5"><i class="fa fa-check"></i><b>7.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="7.1.4" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-4.-5"><i class="fa fa-check"></i><b>7.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="7.1.5" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-5.-5"><i class="fa fa-check"></i><b>7.1.5</b> Exercise 5.</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#applied-exercises-5"><i class="fa fa-check"></i><b>7.2</b> Applied exercises</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-6.-5"><i class="fa fa-check"></i><b>7.2.1</b> Exercise 6.</a></li>
+<li class="chapter" data-level="7.2.2" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-7.-5"><i class="fa fa-check"></i><b>7.2.2</b> Exercise 7.</a></li>
+<li class="chapter" data-level="7.2.3" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-8.-5"><i class="fa fa-check"></i><b>7.2.3</b> Exercise 8.</a></li>
+<li class="chapter" data-level="7.2.4" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-9.-5"><i class="fa fa-check"></i><b>7.2.4</b> Exercise 9.</a></li>
+<li class="chapter" data-level="7.2.5" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-10.-4"><i class="fa fa-check"></i><b>7.2.5</b> Exercise 10.</a></li>
+<li class="chapter" data-level="7.2.6" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-11.-3"><i class="fa fa-check"></i><b>7.2.6</b> Exercise 11.</a></li>
+<li class="chapter" data-level="7.2.7" data-path="moving-beyond-linearity.html"><a href="moving-beyond-linearity.html#exercise-12.-2"><i class="fa fa-check"></i><b>7.2.7</b> Exercise 12.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="tree-based-methods.html"><a href="tree-based-methods.html"><i class="fa fa-check"></i><b>8</b> Tree-based methods</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="tree-based-methods.html"><a href="tree-based-methods.html#conceptual-exercises-6"><i class="fa fa-check"></i><b>8.1</b> Conceptual exercises</a>
+<ul>
+<li class="chapter" data-level="8.1.1" data-path="tree-based-methods.html"><a href="tree-based-methods.html#exercise-1.-6"><i class="fa fa-check"></i><b>8.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="8.1.2" data-path="tree-based-methods.html"><a href="tree-based-methods.html#exercise-2.-6"><i class="fa fa-check"></i><b>8.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="8.1.3" data-path="tree-based-methods.html"><a href="tree-based-methods.html#exercise-3.-6"><i class="fa fa-check"></i><b>8.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="8.1.4" data-path="tree-based-methods.html"><a href="tree-based-methods.html#exercise-4.-6"><i class="fa fa-check"></i><b>8.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="8.1.5" data-path="tree-based-methods.html"><a href="tree-based-methods.html#exercise-5.-6"><i class="fa fa-check"></i><b>8.1.5</b> Exercise 5.</a></li>
+<li class="chapter" data-level="8.1.6" data-path="tree-based-methods.html"><a href="tree-based-methods.html#exercise-6.-6"><i class="fa fa-check"></i><b>8.1.6</b> Exercise 6.</a></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="tree-based-methods.html"><a href="tree-based-methods.html#applied-exercises-6"><i class="fa fa-check"></i><b>8.2</b> Applied exercises</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="tree-based-methods.html"><a href="tree-based-methods.html#exercise-7.-6"><i class="fa fa-check"></i><b>8.2.1</b> Exercise 7.</a></li>
+<li class="chapter" data-level="8.2.2" data-path="tree-based-methods.html"><a href="tree-based-methods.html#exercise-8.-6"><i class="fa fa-check"></i><b>8.2.2</b> Exercise 8.</a></li>
+<li class="chapter" data-level="8.2.3" data-path="tree-based-methods.html"><a href="tree-based-methods.html#exercise-9.-6"><i class="fa fa-check"></i><b>8.2.3</b> Exercise 9.</a></li>
+<li class="chapter" data-level="8.2.4" data-path="tree-based-methods.html"><a href="tree-based-methods.html#exercise-10.-5"><i class="fa fa-check"></i><b>8.2.4</b> Exercise 10.</a></li>
+<li class="chapter" data-level="8.2.5" data-path="tree-based-methods.html"><a href="tree-based-methods.html#exercise-11.-4"><i class="fa fa-check"></i><b>8.2.5</b> Exercise 11.</a></li>
+<li class="chapter" data-level="8.2.6" data-path="tree-based-methods.html"><a href="tree-based-methods.html#exercise-12.-3"><i class="fa fa-check"></i><b>8.2.6</b> Exercise 12.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="support-vector-machines.html"><a href="support-vector-machines.html"><i class="fa fa-check"></i><b>9</b> Support Vector Machines</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="support-vector-machines.html"><a href="support-vector-machines.html#conceptual-exercises-7"><i class="fa fa-check"></i><b>9.1</b> Conceptual exercises</a>
+<ul>
+<li class="chapter" data-level="9.1.1" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-1.-7"><i class="fa fa-check"></i><b>9.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="9.1.2" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-2.-7"><i class="fa fa-check"></i><b>9.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="9.1.3" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-3.-7"><i class="fa fa-check"></i><b>9.1.3</b> Exercise 3.</a></li>
+</ul></li>
+<li class="chapter" data-level="9.2" data-path="support-vector-machines.html"><a href="support-vector-machines.html#applied-exercises-7"><i class="fa fa-check"></i><b>9.2</b> Applied exercises</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-4.-7"><i class="fa fa-check"></i><b>9.2.1</b> Exercise 4.</a></li>
+<li class="chapter" data-level="9.2.2" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-5.-7"><i class="fa fa-check"></i><b>9.2.2</b> Exercise 5.</a></li>
+<li class="chapter" data-level="9.2.3" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-6.-7"><i class="fa fa-check"></i><b>9.2.3</b> Exercise 6.</a></li>
+<li class="chapter" data-level="9.2.4" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-7.-7"><i class="fa fa-check"></i><b>9.2.4</b> Exercise 7.</a></li>
+<li class="chapter" data-level="9.2.5" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-8.-7"><i class="fa fa-check"></i><b>9.2.5</b> Exercise 8.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">An Introduction to Statistical Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="support-vector-machines" class="section level1" number="9">
+<h1><span class="header-section-number">Chapter 9</span> Support Vector Machines</h1>
+<div id="conceptual-exercises-7" class="section level2" number="9.1">
+<h2><span class="header-section-number">9.1</span> Conceptual exercises</h2>
+<div id="exercise-1.-7" class="section level3" number="9.1.1">
+<h3><span class="header-section-number">9.1.1</span> Exercise 1.</h3>
+<p>This problem involves hyperplanes in two dimensions.</p>
+<p>The blue line correspond to the hyperplane <span class="math inline">\(1 + 3X_1 - X_2 = 0\)</span> and the purple line correspond to the hyperplane <span class="math inline">\(-2 + X_1 + 2X_2 = 0\)</span>.</p>
+<ul>
+<li>The blue points are in the space where <span class="math inline">\(1 + 3X_1 - X_2 &gt; 0\)</span> and <span class="math inline">\(-2 + X_1 + 2X_2 &gt; 0\)</span>.</li>
+<li>The red points are in the space where <span class="math inline">\(1 + 3X_1 - X_2 &gt; 0\)</span> and <span class="math inline">\(-2 + X_1 + 2X_2 &lt; 0\)</span>.</li>
+<li>The green points are in the space where <span class="math inline">\(1 + 3X_1 - X_2 &lt; 0\)</span> and <span class="math inline">\(-2 + X_1 + 2X_2 &lt; 0\)</span>.</li>
+<li>The yellow points are in the space where <span class="math inline">\(1 + 3X_1 - X_2 &lt; 0\)</span> and <span class="math inline">\(-2 + X_1 + 2X_2 &gt; 0\)</span>.</li>
+</ul>
+<div class="figure" style="text-align: center"><span id="fig:ex1"></span>
+<img src="08-svm_files/figure-html/ex1-1.png" alt="Example of hyperplanes in two dimensions." width="960" />
+<p class="caption">
+Figure 9.1: Example of hyperplanes in two dimensions.
+</p>
+</div>
+</div>
+<div id="exercise-2.-7" class="section level3" number="9.1.2">
+<h3><span class="header-section-number">9.1.2</span> Exercise 2.</h3>
+<p>This problem involves non-linear decision boundary in two dimensions.</p>
+<ul>
+<li><em>Question (a)</em> and <em>Question (b)</em></li>
+</ul>
+<p>Let’s plot the curve <span class="math inline">\((1 + X_1)^2 + (2 - X_2)^2 = 4\)</span>. The blue points refer to the space where <span class="math inline">\((1 + X_1)^2 + (2 - X_2)^2 &gt; 4\)</span> and the red points to <span class="math inline">\((1 + X_1)^2 + (2 - X_2)^2 \leq 4\)</span>.</p>
+<div class="figure" style="text-align: center"><span id="fig:ex2"></span>
+<img src="08-svm_files/figure-html/ex2-1.png" alt="Example of non-linear decision boundary" width="960" />
+<p class="caption">
+Figure 9.2: Example of non-linear decision boundary
+</p>
+</div>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>The observation <span class="math inline">\((0, 0)\)</span> will be blue, <span class="math inline">\((-1, 1)\)</span> red, <span class="math inline">\((2, 2)\)</span> blue and <span class="math inline">\((3, 8)\)</span> also blue.</p>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>Let’s expand the formula <span class="math inline">\((1 + X_1)^2 + (2 - X_2)^2\)</span>.</p>
+<p><span class="math display">\[(1 + X_1)^2 + (2 - X_2)^2 = 5 + 2X_1 + X_1^2 + 4 - 4X_2 + X_2^2\]</span></p>
+<p>This expression is linear in terms of <span class="math inline">\(X_1\)</span>, <span class="math inline">\(X_2\)</span>, <span class="math inline">\(X_1^2\)</span> and <span class="math inline">\(X_2^2\)</span>.</p>
+</div>
+<div id="exercise-3.-7" class="section level3" number="9.1.3">
+<h3><span class="header-section-number">9.1.3</span> Exercise 3.</h3>
+<p>We explore the maximal margin classifier on a toy data set.</p>
+<ul>
+<li><em>Question (a)</em> and <em>Question (b)</em></li>
+</ul>
+<p>The optimal separating hyperplane aims to separate the two classes by maximising the distance between the closest points of the different classes. So, it has to pass though the middle of the observations <span class="math inline">\(2\)</span> and <span class="math inline">\(5\)</span> which is the point <span class="math inline">\((2, 1.5)\)</span> and <span class="math inline">\(3\)</span> and <span class="math inline">\(6\)</span> which is the point <span class="math inline">\((4, 3.5)\)</span>. Thus, it leads to the equation <span class="math inline">\(y: x \mapsto x - 0.5\)</span></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="support-vector-machines.html#cb1-1"></a>df &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">X1 =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">4</span>),</span>
+<span id="cb1-2"><a href="support-vector-machines.html#cb1-2"></a>             <span class="dt">X2 =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">1</span>),</span>
+<span id="cb1-3"><a href="support-vector-machines.html#cb1-3"></a>             <span class="dt">Y =</span> <span class="kw">c</span>(<span class="st">&#39;R&#39;</span>, <span class="st">&#39;R&#39;</span>, <span class="st">&#39;R&#39;</span>, <span class="st">&#39;R&#39;</span>, <span class="st">&#39;B&#39;</span>, <span class="st">&#39;B&#39;</span>, <span class="st">&#39;B&#39;</span>))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex3b"></span>
+<img src="08-svm_files/figure-html/ex3b-1.png" alt="Example of toy dataset with a separating hyperplane" width="960" />
+<p class="caption">
+Figure 9.3: Example of toy dataset with a separating hyperplane
+</p>
+</div>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>We rewrite the equation found in the previous question as:
+<span class="math display">\[0.5 - X_1 + X_2 = 0\]</span></p>
+<p>Then, classify to Red if <span class="math inline">\(0.5 - X_1 + X_2 &gt; 0\)</span>, and classify to Blue otherwise.</p>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<div class="figure" style="text-align: center"><span id="fig:ex3d"></span>
+<img src="08-svm_files/figure-html/ex3d-1.png" alt="Example of the margins" width="960" />
+<p class="caption">
+Figure 9.4: Example of the margins
+</p>
+</div>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<div class="figure" style="text-align: center"><span id="fig:ex3e"></span>
+<img src="08-svm_files/figure-html/ex3e-1.png" alt="Example of the support vectors" width="960" />
+<p class="caption">
+Figure 9.5: Example of the support vectors
+</p>
+</div>
+<ul>
+<li><em>Question (f)</em></li>
+</ul>
+<p>The seventh observation, which is the point <span class="math inline">\((4, 1)\)</span> do not affect the maximal margin hyperplane because it does not belong to the margins.</p>
+<ul>
+<li><em>Question (g)</em></li>
+</ul>
+A non-optimal separating hyperplane would be
+<span class="math display">\[0.1 - 0.8X_1 + X_2 = 0.\]</span>
+<div class="figure" style="text-align: center"><span id="fig:ex3g"></span>
+<img src="08-svm_files/figure-html/ex3g-1.png" alt="Example of the non-optimal hyperplane" width="960" />
+<p class="caption">
+Figure 9.6: Example of the non-optimal hyperplane
+</p>
+</div>
+<ul>
+<li><em>Question (h)</em></li>
+</ul>
+<div class="figure" style="text-align: center"><span id="fig:ex3h"></span>
+<img src="08-svm_files/figure-html/ex3h-1.png" alt="Example of the non-separable points" width="960" />
+<p class="caption">
+Figure 9.7: Example of the non-separable points
+</p>
+</div>
+</div>
+</div>
+<div id="applied-exercises-7" class="section level2" number="9.2">
+<h2><span class="header-section-number">9.2</span> Applied exercises</h2>
+<div id="exercise-4.-7" class="section level3" number="9.2.1">
+<h3><span class="header-section-number">9.2.1</span> Exercise 4.</h3>
+<p>We simulate a two-class data set with <span class="math inline">\(100\)</span> observations and two features in which there is a visible but non-linear separation between the two classes.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="support-vector-machines.html#cb2-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb2-2"><a href="support-vector-machines.html#cb2-2"></a>t &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">50</span>)</span>
+<span id="cb2-3"><a href="support-vector-machines.html#cb2-3"></a>X_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">sin</span>(<span class="dv">2</span><span class="op">*</span>pi<span class="op">*</span>t) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">50</span>, <span class="dv">0</span>, <span class="fl">0.25</span>)</span>
+<span id="cb2-4"><a href="support-vector-machines.html#cb2-4"></a>X_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">sin</span>(<span class="dv">2</span><span class="op">*</span>pi<span class="op">*</span>t) <span class="op">+</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">50</span>, <span class="dv">0</span>, <span class="fl">0.25</span>)</span>
+<span id="cb2-5"><a href="support-vector-machines.html#cb2-5"></a>df &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">t =</span> <span class="kw">c</span>(t, t), <span class="dt">X =</span> <span class="kw">c</span>(X_<span class="dv">1</span>, X_<span class="dv">2</span>), <span class="dt">cl =</span> <span class="kw">as.factor</span>(<span class="kw">c</span>(<span class="kw">rep</span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">50</span>), <span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">50</span>))))</span>
+<span id="cb2-6"><a href="support-vector-machines.html#cb2-6"></a></span>
+<span id="cb2-7"><a href="support-vector-machines.html#cb2-7"></a>idx &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(df), <span class="dv">50</span>)</span>
+<span id="cb2-8"><a href="support-vector-machines.html#cb2-8"></a>train &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">slice</span>(idx)</span>
+<span id="cb2-9"><a href="support-vector-machines.html#cb2-9"></a>test &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">slice</span>(<span class="op">-</span>idx)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex4data"></span>
+<img src="08-svm_files/figure-html/ex4data-1.png" alt="Simulated data" width="960" />
+<p class="caption">
+Figure 9.8: Simulated data
+</p>
+</div>
+<p>The boundary between the two classes is clearly non-linear.</p>
+<ul>
+<li>Linear SVM</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="support-vector-machines.html#cb3-1"></a>svm_linear &lt;-<span class="st"> </span><span class="kw">tune</span>(<span class="st">&#39;svm&#39;</span>, cl <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train, </span>
+<span id="cb3-2"><a href="support-vector-machines.html#cb3-2"></a>                       <span class="dt">kernel =</span> <span class="st">&#39;linear&#39;</span>, </span>
+<span id="cb3-3"><a href="support-vector-machines.html#cb3-3"></a>                       <span class="dt">ranges =</span> <span class="kw">list</span>(<span class="dt">gamma =</span> <span class="dv">2</span><span class="op">^</span>(<span class="op">-</span><span class="dv">1</span><span class="op">:</span><span class="dv">1</span>), <span class="dt">cost =</span> <span class="dv">2</span><span class="op">^</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">4</span>)))</span>
+<span id="cb3-4"><a href="support-vector-machines.html#cb3-4"></a>svm_linear_best &lt;-<span class="st"> </span>svm_linear<span class="op">$</span>best.model</span>
+<span id="cb3-5"><a href="support-vector-machines.html#cb3-5"></a>preds_train &lt;-<span class="st"> </span><span class="kw">predict</span>(svm_linear_best, train)</span>
+<span id="cb3-6"><a href="support-vector-machines.html#cb3-6"></a>preds_test &lt;-<span class="st"> </span><span class="kw">predict</span>(svm_linear_best, test)</span></code></pre></div>
+<p>Around 16% of the train observations are misclassified and 18% of the test observations.</p>
+<div class="figure" style="text-align: center"><span id="fig:ex4plotlinear"></span>
+<img src="08-svm_files/figure-html/ex4plotlinear-1.png" alt="Results of linear SVM" width="960" />
+<p class="caption">
+Figure 9.9: Results of linear SVM
+</p>
+</div>
+<ul>
+<li>Polynomial SVM</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="support-vector-machines.html#cb4-1"></a>svm_poly &lt;-<span class="st"> </span><span class="kw">tune</span>(<span class="st">&#39;svm&#39;</span>, cl <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train, </span>
+<span id="cb4-2"><a href="support-vector-machines.html#cb4-2"></a>                       <span class="dt">kernel =</span> <span class="st">&#39;polynomial&#39;</span>, </span>
+<span id="cb4-3"><a href="support-vector-machines.html#cb4-3"></a>                       <span class="dt">ranges =</span> <span class="kw">list</span>(<span class="dt">gamma =</span> <span class="dv">2</span><span class="op">^</span>(<span class="op">-</span><span class="dv">1</span><span class="op">:</span><span class="dv">1</span>), <span class="dt">cost =</span> <span class="dv">2</span><span class="op">^</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">4</span>), <span class="dt">degree =</span> <span class="dv">2</span><span class="op">:</span><span class="dv">5</span>))</span>
+<span id="cb4-4"><a href="support-vector-machines.html#cb4-4"></a>svm_poly_best &lt;-<span class="st"> </span>svm_poly<span class="op">$</span>best.model</span>
+<span id="cb4-5"><a href="support-vector-machines.html#cb4-5"></a>preds_train &lt;-<span class="st"> </span><span class="kw">predict</span>(svm_poly_best, train)</span>
+<span id="cb4-6"><a href="support-vector-machines.html#cb4-6"></a>preds_test &lt;-<span class="st"> </span><span class="kw">predict</span>(svm_poly_best, test)</span></code></pre></div>
+<p>Around 22 of the train observations are misclassified and 22% of the test observations.</p>
+<div class="figure" style="text-align: center"><span id="fig:ex4plotpoly"></span>
+<img src="08-svm_files/figure-html/ex4plotpoly-1.png" alt="Results of polynomial SVM" width="960" />
+<p class="caption">
+Figure 9.10: Results of polynomial SVM
+</p>
+</div>
+<ul>
+<li>Radial SVM</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="support-vector-machines.html#cb5-1"></a>svm_radial &lt;-<span class="st"> </span><span class="kw">tune</span>(<span class="st">&#39;svm&#39;</span>, cl <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train, </span>
+<span id="cb5-2"><a href="support-vector-machines.html#cb5-2"></a>                       <span class="dt">kernel =</span> <span class="st">&#39;radial&#39;</span>, </span>
+<span id="cb5-3"><a href="support-vector-machines.html#cb5-3"></a>                       <span class="dt">ranges =</span> <span class="kw">list</span>(<span class="dt">gamma =</span> <span class="dv">2</span><span class="op">^</span>(<span class="op">-</span><span class="dv">1</span><span class="op">:</span><span class="dv">1</span>), <span class="dt">cost =</span> <span class="dv">2</span><span class="op">^</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">4</span>)))</span>
+<span id="cb5-4"><a href="support-vector-machines.html#cb5-4"></a>svm_radial_best &lt;-<span class="st"> </span>svm_radial<span class="op">$</span>best.model</span>
+<span id="cb5-5"><a href="support-vector-machines.html#cb5-5"></a>preds_train &lt;-<span class="st"> </span><span class="kw">predict</span>(svm_radial_best, train)</span>
+<span id="cb5-6"><a href="support-vector-machines.html#cb5-6"></a>preds_test &lt;-<span class="st"> </span><span class="kw">predict</span>(svm_radial_best, test)</span></code></pre></div>
+<p>Around 4 of the train observations are misclassified and 10% of the test observations.</p>
+<div class="figure" style="text-align: center"><span id="fig:ex4plotradial"></span>
+<img src="08-svm_files/figure-html/ex4plotradial-1.png" alt="Results of radial SVM" width="960" />
+<p class="caption">
+Figure 9.11: Results of radial SVM
+</p>
+</div>
+<ul>
+<li>Conclusion</li>
+</ul>
+<p>Here, the radial kernel shows the best results in term of misclassification error rate. Of course, it was expected because the generating process was a sinus.</p>
+</div>
+<div id="exercise-5.-7" class="section level3" number="9.2.2">
+<h3><span class="header-section-number">9.2.2</span> Exercise 5.</h3>
+<p>We will now see that we can also obtain a non-linear decision boundary by performing logistic regression using non-linear transformations of the features.</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="support-vector-machines.html#cb6-1"></a>X1 &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">500</span>) <span class="op">-</span><span class="st"> </span><span class="fl">0.5</span></span>
+<span id="cb6-2"><a href="support-vector-machines.html#cb6-2"></a>X2 &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">500</span>) <span class="op">-</span><span class="st"> </span><span class="fl">0.5</span></span>
+<span id="cb6-3"><a href="support-vector-machines.html#cb6-3"></a>Y &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="dv">1</span> <span class="op">*</span><span class="st"> </span>(X1<span class="op">**</span><span class="dv">2</span> <span class="op">-</span><span class="st"> </span>X2<span class="op">**</span><span class="dv">2</span> <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>))</span>
+<span id="cb6-4"><a href="support-vector-machines.html#cb6-4"></a>df &lt;-<span class="st"> </span><span class="kw">tibble</span>(X1, X2, Y)</span></code></pre></div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<div class="figure" style="text-align: center"><span id="fig:ex5b"></span>
+<img src="08-svm_files/figure-html/ex5b-1.png" alt="Plot of the observations with true classes" width="960" />
+<p class="caption">
+Figure 9.12: Plot of the observations with true classes
+</p>
+</div>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="support-vector-machines.html#cb7-1"></a>lm_model &lt;-<span class="st"> </span><span class="kw">glm</span>(Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> df, <span class="dt">family =</span> <span class="st">&#39;binomial&#39;</span>)</span></code></pre></div>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="support-vector-machines.html#cb8-1"></a>pred_lm &lt;-<span class="st"> </span><span class="kw">predict</span>(lm_model, df, <span class="dt">type =</span> <span class="st">&#39;response&#39;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex5di"></span>
+<img src="08-svm_files/figure-html/ex5di-1.png" alt="Plot of the observations with predicted classes for LM model" width="960" />
+<p class="caption">
+Figure 9.13: Plot of the observations with predicted classes for LM model
+</p>
+</div>
+<p>The decision boundary is linear and do not fit to the true regression line.</p>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="support-vector-machines.html#cb9-1"></a>glm_model &lt;-<span class="st"> </span><span class="kw">glm</span>(Y <span class="op">~</span><span class="st"> </span><span class="kw">poly</span>(X1, <span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">poly</span>(X2, <span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(X1 <span class="op">*</span><span class="st"> </span>X2), <span class="dt">data =</span> df, <span class="dt">family =</span> <span class="st">&#39;binomial&#39;</span>)</span></code></pre></div>
+<ul>
+<li><em>Question (f)</em></li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="support-vector-machines.html#cb10-1"></a>pred_glm &lt;-<span class="st"> </span><span class="kw">predict</span>(glm_model, df, <span class="dt">type =</span> <span class="st">&#39;response&#39;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex5fi"></span>
+<img src="08-svm_files/figure-html/ex5fi-1.png" alt="Plot of the observations with predicted classes for GLM model" width="960" />
+<p class="caption">
+Figure 9.14: Plot of the observations with predicted classes for GLM model
+</p>
+</div>
+<p>The decision boundary is not linear and looks like the true decision boundary.</p>
+<ul>
+<li><em>Question (g)</em></li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="support-vector-machines.html#cb11-1"></a>svm_poly &lt;-<span class="st"> </span><span class="kw">tune</span>(<span class="st">&#39;svm&#39;</span>, Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> df, </span>
+<span id="cb11-2"><a href="support-vector-machines.html#cb11-2"></a>                       <span class="dt">kernel =</span> <span class="st">&#39;polynomial&#39;</span>, </span>
+<span id="cb11-3"><a href="support-vector-machines.html#cb11-3"></a>                       <span class="dt">ranges =</span> <span class="kw">list</span>(<span class="dt">cost =</span> <span class="dv">2</span><span class="op">^</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">4</span>)))</span>
+<span id="cb11-4"><a href="support-vector-machines.html#cb11-4"></a>svm_poly_best &lt;-<span class="st"> </span>svm_poly<span class="op">$</span>best.model</span>
+<span id="cb11-5"><a href="support-vector-machines.html#cb11-5"></a>preds_svm &lt;-<span class="st"> </span><span class="kw">predict</span>(svm_poly_best, df)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex5gi"></span>
+<img src="08-svm_files/figure-html/ex5gi-1.png" alt="Results of polynomial SVM" width="960" />
+<p class="caption">
+Figure 9.15: Results of polynomial SVM
+</p>
+</div>
+<p>A linear kernel fails to find non linear boundary.</p>
+<ul>
+<li><em>Question (h)</em></li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="support-vector-machines.html#cb12-1"></a>svm_radial &lt;-<span class="st"> </span><span class="kw">tune</span>(<span class="st">&#39;svm&#39;</span>, Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> df, </span>
+<span id="cb12-2"><a href="support-vector-machines.html#cb12-2"></a>                       <span class="dt">kernel =</span> <span class="st">&#39;radial&#39;</span>, </span>
+<span id="cb12-3"><a href="support-vector-machines.html#cb12-3"></a>                       <span class="dt">ranges =</span> <span class="kw">list</span>(<span class="dt">cost =</span> <span class="dv">2</span><span class="op">^</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">4</span>)))</span>
+<span id="cb12-4"><a href="support-vector-machines.html#cb12-4"></a>svm_radial_best &lt;-<span class="st"> </span>svm_radial<span class="op">$</span>best.model</span>
+<span id="cb12-5"><a href="support-vector-machines.html#cb12-5"></a>preds_svm &lt;-<span class="st"> </span><span class="kw">predict</span>(svm_radial_best, df)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex5hi"></span>
+<img src="08-svm_files/figure-html/ex5hi-1.png" alt="Results of kernel SVM" width="960" />
+<p class="caption">
+Figure 9.16: Results of kernel SVM
+</p>
+</div>
+<p>A radial kernel performs way better on this data. The prediction boundary seems to be quite close to the true boundary.</p>
+<ul>
+<li><em>Question (i)</em></li>
+</ul>
+<p>So, the support vector machine, with radial kernel, appears to be very good to find non-linear decision boundary. However, even if logistic regression may also found out this kind of boundary, it requires to add non linear transformation of the features to find it.</p>
+</div>
+<div id="exercise-6.-7" class="section level3" number="9.2.3">
+<h3><span class="header-section-number">9.2.3</span> Exercise 6.</h3>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="support-vector-machines.html#cb13-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb13-2"><a href="support-vector-machines.html#cb13-2"></a>X1 &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">500</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb13-3"><a href="support-vector-machines.html#cb13-3"></a>X2 &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">runif</span>(<span class="dv">250</span>, X1[<span class="dv">1</span><span class="op">:</span><span class="dv">250</span>] <span class="op">+</span><span class="st"> </span><span class="fl">0.05</span>), <span class="kw">runif</span>(<span class="dv">250</span>, <span class="dv">0</span>, X1[<span class="dv">251</span><span class="op">:</span><span class="dv">500</span>] <span class="op">-</span><span class="st"> </span><span class="fl">0.05</span>))</span>
+<span id="cb13-4"><a href="support-vector-machines.html#cb13-4"></a>noise_X1 &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">100</span>, <span class="fl">0.1</span>, <span class="fl">0.9</span>)</span>
+<span id="cb13-5"><a href="support-vector-machines.html#cb13-5"></a>noise_X2 &lt;-<span class="st"> </span><span class="fl">0.8</span> <span class="op">*</span><span class="st"> </span>noise_X1 <span class="op">+</span><span class="st"> </span><span class="fl">0.1</span></span>
+<span id="cb13-6"><a href="support-vector-machines.html#cb13-6"></a></span>
+<span id="cb13-7"><a href="support-vector-machines.html#cb13-7"></a>Y &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="dv">1</span> <span class="op">*</span><span class="st"> </span>(X1 <span class="op">-</span><span class="st"> </span>X2 <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>))</span>
+<span id="cb13-8"><a href="support-vector-machines.html#cb13-8"></a>noise_Y &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="dt">size =</span> <span class="dv">100</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>))</span>
+<span id="cb13-9"><a href="support-vector-machines.html#cb13-9"></a></span>
+<span id="cb13-10"><a href="support-vector-machines.html#cb13-10"></a>df &lt;-<span class="st"> </span><span class="kw">tibble</span>(X1, X2, Y) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb13-11"><a href="support-vector-machines.html#cb13-11"></a><span class="st">  </span><span class="kw">bind_rows</span>(<span class="kw">tibble</span>(<span class="dt">X1 =</span> <span class="kw">sort</span>(noise_X1), <span class="dt">X2 =</span> <span class="kw">sort</span>(noise_X2), <span class="dt">Y =</span> noise_Y)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb13-12"><a href="support-vector-machines.html#cb13-12"></a><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(Y))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex6ai"></span>
+<img src="08-svm_files/figure-html/ex6ai-1.png" alt="Plot of the observations with true classes" width="960" />
+<p class="caption">
+Figure 9.17: Plot of the observations with true classes
+</p>
+</div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="support-vector-machines.html#cb14-1"></a>svm_poly &lt;-<span class="st"> </span><span class="kw">tune</span>(<span class="st">&#39;svm&#39;</span>, Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> df, </span>
+<span id="cb14-2"><a href="support-vector-machines.html#cb14-2"></a>                       <span class="dt">kernel =</span> <span class="st">&#39;linear&#39;</span>, </span>
+<span id="cb14-3"><a href="support-vector-machines.html#cb14-3"></a>                       <span class="dt">ranges =</span> <span class="kw">list</span>(<span class="dt">cost =</span> <span class="dv">10</span><span class="op">^</span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">4</span>)))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex6bi"></span>
+<img src="08-svm_files/figure-html/ex6bi-1.png" alt="Plot of the errors from cross-validation" width="960" />
+<p class="caption">
+Figure 9.18: Plot of the errors from cross-validation
+</p>
+</div>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="support-vector-machines.html#cb15-1"></a><span class="kw">set.seed</span>(<span class="dv">43</span>)</span>
+<span id="cb15-2"><a href="support-vector-machines.html#cb15-2"></a>X1 &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">500</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb15-3"><a href="support-vector-machines.html#cb15-3"></a>X2 &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">500</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb15-4"><a href="support-vector-machines.html#cb15-4"></a>Y &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="dv">1</span> <span class="op">*</span><span class="st"> </span>(X1 <span class="op">-</span><span class="st"> </span>X2 <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>))</span>
+<span id="cb15-5"><a href="support-vector-machines.html#cb15-5"></a>df_test &lt;-<span class="st"> </span><span class="kw">tibble</span>(X1, X2, Y)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="support-vector-machines.html#cb16-1"></a>costs =<span class="st"> </span><span class="dv">10</span><span class="op">**</span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">4</span>)</span>
+<span id="cb16-2"><a href="support-vector-machines.html#cb16-2"></a>errors_test &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">NA</span>, <span class="kw">length</span>(costs))</span>
+<span id="cb16-3"><a href="support-vector-machines.html#cb16-3"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(costs)){</span>
+<span id="cb16-4"><a href="support-vector-machines.html#cb16-4"></a>  model_svm &lt;-<span class="st"> </span><span class="kw">svm</span>(Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> df, <span class="dt">kernel =</span> <span class="st">&#39;linear&#39;</span>, <span class="dt">cost =</span> costs[i])</span>
+<span id="cb16-5"><a href="support-vector-machines.html#cb16-5"></a>  pred &lt;-<span class="st"> </span><span class="kw">predict</span>(model_svm, df_test)</span>
+<span id="cb16-6"><a href="support-vector-machines.html#cb16-6"></a>  errors_test[i] &lt;-<span class="st"> </span><span class="kw">mean</span>(df_test<span class="op">$</span>Y <span class="op">!=</span><span class="st"> </span>pred)</span>
+<span id="cb16-7"><a href="support-vector-machines.html#cb16-7"></a>}</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex6cii"></span>
+<img src="08-svm_files/figure-html/ex6cii-1.png" alt="Plot of the errors on the test set" width="960" />
+<p class="caption">
+Figure 9.19: Plot of the errors on the test set
+</p>
+</div>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>Here, we see that a smaller cost performs better on the test dataset. But, we do not point out the overfitting phenomenon of a high cost on the train dataset.</p>
+</div>
+<div id="exercise-7.-7" class="section level3" number="9.2.4">
+<h3><span class="header-section-number">9.2.4</span> Exercise 7.</h3>
+<p>We will use support vector approaches in order to predict whether a given car gets high or low gas mileage based on the <code>Auto</code> dataset.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="support-vector-machines.html#cb17-1"></a>auto &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(Auto) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="op">-</span><span class="kw">c</span>(<span class="st">&#39;name&#39;</span>, <span class="st">&#39;year&#39;</span>, <span class="st">&#39;origin&#39;</span>, <span class="st">&#39;weight&#39;</span>, <span class="st">&#39;cylinders&#39;</span>))</span></code></pre></div>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>We create a binary variable that takes on a <span class="math inline">\(1\)</span> for cars with gas mileage above the median, and a <span class="math inline">\(0\)</span> for cars with gas mileage below the median.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="support-vector-machines.html#cb18-1"></a>Y &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">*</span><span class="st"> </span>(auto<span class="op">$</span>mpg <span class="op">&gt;</span><span class="st"> </span><span class="kw">median</span>(auto<span class="op">$</span>mpg))</span>
+<span id="cb18-2"><a href="support-vector-machines.html#cb18-2"></a>auto &lt;-<span class="st"> </span>auto <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb18-3"><a href="support-vector-machines.html#cb18-3"></a><span class="st">  </span><span class="kw">add_column</span>(Y) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb18-4"><a href="support-vector-machines.html#cb18-4"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span><span class="kw">c</span>(<span class="st">&#39;mpg&#39;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb18-5"><a href="support-vector-machines.html#cb18-5"></a><span class="st">  </span><span class="kw">mutate_at</span>(<span class="kw">vars</span>(Y), <span class="kw">funs</span>(<span class="kw">as.factor</span>(.)))</span></code></pre></div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="support-vector-machines.html#cb19-1"></a>svm_linear &lt;-<span class="st"> </span><span class="kw">tune</span>(<span class="st">&#39;svm&#39;</span>, Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> auto, </span>
+<span id="cb19-2"><a href="support-vector-machines.html#cb19-2"></a>                       <span class="dt">kernel =</span> <span class="st">&#39;linear&#39;</span>, </span>
+<span id="cb19-3"><a href="support-vector-machines.html#cb19-3"></a>                       <span class="dt">ranges =</span> <span class="kw">list</span>(<span class="dt">cost =</span> <span class="dv">10</span><span class="op">^</span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">4</span>)))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex7bi"></span>
+<img src="08-svm_files/figure-html/ex7bi-1.png" alt="Plot of the errors from cross-validation" width="960" />
+<p class="caption">
+Figure 9.20: Plot of the errors from cross-validation
+</p>
+</div>
+<p>The lowest cross-validation error is obtained for <code>cost = 0.1</code>.</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="support-vector-machines.html#cb20-1"></a>svm_radial &lt;-<span class="st"> </span><span class="kw">tune</span>(<span class="st">&#39;svm&#39;</span>, Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> auto, </span>
+<span id="cb20-2"><a href="support-vector-machines.html#cb20-2"></a>                       <span class="dt">kernel =</span> <span class="st">&#39;radial&#39;</span>, </span>
+<span id="cb20-3"><a href="support-vector-machines.html#cb20-3"></a>                       <span class="dt">ranges =</span> <span class="kw">list</span>(<span class="dt">cost =</span> <span class="dv">10</span><span class="op">^</span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">4</span>),</span>
+<span id="cb20-4"><a href="support-vector-machines.html#cb20-4"></a>                                     <span class="dt">gamma =</span> <span class="dv">10</span><span class="op">^</span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">4</span>)))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex7ci"></span>
+<img src="08-svm_files/figure-html/ex7ci-1.png" alt="Plot of the errors from cross-validation" width="960" />
+<p class="caption">
+Figure 9.21: Plot of the errors from cross-validation
+</p>
+</div>
+<p>The lowest cross-validation error is obtained for <code>cost = 10000</code> and <code>gamma = 0.01</code>.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="support-vector-machines.html#cb21-1"></a>svm_poly &lt;-<span class="st"> </span><span class="kw">tune</span>(<span class="st">&#39;svm&#39;</span>, Y <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> auto, </span>
+<span id="cb21-2"><a href="support-vector-machines.html#cb21-2"></a>                       <span class="dt">kernel =</span> <span class="st">&#39;polynomial&#39;</span>, </span>
+<span id="cb21-3"><a href="support-vector-machines.html#cb21-3"></a>                       <span class="dt">ranges =</span> <span class="kw">list</span>(<span class="dt">cost =</span> <span class="dv">10</span><span class="op">^</span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">4</span>),</span>
+<span id="cb21-4"><a href="support-vector-machines.html#cb21-4"></a>                                     <span class="dt">degree =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex7ciii"></span>
+<img src="08-svm_files/figure-html/ex7ciii-1.png" alt="Plot of the errors from cross-validation" width="960" />
+<p class="caption">
+Figure 9.22: Plot of the errors from cross-validation
+</p>
+</div>
+<p>The lowest cross-validation error is obtained for <code>cost = 0.1</code> and <code>degree = 1</code>.</p>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<div class="figure" style="text-align: center"><span id="fig:ex7d"></span>
+<img src="08-svm_files/figure-html/ex7d-1.png" alt="Results based on displacement x horsepower" width="1440" />
+<p class="caption">
+Figure 9.23: Results based on displacement x horsepower
+</p>
+</div>
+</div>
+<div id="exercise-8.-7" class="section level3" number="9.2.5">
+<h3><span class="header-section-number">9.2.5</span> Exercise 8.</h3>
+<p>The problem involves the <code>OJ</code> dataset.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="support-vector-machines.html#cb22-1"></a>df &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(OJ)</span></code></pre></div>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="support-vector-machines.html#cb23-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb23-2"><a href="support-vector-machines.html#cb23-2"></a>idx &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(df), <span class="dv">800</span>)</span>
+<span id="cb23-3"><a href="support-vector-machines.html#cb23-3"></a>train &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">slice</span>(idx)</span>
+<span id="cb23-4"><a href="support-vector-machines.html#cb23-4"></a>test &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">slice</span>(<span class="op">-</span>idx)</span></code></pre></div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>Let’s fit a support vector classifier to the training data using <code>cost = 0.01</code> with <code>Purchase</code> as the response and the other variables as predictors.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="support-vector-machines.html#cb24-1"></a>svm_linear &lt;-<span class="st"> </span><span class="kw">svm</span>(Purchase <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train, <span class="dt">kernel =</span> <span class="st">&#39;linear&#39;</span>, <span class="dt">cost =</span> <span class="fl">0.01</span>)</span></code></pre></div>
+<p>Its prodoces 432 supports vectors out of <span class="math inline">\(800\)</span> training points. Out of these, 215 belong to level CH and 217 belong to level MM.</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="support-vector-machines.html#cb25-1"></a>train_error &lt;-<span class="st"> </span><span class="kw">mean</span>(train<span class="op">$</span>Purchase <span class="op">!=</span><span class="st"> </span><span class="kw">predict</span>(svm_linear, train))</span>
+<span id="cb25-2"><a href="support-vector-machines.html#cb25-2"></a>test_error &lt;-<span class="st"> </span><span class="kw">mean</span>(test<span class="op">$</span>Purchase <span class="op">!=</span><span class="st"> </span><span class="kw">predict</span>(svm_linear, test))</span></code></pre></div>
+<p>The training error rate is 17.12% and the test error rate is 16.3%.</p>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="support-vector-machines.html#cb26-1"></a>svm_linear &lt;-<span class="st"> </span><span class="kw">tune</span>(<span class="st">&#39;svm&#39;</span>, Purchase <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train, </span>
+<span id="cb26-2"><a href="support-vector-machines.html#cb26-2"></a>                       <span class="dt">kernel =</span> <span class="st">&#39;linear&#39;</span>, </span>
+<span id="cb26-3"><a href="support-vector-machines.html#cb26-3"></a>                       <span class="dt">ranges =</span> <span class="kw">list</span>(<span class="dt">cost =</span> <span class="dv">10</span><span class="op">^</span>(<span class="kw">seq</span>(<span class="op">-</span><span class="dv">2</span>, <span class="dv">1</span>, <span class="dt">by =</span> <span class="fl">0.1</span>))))</span></code></pre></div>
+<p>The optimal <code>cost</code> found is 1.</p>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="support-vector-machines.html#cb27-1"></a>train_error &lt;-<span class="st"> </span><span class="kw">mean</span>(train<span class="op">$</span>Purchase <span class="op">!=</span><span class="st"> </span><span class="kw">predict</span>(svm_linear<span class="op">$</span>best.model, train))</span>
+<span id="cb27-2"><a href="support-vector-machines.html#cb27-2"></a>test_error &lt;-<span class="st"> </span><span class="kw">mean</span>(test<span class="op">$</span>Purchase <span class="op">!=</span><span class="st"> </span><span class="kw">predict</span>(svm_linear<span class="op">$</span>best.model, test))</span></code></pre></div>
+<p>The training error rate is 16.75% and the test error rate is 16.3%.</p>
+<ul>
+<li><em>Question (f)</em></li>
+</ul>
+<p>We do the same process using support vector machine with radial kernel.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="support-vector-machines.html#cb28-1"></a>svm_radial &lt;-<span class="st"> </span><span class="kw">tune</span>(<span class="st">&#39;svm&#39;</span>, Purchase <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train, </span>
+<span id="cb28-2"><a href="support-vector-machines.html#cb28-2"></a>                       <span class="dt">kernel =</span> <span class="st">&#39;radial&#39;</span>, </span>
+<span id="cb28-3"><a href="support-vector-machines.html#cb28-3"></a>                       <span class="dt">ranges =</span> <span class="kw">list</span>(<span class="dt">cost =</span> <span class="dv">10</span><span class="op">^</span>(<span class="kw">seq</span>(<span class="op">-</span><span class="dv">2</span>, <span class="dv">1</span>, <span class="dt">by =</span> <span class="fl">0.1</span>))))</span></code></pre></div>
+<p>The optimal <code>cost</code> found is 0.6309573.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="support-vector-machines.html#cb29-1"></a>train_error &lt;-<span class="st"> </span><span class="kw">mean</span>(train<span class="op">$</span>Purchase <span class="op">!=</span><span class="st"> </span><span class="kw">predict</span>(svm_radial<span class="op">$</span>best.model, train))</span>
+<span id="cb29-2"><a href="support-vector-machines.html#cb29-2"></a>test_error &lt;-<span class="st"> </span><span class="kw">mean</span>(test<span class="op">$</span>Purchase <span class="op">!=</span><span class="st"> </span><span class="kw">predict</span>(svm_radial<span class="op">$</span>best.model, test))</span></code></pre></div>
+<p>The training error rate is 15.25% and the test error rate is 15.56%.</p>
+<ul>
+<li><em>Question (f)</em></li>
+</ul>
+<p>We do the same process using support vector machine with radial kernel.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="support-vector-machines.html#cb30-1"></a>svm_poly &lt;-<span class="st"> </span><span class="kw">tune</span>(<span class="st">&#39;svm&#39;</span>, Purchase <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train, </span>
+<span id="cb30-2"><a href="support-vector-machines.html#cb30-2"></a>                       <span class="dt">kernel =</span> <span class="st">&#39;polynomial&#39;</span>, </span>
+<span id="cb30-3"><a href="support-vector-machines.html#cb30-3"></a>                       <span class="dt">ranges =</span> <span class="kw">list</span>(<span class="dt">cost =</span> <span class="dv">10</span><span class="op">^</span>(<span class="kw">seq</span>(<span class="op">-</span><span class="dv">2</span>, <span class="dv">1</span>, <span class="dt">by =</span> <span class="fl">0.1</span>)),</span>
+<span id="cb30-4"><a href="support-vector-machines.html#cb30-4"></a>                                     <span class="dt">degree =</span> <span class="dv">2</span>))</span></code></pre></div>
+<p>The optimal <code>cost</code> found is 5.0118723.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="support-vector-machines.html#cb31-1"></a>train_error &lt;-<span class="st"> </span><span class="kw">mean</span>(train<span class="op">$</span>Purchase <span class="op">!=</span><span class="st"> </span><span class="kw">predict</span>(svm_poly<span class="op">$</span>best.model, train))</span>
+<span id="cb31-2"><a href="support-vector-machines.html#cb31-2"></a>test_error &lt;-<span class="st"> </span><span class="kw">mean</span>(test<span class="op">$</span>Purchase <span class="op">!=</span><span class="st"> </span><span class="kw">predict</span>(svm_poly<span class="op">$</span>best.model, test))</span></code></pre></div>
+<p>The training error rate is 14.75% and the test error rate is 16.67%.</p>
+<ul>
+<li><em>Question (h)</em></li>
+</ul>
+<p>In this case, it appears that the support vector classifier with radial kernel give the best results in terms of percentage error on the test set for this dataset. However, all the results are pretty close.</p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="tree-based-methods.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

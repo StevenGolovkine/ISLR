@@ -580,7 +580,7 @@ knn_model <- knn(train[, 'Lag2'], test[, 'Lag2'], train$Direction, k = 1)
 </div>
 </center>
 
-The percentage of correct prediction of the movement of the market on the test set is 50% for the $K$-NN model with $K = 1$.
+The percentage of correct prediction of the movement of the market on the test set is 51% for the $K$-NN model with $K = 1$.
 
 * *Question (g)*
 
