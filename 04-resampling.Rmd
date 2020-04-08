@@ -192,8 +192,8 @@ logit_model %>% summary() %>% print_summary_glm()
 ```{r ex5bi, message=FALSE, warning=FALSE, paged.print=FALSE}
 set.seed(42)
 idx <- df$default %>% createDataPartition(p = 0.7, list = FALSE, times = 1)
-train <- df[idx,]
-test <- df[-idx,]
+train <- df[idx[,1],]
+test <- df[-idx[,1],]
 ```
 
 * *Question (b.ii)* Fit a logistic regression on the train set.
@@ -223,8 +223,8 @@ for(i in 1:3){
   set.seed(i)
   
   idx <- df$default %>% createDataPartition(p = 0.7, list = FALSE, times = 1)
-  train <- df[idx,]
-  test <- df[-idx,]
+  train <- df[idx[,1],]
+  test <- df[-idx[,1],]
   
   logit_model <- glm(default ~ income + balance, data = train, family = 'binomial')
   
@@ -241,8 +241,8 @@ The three misclassification error are respectively `r round(100*misclassif[1], 2
 set.seed(42)
   
 idx <- df$default %>% createDataPartition(p = 0.7, list = FALSE, times = 1)
-train <- df[idx,]
-test <- df[-idx,]
+train <- df[idx[,1],]
+test <- df[-idx[,1],]
   
 logit_model <- glm(default ~ income + balance + student, data = train, family = 'binomial')
   

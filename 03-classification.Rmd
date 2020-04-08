@@ -27,7 +27,7 @@ library(plotly)
 library(reshape2)
 library(tidyverse)
 
-source('https://gist.githubusercontent.com/StevenGolovkine/55b9a2b6c849deadf86e051ed78ae149/raw/1452f33204a44c47b71bd22536594cce7e1e74e3/ggcustom.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/55b9a2b6c849deadf86e051ed78ae149/raw/4c977755502118118f64cff3b62ece3ef21fd8ec/ggcustom.R')
 source('https://gist.githubusercontent.com/StevenGolovkine/632632f470375390853529be54b9ebeb/raw/c07317788844d3d904aab7908e9cfe3d9df29931/summary_functions.R')
 source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_df.R')
 source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_summary_df.R')
@@ -382,8 +382,8 @@ Based on the pairs plot, four variables seem to be associated with the variable 
 ```{r ex11c, message=FALSE, warning=FALSE, paged.print=FALSE}
 set.seed(42)
 idx <- auto$mpg01 %>% createDataPartition(p = 0.7, list = FALSE, times = 1)
-train <- auto[idx, ]
-test <- auto[-idx, ]
+train <- auto[idx[,1], ]
+test <- auto[-idx[,1], ]
 ```
 
 * *Question (d)*
@@ -485,8 +485,8 @@ boston <- boston %>%
 ```{r ex13b, message=FALSE, warning=FALSE, paged.print=FALSE}
 set.seed(42)
 idx <- boston$crim01 %>% createDataPartition(p = 0.7, list = FALSE, times = 1)
-train <- boston[idx, ]
-test <- boston[-idx, ]
+train <- boston[idx[,1], ]
+test <- boston[-idx[,1], ]
 ```
 
 ```{r ex13c}

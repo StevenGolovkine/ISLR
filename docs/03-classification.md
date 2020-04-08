@@ -641,8 +641,8 @@ Based on the pairs plot, four variables seem to be associated with the variable 
 ```r
 set.seed(42)
 idx <- auto$mpg01 %>% createDataPartition(p = 0.7, list = FALSE, times = 1)
-train <- auto[idx, ]
-test <- auto[-idx, ]
+train <- auto[idx[,1], ]
+test <- auto[-idx[,1], ]
 ```
 
 * *Question (d)*
@@ -745,8 +745,8 @@ boston <- boston %>%
 ```r
 set.seed(42)
 idx <- boston$crim01 %>% createDataPartition(p = 0.7, list = FALSE, times = 1)
-train <- boston[idx, ]
-test <- boston[-idx, ]
+train <- boston[idx[,1], ]
+test <- boston[-idx[,1], ]
 ```
 
 

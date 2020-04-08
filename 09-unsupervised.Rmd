@@ -1,0 +1,113 @@
+# Unsupervised Learning
+
+```{r setup, include=FALSE}
+fig.process <- function(x) {
+  if (!grepl('[.]pdf$', x)) return(x) 
+  x2 = sub('pdf$', 'png', x)
+  magick::image_write(magick::image_read(x, density = 300), x2, format = 'png')
+  x2
+}
+
+knitr::opts_chunk$set(echo = TRUE, fig.process = fig.process)
+options(knitr.graphics.auto_pdf = TRUE)
+```
+
+```{r load_package, include=FALSE}
+library(boot)
+library(caret)
+library(class)
+library(e1071)
+library(gam)
+library(gbm)
+library(GGally)
+library(ggdendro)
+library(ggforce)
+library(ggfortify)
+library(glmnet)
+library(gridExtra)
+library(ISLR)
+library(kableExtra)
+library(knitr)
+library(latex2exp)
+library(leaps)
+library(MASS)
+library(plotly)
+library(pls)
+library(randomForest)
+library(reshape2)
+library(rpart)
+library(tidyverse)
+library(tree)
+
+source('https://gist.githubusercontent.com/StevenGolovkine/55b9a2b6c849deadf86e051ed78ae149/raw/4c977755502118118f64cff3b62ece3ef21fd8ec/ggcustom.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/632632f470375390853529be54b9ebeb/raw/c07317788844d3d904aab7908e9cfe3d9df29931/summary_functions.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_df.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/72950af203fc017beb4698455b2edd47701ed002/print_summary_df.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/401f5c2edc8a04a294bfec38136adcb2f5f2e62d/print_summary_lm.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/c1124f4f55ef1edbba51ed619a087ce4/raw/c9a50e250666422da513db7da0fbb2eb007e9cc7/print_summary_glm.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggcriteria.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggcv.glmnet.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/5acddc322cfffcae307941b5ef11111eccb354d2/ggregsubsets.R')
+source('https://gist.githubusercontent.com/StevenGolovkine/ecb6facb833dc564c59f4e7c2310291a/raw/eda0613d4880b3ef1d074625808d69b5dd81b466/gggam.R')
+
+plot_confusion_matrix <- function(confusion_matrix){
+  confusion_matrix %>%
+    as.data.frame(optional = TRUE) %>% 
+    rownames_to_column() %>%
+    rename('Var1' = '.') %>%
+    ggplot() +
+    geom_text(aes(x = Var1, y = Var2, label = Freq), size = 4) +
+    xlab('Prediction') +
+    ylab('True') +
+    geom_hline(aes(yintercept = 1.5), size = 0.2) +
+    geom_vline(aes(xintercept = 1.5), size = 0.2) +
+    theme_bw() +
+    scale_x_discrete(position = "top") +
+    theme(panel.grid = element_blank(),
+          axis.ticks = element_blank())
+}
+
+labels_tree <- function(object, pretty = TRUE, collapse = TRUE, ...)
+{
+    if(!inherits(object, "tree")) stop("not legitimate tree")
+    frame <- object$frame
+    xlevels <- attr(object, "xlevels")
+    var <- as.character(frame$var)
+    splits <- matrix(sub("^>", " > ", sub("^<", " < ", frame$splits)),, 2L)
+    lt <- c(letters, 0:5) # max 32 levels
+    if(!is.null(pretty)) {
+        if(pretty) xlevels <- lapply(xlevels, abbreviate, minlength=pretty)
+        for(i in grep("^:", splits[, 1L],))
+            for(j in 1L:2L) {
+                sh <- splits[i, j]
+                nc <- nchar(sh)
+                sh <- substring(sh, 2L:nc, 2L:nc)
+                xl <- xlevels[[var[i]]][match(sh, lt)]
+                splits[i, j] <- paste0(": ", paste(as.vector(xl), collapse=","))
+
+            }
+    }
+    if(!collapse) return(array(paste0(var, splits), dim(splits)))
+    node <- as.integer(row.names(frame))
+    parent <- match((node %/% 2L), node)
+    odd <- as.logical(node %% 2L)
+    node[odd] <- paste0(var[parent[odd]], splits[parent[odd], 2L])
+    node[!odd] <- paste0(var[parent[!odd]], splits[parent[!odd], 1L])
+    node[1L] <- "root"
+    node
+}
+
+split_tree <- function(object, pretty = NULL){
+  if(!inherits(object, "tree")) stop("not legitimate tree")
+  frame <- object$frame
+  node <- as.integer(row.names(frame))
+  left.child <- match(2 * node, node)
+  rows <- labels_tree(object, pretty = pretty)[left.child]
+  ind <- !is.na(rows)
+  rows[ind]
+}
+
+
+```
+
+## Conceptual exercises

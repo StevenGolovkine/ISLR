@@ -24,7 +24,7 @@
 <meta name="author" content="Steven Golovkine" />
 
 
-<meta name="date" content="2020-03-24" />
+<meta name="date" content="2020-04-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -285,7 +285,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="9.1" data-path="support-vector-machines.html"><a href="support-vector-machines.html#conceptual-exercises-7"><i class="fa fa-check"></i><b>9.1</b> Conceptual exercises</a>
 <ul>
 <li class="chapter" data-level="9.1.1" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-1.-7"><i class="fa fa-check"></i><b>9.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="9.1.2" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-2.-7"><i class="fa fa-check"></i><b>9.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="9.1.3" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-3.-7"><i class="fa fa-check"></i><b>9.1.3</b> Exercise 3.</a></li>
 </ul></li>
+<li class="chapter" data-level="9.2" data-path="support-vector-machines.html"><a href="support-vector-machines.html#applied-exercises-7"><i class="fa fa-check"></i><b>9.2</b> Applied exercises</a>
+<ul>
+<li class="chapter" data-level="9.2.1" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-4.-7"><i class="fa fa-check"></i><b>9.2.1</b> Exercise 4.</a></li>
+<li class="chapter" data-level="9.2.2" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-5.-7"><i class="fa fa-check"></i><b>9.2.2</b> Exercise 5.</a></li>
+<li class="chapter" data-level="9.2.3" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-6.-7"><i class="fa fa-check"></i><b>9.2.3</b> Exercise 6.</a></li>
+<li class="chapter" data-level="9.2.4" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-7.-7"><i class="fa fa-check"></i><b>9.2.4</b> Exercise 7.</a></li>
+<li class="chapter" data-level="9.2.5" data-path="support-vector-machines.html"><a href="support-vector-machines.html#exercise-8.-7"><i class="fa fa-check"></i><b>9.2.5</b> Exercise 8.</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html"><i class="fa fa-check"></i><b>10</b> Unsupervised Learning</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#conceptual-exercises-8"><i class="fa fa-check"></i><b>10.1</b> Conceptual exercises</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
@@ -1336,8 +1350,8 @@ Figure 4.8: Pair plots.
 </ul>
 <div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="classification.html#cb57-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
 <span id="cb57-2"><a href="classification.html#cb57-2"></a>idx &lt;-<span class="st"> </span>auto<span class="op">$</span>mpg01 <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">createDataPartition</span>(<span class="dt">p =</span> <span class="fl">0.7</span>, <span class="dt">list =</span> <span class="ot">FALSE</span>, <span class="dt">times =</span> <span class="dv">1</span>)</span>
-<span id="cb57-3"><a href="classification.html#cb57-3"></a>train &lt;-<span class="st"> </span>auto[idx, ]</span>
-<span id="cb57-4"><a href="classification.html#cb57-4"></a>test &lt;-<span class="st"> </span>auto[<span class="op">-</span>idx, ]</span></code></pre></div>
+<span id="cb57-3"><a href="classification.html#cb57-3"></a>train &lt;-<span class="st"> </span>auto[idx[,<span class="dv">1</span>], ]</span>
+<span id="cb57-4"><a href="classification.html#cb57-4"></a>test &lt;-<span class="st"> </span>auto[<span class="op">-</span>idx[,<span class="dv">1</span>], ]</span></code></pre></div>
 <ul>
 <li><em>Question (d)</em></li>
 </ul>
@@ -1417,8 +1431,8 @@ Figure 4.12: Evolution of percentage of incorrect predictions compared to <span 
 <span id="cb63-4"><a href="classification.html#cb63-4"></a><span class="st">          </span><span class="kw">select</span>(<span class="op">-</span><span class="kw">c</span>(crim))</span></code></pre></div>
 <div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="classification.html#cb64-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
 <span id="cb64-2"><a href="classification.html#cb64-2"></a>idx &lt;-<span class="st"> </span>boston<span class="op">$</span>crim01 <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">createDataPartition</span>(<span class="dt">p =</span> <span class="fl">0.7</span>, <span class="dt">list =</span> <span class="ot">FALSE</span>, <span class="dt">times =</span> <span class="dv">1</span>)</span>
-<span id="cb64-3"><a href="classification.html#cb64-3"></a>train &lt;-<span class="st"> </span>boston[idx, ]</span>
-<span id="cb64-4"><a href="classification.html#cb64-4"></a>test &lt;-<span class="st"> </span>boston[<span class="op">-</span>idx, ]</span></code></pre></div>
+<span id="cb64-3"><a href="classification.html#cb64-3"></a>train &lt;-<span class="st"> </span>boston[idx[,<span class="dv">1</span>], ]</span>
+<span id="cb64-4"><a href="classification.html#cb64-4"></a>test &lt;-<span class="st"> </span>boston[<span class="op">-</span>idx[,<span class="dv">1</span>], ]</span></code></pre></div>
 <div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="classification.html#cb65-1"></a>lda_model &lt;-<span class="st"> </span><span class="kw">lda</span>(crim01 <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> train)</span>
 <span id="cb65-2"><a href="classification.html#cb65-2"></a>lda_prob &lt;-<span class="st"> </span><span class="kw">predict</span>(lda_model, test)<span class="op">$</span>posterior[, <span class="st">&#39;1&#39;</span>]</span>
 <span id="cb65-3"><a href="classification.html#cb65-3"></a>lda_pred &lt;-<span class="st"> </span><span class="kw">if_else</span>(lda_prob <span class="op">&gt;</span><span class="st"> </span><span class="fl">.5</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span></code></pre></div>

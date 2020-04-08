@@ -836,8 +836,8 @@ In this exercise, we will predict the number of applications received (`Apps` va
 set.seed(42)
 df <- as_tibble(College[-1])
 idx <- df$Apps %>% createDataPartition(p = 0.7, list = FALSE, times = 1)
-train <- slice(df, idx); Y_train <- as.vector(train$Apps); X_train <- as.matrix(select(train, -Apps))
-test <- slice(df, -idx); Y_test <- as.vector(test$Apps); X_test <- as.matrix(select(test, -Apps))
+train <- slice(df, idx[,1]); Y_train <- as.vector(train$Apps); X_train <- as.matrix(select(train, -Apps))
+test <- slice(df, -idx[,1]); Y_test <- as.vector(test$Apps); X_test <- as.matrix(select(test, -Apps))
 ```
 
 * *Question (b)*

@@ -96,7 +96,7 @@ store <- rep(NA, 1000)
 for(i in 1:1000) store[i] <- sum(sample(1:100, replace = TRUE) == 4) > 0
 ```
 
-This piece of code repeatedly create bootstrap samples, and each time we record whether or not the fourth observation is contained in the bootstrap sample. In mean, we found that the fourth observation is contain in 62.8% of the samples. So, we retrieve the observation that gave at the previous question.
+This piece of code repeatedly create bootstrap samples, and each time we record whether or not the fourth observation is contained in the bootstrap sample. In mean, we found that the fourth observation is contain in 62.3% of the samples. So, we retrieve the observation that gave at the previous question.
 
 Mathematically, we can be prove like that:
 \begin{align}
@@ -243,8 +243,8 @@ Results of the model on the **df** dataset.<ul><li> *Formula*: default ~ income 
 ```r
 set.seed(42)
 idx <- df$default %>% createDataPartition(p = 0.7, list = FALSE, times = 1)
-train <- df[idx,]
-test <- df[-idx,]
+train <- df[idx[,1],]
+test <- df[-idx[,1],]
 ```
 
 * *Question (b.ii)* Fit a logistic regression on the train set.
@@ -278,8 +278,8 @@ for(i in 1:3){
   set.seed(i)
   
   idx <- df$default %>% createDataPartition(p = 0.7, list = FALSE, times = 1)
-  train <- df[idx,]
-  test <- df[-idx,]
+  train <- df[idx[,1],]
+  test <- df[-idx[,1],]
   
   logit_model <- glm(default ~ income + balance, data = train, family = 'binomial')
   
@@ -297,8 +297,8 @@ The three misclassification error are respectively 2.6%, 2.77% and 2.53% on each
 set.seed(42)
   
 idx <- df$default %>% createDataPartition(p = 0.7, list = FALSE, times = 1)
-train <- df[idx,]
-test <- df[-idx,]
+train <- df[idx[,1],]
+test <- df[-idx[,1],]
   
 logit_model <- glm(default ~ income + balance + student, data = train, family = 'binomial')
   
