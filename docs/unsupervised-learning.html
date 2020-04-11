@@ -24,7 +24,7 @@
 <meta name="author" content="Steven Golovkine" />
 
 
-<meta name="date" content="2020-04-08" />
+<meta name="date" content="2020-04-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -299,7 +299,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="10" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html"><i class="fa fa-check"></i><b>10</b> Unsupervised Learning</a>
 <ul>
-<li class="chapter" data-level="10.1" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#conceptual-exercises-8"><i class="fa fa-check"></i><b>10.1</b> Conceptual exercises</a></li>
+<li class="chapter" data-level="10.1" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#conceptual-exercises-8"><i class="fa fa-check"></i><b>10.1</b> Conceptual exercises</a>
+<ul>
+<li class="chapter" data-level="10.1.1" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#exercise-1.-8"><i class="fa fa-check"></i><b>10.1.1</b> Exercise 1.</a></li>
+<li class="chapter" data-level="10.1.2" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#exercise-2.-8"><i class="fa fa-check"></i><b>10.1.2</b> Exercise 2.</a></li>
+<li class="chapter" data-level="10.1.3" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#exercise-3.-8"><i class="fa fa-check"></i><b>10.1.3</b> Exercise 3.</a></li>
+<li class="chapter" data-level="10.1.4" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#exercise-4.-8"><i class="fa fa-check"></i><b>10.1.4</b> Exercise 4.</a></li>
+<li class="chapter" data-level="10.1.5" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#exercise-5.-8"><i class="fa fa-check"></i><b>10.1.5</b> Exercise 5.</a></li>
+<li class="chapter" data-level="10.1.6" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#exercise-6.-8"><i class="fa fa-check"></i><b>10.1.6</b> Exercise 6.</a></li>
+</ul></li>
+<li class="chapter" data-level="10.2" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#applied-exercises-8"><i class="fa fa-check"></i><b>10.2</b> Applied exercises</a>
+<ul>
+<li class="chapter" data-level="10.2.1" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#exercise-7.-8"><i class="fa fa-check"></i><b>10.2.1</b> Exercise 7.</a></li>
+<li class="chapter" data-level="10.2.2" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#exercise-8.-8"><i class="fa fa-check"></i><b>10.2.2</b> Exercise 8.</a></li>
+<li class="chapter" data-level="10.2.3" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#exercise-9.-7"><i class="fa fa-check"></i><b>10.2.3</b> Exercise 9.</a></li>
+<li class="chapter" data-level="10.2.4" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#exercise-10.-6"><i class="fa fa-check"></i><b>10.2.4</b> Exercise 10.</a></li>
+<li class="chapter" data-level="10.2.5" data-path="unsupervised-learning.html"><a href="unsupervised-learning.html#exercise-11.-5"><i class="fa fa-check"></i><b>10.2.5</b> Exercise 11.</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
@@ -326,7 +342,708 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 10</span> Unsupervised Learning</h1>
 <div id="conceptual-exercises-8" class="section level2" number="10.1">
 <h2><span class="header-section-number">10.1</span> Conceptual exercises</h2>
+<div id="exercise-1.-8" class="section level3" number="10.1.1">
+<h3><span class="header-section-number">10.1.1</span> Exercise 1.</h3>
+<p>This problem involves the <span class="math inline">\(K\)</span>-means clustering algorithm.</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>We want to prove that
+<span class="math display">\[\frac{1}{\lvert C_k \rvert}\sum_{i, i^\prime \in C_k} \sum_{j=1}^p (x_{ij} - x_{i^\prime j})^2 = 2 \sum_{i \in C_k}\sum_{j = 1}^p(x_{ij} - \bar{x}_{kj})^2 \quad\text{where}\quad \bar{x}_{kj} = \frac{1}{\lvert C_k \rvert}\sum_{i \in C_k} x_{ij}.\]</span></p>
+<p><span class="math display">\[\begin{align*}
+\frac{1}{\lvert C_k \rvert}\sum_{i, i^\prime \in C_k} \sum_{j=1}^p (x_{ij} - x_{i^\prime j})^2 
+  &amp;= \frac{1}{\lvert C_k \rvert}\sum_{i, i^\prime \in C_k} \sum_{j=1}^p (x_{ij} - \bar{x}_{kj} + \bar{x}_{kj} - x_{i^\prime j})^2 \\
+  &amp;= \frac{1}{\lvert C_k \rvert}\sum_{i, i^\prime \in C_k} \sum_{j=1}^p \left((x_{ij} - \bar{x}_{kj})^2 + (x_{i^\prime j} - \bar{x}_{kj})^2 - 2(x_{ij} - \bar{x}_{kj})(x_{i^\prime j} - \bar{x}_{kj})\right) \\
+  &amp;= \frac{1}{\lvert C_k \rvert} \sum_{j=1}^p \left(2\lvert C_k \rvert \sum_{i \in C_k}(x_{ij} - \bar{x}_{kj})^2 - 2\sum_{i, i^\prime \in C_k}(x_{ij} - \bar{x}_{kj})(x_{i^\prime j} - \bar{x}_{kj})\right) \\
+  &amp;=  2 \sum_{i \in C_k}\sum_{j = 1}^p(x_{ij} - \bar{x}_{kj})^2 - \frac{2}{\lvert C_k \rvert}\sum_{j = 1}^p \sum_{i, i^\prime \in C_k}(x_{ij} - \bar{x}_{kj})(x_{i^\prime j} - \bar{x}_{kj})
+\end{align*}\]</span></p>
+<p>Moreover,
+<span class="math display">\[\sum_{j = 1}^p \sum_{i, i^\prime \in C_k}(x_{ij} - \bar{x}_{kj})(x_{i^\prime j} - \bar{x}_{kj}) = 0 \quad\text{because}\quad \sum_{i \in C_k}(x_{ij} - \bar{x}_{kj}) = 0\]</span></p>
+<p>So, the equality is proved.</p>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>The previous equation show that minimizing the total within-cluster variation is equivalent to minimize the sum of the Euclideans square distance for each cluster. And thus, assigning each observation to the cluster whise centroid is closest will decrease the objective (10.11).</p>
+</div>
+<div id="exercise-2.-8" class="section level3" number="10.1.2">
+<h3><span class="header-section-number">10.1.2</span> Exercise 2.</h3>
+<p>Suppose that we have four observations, for which we compute a dissimilarity matrix given by
+<span class="math display">\[\begin{pmatrix}
+    &amp; 0.3 &amp; 0.4 &amp; 0.7 \\
+0.3 &amp;     &amp; 0.5 &amp; 0.8 \\
+0.4 &amp; 0.5 &amp;     &amp; 0.45 \\
+0.7 &amp; 0.8 &amp; 0.45 &amp;  \\
+\end{pmatrix}.\]</span></p>
+<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="unsupervised-learning.html#cb229-1"></a>D &lt;-<span class="st"> </span><span class="kw">as.dist</span>(<span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.7</span>,</span>
+<span id="cb229-2"><a href="unsupervised-learning.html#cb229-2"></a>                      <span class="fl">0.3</span>, <span class="dv">0</span>, <span class="fl">0.5</span>, <span class="fl">0.8</span>,</span>
+<span id="cb229-3"><a href="unsupervised-learning.html#cb229-3"></a>                      <span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="dv">0</span>, <span class="fl">0.45</span>,</span>
+<span id="cb229-4"><a href="unsupervised-learning.html#cb229-4"></a>                      <span class="fl">0.7</span>, <span class="fl">0.8</span>, <span class="fl">0.45</span>, <span class="dv">0</span>), <span class="dt">nrow =</span> <span class="dv">4</span>))</span></code></pre></div>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<div class="figure" style="text-align: center"><span id="fig:ex2a"></span>
+<img src="09-unsupervised_files/figure-html/ex2a-1.png" alt="Dendrogram using complete linkage." width="960" />
+<p class="caption">
+Figure 10.1: Dendrogram using complete linkage.
+</p>
+</div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<div class="figure" style="text-align: center"><span id="fig:ex2b"></span>
+<img src="09-unsupervised_files/figure-html/ex2b-1.png" alt="Dendrogram using single linkage." width="960" />
+<p class="caption">
+Figure 10.2: Dendrogram using single linkage.
+</p>
+</div>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>If we cut the dendrogram obtained in question (a) such that two clusters results, we will have one cluster with <span class="math inline">\(1\)</span> and <span class="math inline">\(2\)</span> and the other one will have <span class="math inline">\(3\)</span> and <span class="math inline">\(4\)</span>.</p>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>If we cut the dendrogram obtained in question (b) such that two clusters results, we will have one cluster with <span class="math inline">\(1\)</span>, <span class="math inline">\(2\)</span> and <span class="math inline">\(3\)</span> and the other one will only contain <span class="math inline">\(4\)</span>.</p>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<div class="figure" style="text-align: center"><span id="fig:ex2e"></span>
+<img src="09-unsupervised_files/figure-html/ex2e-1.png" alt="Dendrogram using complete linkage." width="960" />
+<p class="caption">
+Figure 10.3: Dendrogram using complete linkage.
+</p>
+</div>
+</div>
+<div id="exercise-3.-8" class="section level3" number="10.1.3">
+<h3><span class="header-section-number">10.1.3</span> Exercise 3.</h3>
+<p>In this problem, we will perform <span class="math inline">\(K\)</span>-means clustering manually, with <span class="math inline">\(K = 2\)</span>, on a small example with <span class="math inline">\(n = 6\)</span> observations and <span class="math inline">\(p = 2\)</span> features.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="center">Obs</th>
+<th align="center"><span class="math inline">\(X_1\)</span></th>
+<th align="center"><span class="math inline">\(X_2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">4</td>
+</tr>
+<tr class="even">
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">3</td>
+</tr>
+<tr class="odd">
+<td align="center">3</td>
+<td align="center">0</td>
+<td align="center">4</td>
+</tr>
+<tr class="even">
+<td align="center">4</td>
+<td align="center">5</td>
+<td align="center">1</td>
+</tr>
+<tr class="odd">
+<td align="center">5</td>
+<td align="center">6</td>
+<td align="center">2</td>
+</tr>
+<tr class="even">
+<td align="center">6</td>
+<td align="center">4</td>
+<td align="center">0</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="unsupervised-learning.html#cb230-1"></a>df &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(<span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">0</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">1</span>, <span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">0</span>), <span class="dt">ncol =</span> <span class="dv">2</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>))</span></code></pre></div>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<div class="figure" style="text-align: center"><span id="fig:ex3a"></span>
+<img src="09-unsupervised_files/figure-html/ex3a-1.png" alt="Observations." width="480" />
+<p class="caption">
+Figure 10.4: Observations.
+</p>
+</div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="unsupervised-learning.html#cb231-1"></a><span class="kw">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb231-2"><a href="unsupervised-learning.html#cb231-2"></a>labels &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="kw">nrow</span>(df), <span class="dt">replace =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb231-3"><a href="unsupervised-learning.html#cb231-3"></a>df &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">add_column</span>(<span class="dt">label =</span> <span class="kw">as.factor</span>(labels))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex3bi"></span>
+<img src="09-unsupervised_files/figure-html/ex3bi-1.png" alt="Observation with random cluster labels." width="480" />
+<p class="caption">
+Figure 10.5: Observation with random cluster labels.
+</p>
+</div>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="unsupervised-learning.html#cb232-1"></a>df_centroid &lt;-<span class="st"> </span><span class="kw">group_by</span>(df, label) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">V1 =</span> <span class="kw">mean</span>(V1), <span class="dt">V2 =</span> <span class="kw">mean</span>(V2))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex3c"></span>
+<img src="09-unsupervised_files/figure-html/ex3c-1.png" alt="Observation with random cluster labels and centroid." width="480" />
+<p class="caption">
+Figure 10.6: Observation with random cluster labels and centroid.
+</p>
+</div>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>We reassign the observations to their closest centroid.</p>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="unsupervised-learning.html#cb233-1"></a>dist_mat &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">bind_rows</span>(df_centroid) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">dist</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as.matrix</span>()</span>
+<span id="cb233-2"><a href="unsupervised-learning.html#cb233-2"></a>df<span class="op">$</span>label2 &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">*</span><span class="st"> </span>(dist_mat[<span class="dv">7</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">6</span>] <span class="op">&gt;</span><span class="st"> </span>dist_mat[<span class="dv">8</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">6</span>])</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex3di"></span>
+<img src="09-unsupervised_files/figure-html/ex3di-1.png" alt="Observation with cluster labels." width="480" />
+<p class="caption">
+Figure 10.7: Observation with cluster labels.
+</p>
+</div>
+<ul>
+<li><em>Question (e) and (f)</em></li>
+</ul>
+<p>Finally, we recompute the centroid.</p>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="unsupervised-learning.html#cb234-1"></a>df_centroid &lt;-<span class="st"> </span><span class="kw">group_by</span>(df, label2) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">V1 =</span> <span class="kw">mean</span>(V1), <span class="dt">V2 =</span> <span class="kw">mean</span>(V2))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex3e"></span>
+<img src="09-unsupervised_files/figure-html/ex3e-1.png" alt="Observation with random cluster labels and centroid." width="480" />
+<p class="caption">
+Figure 9.4: Observation with random cluster labels and centroid.
+</p>
+</div>
+</div>
+<div id="exercise-4.-8" class="section level3" number="10.1.4">
+<h3><span class="header-section-number">10.1.4</span> Exercise 4.</h3>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>There is not enough information to tell because maximal intercluster dissimilarity could be equal to the mimimal intercluster dissimilarity. However, this case will be very unlikel to happened. Most of the time, the single linkage will fused at a lower height than the complete linkage.</p>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>They will fuse at the same height because there is only one observation in each of the cluster.</p>
+</div>
+<div id="exercise-5.-8" class="section level3" number="10.1.5">
+<h3><span class="header-section-number">10.1.5</span> Exercise 5.</h3>
+<p>First, let’s consider the case of number of item purchases. The number of computers sold is 0 or 1, and thus will have no impact on the results of <span class="math inline">\(K\)</span>-means clustering with Euclidean distance. The two classes will result on the clustering of the number of socks sold. The orange seller will be alone in his cluster and the remaining ones are the other cluster.</p>
+<p>When we scales each variable by its standard deviation, the <span class="math inline">\(K\)</span>-means clustering result in a clustering computer purchase / no computer purchase because the Euclidean distance in the computer dimension in greater than the one in the socks dimension.</p>
+<p>The last scalling give all the weight to the computer, so it will result in a clustering computer purchase / no computer purchase.</p>
+</div>
+<div id="exercise-6.-8" class="section level3" number="10.1.6">
+<h3><span class="header-section-number">10.1.6</span> Exercise 6.</h3>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<p>The first principal component explains <span class="math inline">\(10\%\)</span> of the variance means that by projecting the data onto the first principal components, the information contains within this projected data corresponds to <span class="math inline">\(10\%\)</span> of the total variation presents in the raw data. We can also say that <span class="math inline">\(90\%\)</span> of the variance is lost by projeting the data onto the first principal component. The first component mostly carries the information of the machine used to perform the test.</p>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<p>We can try to guess why the researcher decides to replace the <span class="math inline">\((j,i)\)</span>th element of <span class="math inline">\(X\)</span> with <span class="math inline">\(x_{ji} - \phi_{j1}z_{i1}\)</span>. We would say that we want to remove the information of the machine used for the test from the data. However, <span class="math inline">\({x_{ij}} - {z_{i1}}{\phi _{j1}}\)</span> corresponds to the remaning information after projecting observations onto the first principal and the remaining information without the machine used.</p>
+<p>For the analysis of the PCA, it is suggested to firstly plot a scree plot w.r.t. number of principal components used, find the elbow point at which the number of principal components are preferred, say it is <span class="math inline">\(T\)</span>. Then, we can replace the <span class="math inline">\(i\)</span> th original observation <span class="math inline">\(x_i\)</span> in predictor space of dimension <span class="math inline">\(p = 100\)</span> with <span class="math inline">\(z_i\)</span> in reduced predictor space of dimention <span class="math inline">\(T\)</span> which contains sufficient information (whether it is good approximating original observations using such an elbow point depends on the data set). Afterwards, instead of analyzing on a <span class="math inline">\(1000 \times 100\)</span> matrix, we are now able to reduce its size to <span class="math inline">\(1000 \times T\)</span> where <span class="math inline">\(T \ll 100\)</span>.</p>
+<p>But, here, analyzing the components of the PCA with two samples <span class="math inline">\(t\)</span>-test in not feasible because the information of conditions is lost.</p>
+<p>For the analysis, it may be better to split the dataframe considering the machine used (maybe, perform a <span class="math inline">\(K\)</span>-means clustering to retrieve the group). And, then perform the two samples <span class="math inline">\(t\)</span>-test on the two group separately.</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>We will the data <code>Ch10Ex11.csv</code> from the book website with some small modification in order to show our method. This dataset consists of <span class="math inline">\(40\)</span> tissue samples with measurements on <span class="math inline">\(1000\)</span> genes. The first <span class="math inline">\(20\)</span> samples are from healthy patients, while the second <span class="math inline">\(20\)</span> are from a diseased group. So, we can consider the first <span class="math inline">\(20\)</span> as the control group and the other <span class="math inline">\(20\)</span> as the treatment group.</p>
+<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb235-1"><a href="unsupervised-learning.html#cb235-1"></a>df &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&#39;data/Ch10Ex11.csv&#39;</span>, <span class="dt">col_names =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb235-2"><a href="unsupervised-learning.html#cb235-2"></a>df &lt;-<span class="st"> </span><span class="kw">t</span>(df) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as_tibble</span>()</span>
+<span id="cb235-3"><a href="unsupervised-learning.html#cb235-3"></a>df &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb235-4"><a href="unsupervised-learning.html#cb235-4"></a><span class="st">  </span><span class="kw">add_column</span>(<span class="dt">group =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&#39;C&#39;</span>, <span class="dv">20</span>), <span class="kw">rep</span>(<span class="st">&#39;T&#39;</span>, <span class="dv">20</span>)), <span class="dt">.before =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># Add group</span></span>
+<span id="cb235-5"><a href="unsupervised-learning.html#cb235-5"></a><span class="st">  </span><span class="kw">sample_frac</span>(<span class="dv">1</span>, <span class="dt">replace =</span> <span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># Random the group</span></span>
+<span id="cb235-6"><a href="unsupervised-learning.html#cb235-6"></a><span class="st">  </span><span class="kw">add_column</span>(<span class="dt">machine =</span> <span class="kw">c</span>(<span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="dv">20</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.8</span>, <span class="fl">0.2</span>)),</span>
+<span id="cb235-7"><a href="unsupervised-learning.html#cb235-7"></a>                         <span class="kw">sample</span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">10</span>), <span class="dv">20</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.2</span>, <span class="fl">0.8</span>))), </span>
+<span id="cb235-8"><a href="unsupervised-learning.html#cb235-8"></a>             <span class="dt">.before =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># Add the machine used</span></span>
+<span id="cb235-9"><a href="unsupervised-learning.html#cb235-9"></a><span class="st">  </span><span class="kw">mutate_at</span>(<span class="kw">vars</span>(<span class="kw">starts_with</span>(<span class="st">&#39;V&#39;</span>)), <span class="co"># Shift the mean for one machine</span></span>
+<span id="cb235-10"><a href="unsupervised-learning.html#cb235-10"></a>            <span class="kw">funs</span>(<span class="kw">case_when</span>(machine <span class="op">==</span><span class="st"> </span><span class="dv">10</span> <span class="op">~</span><span class="st"> </span>. <span class="op">+</span><span class="st"> </span><span class="dv">1</span>, machine <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">~</span><span class="st"> </span>.)))</span></code></pre></div>
+<ul>
+<li>Method from the researcher</li>
+</ul>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="unsupervised-learning.html#cb236-1"></a>pca &lt;-<span class="st"> </span><span class="kw">prcomp</span>(<span class="kw">select</span>(df, <span class="kw">starts_with</span>(<span class="st">&#39;V&#39;</span>))) <span class="co"># Perform the PCA</span></span>
+<span id="cb236-2"><a href="unsupervised-learning.html#cb236-2"></a>X &lt;-<span class="st"> </span><span class="kw">select</span>(df, <span class="kw">starts_with</span>(<span class="st">&#39;V&#39;</span>)) <span class="op">-</span><span class="st"> </span><span class="kw">matrix</span>(pca<span class="op">$</span>x[,<span class="dv">1</span>], <span class="dt">nrow =</span> <span class="dv">40</span>) <span class="op">%*%</span><span class="st"> </span>pca<span class="op">$</span>rotation[,<span class="dv">1</span>]</span>
+<span id="cb236-3"><a href="unsupervised-learning.html#cb236-3"></a>X &lt;-<span class="st"> </span>X <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">add_column</span>(<span class="dt">group =</span> df<span class="op">$</span>group, <span class="dt">.before =</span> <span class="dv">1</span>)</span>
+<span id="cb236-4"><a href="unsupervised-learning.html#cb236-4"></a>test &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="kw">select</span>(X, <span class="kw">starts_with</span>(<span class="st">&#39;V&#39;</span>)), <span class="cf">function</span>(x) <span class="kw">t.test</span>(x <span class="op">~</span><span class="st"> </span>X<span class="op">$</span>group))</span></code></pre></div>
+<p>The variance explained by the first components is 21.89%. Over the <span class="math inline">\(1000\)</span> genes, we found that 244 have a significative difference between the mean in the Control group and the Treatment group.</p>
+<ul>
+<li>Our method</li>
+</ul>
+<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="unsupervised-learning.html#cb237-1"></a>pca_our &lt;-<span class="st"> </span><span class="kw">prcomp</span>(<span class="kw">select</span>(df, <span class="op">-</span>group))</span>
+<span id="cb237-2"><a href="unsupervised-learning.html#cb237-2"></a>test_A &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="kw">select</span>(<span class="kw">filter</span>(df, machine <span class="op">==</span><span class="st"> </span><span class="dv">0</span>), <span class="kw">starts_with</span>(<span class="st">&#39;V&#39;</span>)), </span>
+<span id="cb237-3"><a href="unsupervised-learning.html#cb237-3"></a>                 <span class="cf">function</span>(x) <span class="kw">t.test</span>(x <span class="op">~</span><span class="st"> </span><span class="kw">filter</span>(df, machine <span class="op">==</span><span class="st"> </span><span class="dv">0</span>)<span class="op">$</span>group))</span>
+<span id="cb237-4"><a href="unsupervised-learning.html#cb237-4"></a>test_B &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="kw">select</span>(<span class="kw">filter</span>(df, machine <span class="op">==</span><span class="st"> </span><span class="dv">10</span>), <span class="kw">starts_with</span>(<span class="st">&#39;V&#39;</span>)), </span>
+<span id="cb237-5"><a href="unsupervised-learning.html#cb237-5"></a>                 <span class="cf">function</span>(x) <span class="kw">t.test</span>(x <span class="op">~</span><span class="st"> </span><span class="kw">filter</span>(df, machine <span class="op">==</span><span class="st"> </span><span class="dv">10</span>)<span class="op">$</span>group))</span></code></pre></div>
+<p>The variance explained by the first components is 23.09% which is an improvement over the PCA without the feature <code>Machine</code>.</p>
+<p>Over the <span class="math inline">\(1000\)</span> genes, we found that 154 have a significative difference between the mean in the Control group and the Treatment group for the machine A and 142 for the machine B. And they have 113 significative genes in common. This much less than the one wihtout the splitting in two groups, and probably more accurate.</p>
+</div>
+</div>
+<div id="applied-exercises-8" class="section level2" number="10.2">
+<h2><span class="header-section-number">10.2</span> Applied exercises</h2>
+<div id="exercise-7.-8" class="section level3" number="10.2.1">
+<h3><span class="header-section-number">10.2.1</span> Exercise 7.</h3>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="unsupervised-learning.html#cb238-1"></a>df &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(USArrests)</span>
+<span id="cb238-2"><a href="unsupervised-learning.html#cb238-2"></a>euclid_dist &lt;-<span class="st"> </span><span class="kw">dist</span>(<span class="kw">scale</span>(df))<span class="op">^</span><span class="dv">2</span> <span class="co"># Compute Euclidean distance</span></span>
+<span id="cb238-3"><a href="unsupervised-learning.html#cb238-3"></a>cor_dist &lt;-<span class="st"> </span><span class="kw">as.dist</span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">cor</span>(<span class="kw">t</span>(<span class="kw">scale</span>(df)))) <span class="co"># Compute the correlation distance</span></span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex7i"></span>
+<img src="09-unsupervised_files/figure-html/ex7i-1.png" alt="Boxplot of Euclidean / Correlation" width="672" />
+<p class="caption">
+Figure 8.4: Boxplot of Euclidean / Correlation
+</p>
+</div>
+</div>
+<div id="exercise-8.-8" class="section level3" number="10.2.2">
+<h3><span class="header-section-number">10.2.2</span> Exercise 8.</h3>
+<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="unsupervised-learning.html#cb239-1"></a>df &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(USArrests)</span>
+<span id="cb239-2"><a href="unsupervised-learning.html#cb239-2"></a>df_scaled &lt;-<span class="st"> </span><span class="kw">scale</span>(df, <span class="dt">center =</span> <span class="ot">TRUE</span>, <span class="dt">scale =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="unsupervised-learning.html#cb240-1"></a>pca &lt;-<span class="st"> </span><span class="kw">prcomp</span>(df_scaled, <span class="dt">center =</span> <span class="ot">FALSE</span>, <span class="dt">scale. =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb240-2"><a href="unsupervised-learning.html#cb240-2"></a>PVE_a &lt;-<span class="st"> </span>pca<span class="op">$</span>sdev<span class="op">**</span><span class="dv">2</span> <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(pca<span class="op">$</span>sdev<span class="op">**</span><span class="dv">2</span>); PVE_a </span></code></pre></div>
+<pre><code>## [1] 0.62006039 0.24744129 0.08914080 0.04335752</code></pre>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="unsupervised-learning.html#cb242-1"></a>PVE_b &lt;-<span class="st"> </span><span class="kw">apply</span>((df_scaled <span class="op">%*%</span><span class="st"> </span>pca<span class="op">$</span>rotation)<span class="op">**</span><span class="dv">2</span>, <span class="dv">2</span>, sum) <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(df_scaled<span class="op">**</span><span class="dv">2</span>); PVE_b</span></code></pre></div>
+<pre><code>##        PC1        PC2        PC3        PC4 
+## 0.62006039 0.24744129 0.08914080 0.04335752</code></pre>
+</div>
+<div id="exercise-9.-7" class="section level3" number="10.2.3">
+<h3><span class="header-section-number">10.2.3</span> Exercise 9.</h3>
+<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb244-1"><a href="unsupervised-learning.html#cb244-1"></a>df &lt;-<span class="st"> </span>USArrests</span></code></pre></div>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="unsupervised-learning.html#cb245-1"></a>hclust_complete &lt;-<span class="st"> </span><span class="kw">hclust</span>(<span class="kw">dist</span>(df), <span class="dt">method =</span> <span class="st">&#39;complete&#39;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex9ai"></span>
+<img src="09-unsupervised_files/figure-html/ex9ai-1.png" alt="Dendrogram using complete linkage." width="1440" />
+<p class="caption">
+Figure 10.8: Dendrogram using complete linkage.
+</p>
+</div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="unsupervised-learning.html#cb246-1"></a>cut &lt;-<span class="st">  </span><span class="kw">cutree</span>(hclust_complete, <span class="dv">3</span>)</span></code></pre></div>
+<p>The state in the first group: Alabama, Alaska, Arizona, California, Delaware, Florida, Illinois, Louisiana, Maryland, Michigan, Mississippi, Nevada, New Mexico, New York, North Carolina, South Carolina. The state in the second group: Arkansas, Colorado, Georgia, Massachusetts, Missouri, New Jersey, Oklahoma, Oregon, Rhode Island, Tennessee, Texas, Virginia, Washington, Wyoming. And the state in the third group: Connecticut, Hawaii, Idaho, Indiana, Iowa, Kansas, Kentucky, Maine, Minnesota, Montana, Nebraska, New Hampshire, North Dakota, Ohio, Pennsylvania, South Dakota, Utah, Vermont, West Virginia, Wisconsin.</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb247-1"><a href="unsupervised-learning.html#cb247-1"></a>hclust_complete &lt;-<span class="st"> </span><span class="kw">hclust</span>(<span class="kw">dist</span>(<span class="kw">scale</span>(df)), <span class="dt">method =</span> <span class="st">&#39;complete&#39;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex9ci"></span>
+<img src="09-unsupervised_files/figure-html/ex9ci-1.png" alt="Dendrogram using complete linkage." width="1440" />
+<p class="caption">
+Figure 7.14: Dendrogram using complete linkage.
+</p>
+</div>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<p>After scaling the variables, measure of dissimilarities at which the fusion occured decreased. Moreover, it is clear that the data should be split in two or four groups, but not in three. The variables should probably be scaled before the inter-observation dissimilarities are computed because the variance is quite different between the variables (different units).</p>
+</div>
+<div id="exercise-10.-6" class="section level3" number="10.2.4">
+<h3><span class="header-section-number">10.2.4</span> Exercise 10.</h3>
+<p>Here, we will generate simulated data, and then perform PCA and <span class="math inline">\(K\)</span>-means clustering on the data.</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="unsupervised-learning.html#cb248-1"></a>df_A &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(<span class="dv">20</span> <span class="op">*</span><span class="st"> </span><span class="dv">50</span>, <span class="dv">0</span>, <span class="fl">1.5</span>), <span class="dt">ncol =</span> <span class="dv">50</span>)</span>
+<span id="cb248-2"><a href="unsupervised-learning.html#cb248-2"></a>df_B &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(<span class="dv">20</span> <span class="op">*</span><span class="st"> </span><span class="dv">50</span>, <span class="dv">1</span>, <span class="fl">0.8</span>), <span class="dt">ncol =</span> <span class="dv">50</span>)</span>
+<span id="cb248-3"><a href="unsupervised-learning.html#cb248-3"></a>df_C &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(<span class="dv">20</span> <span class="op">*</span><span class="st"> </span><span class="dv">50</span>, <span class="dv">2</span>, <span class="fl">1.2</span>), <span class="dt">ncol =</span> <span class="dv">50</span>)</span>
+<span id="cb248-4"><a href="unsupervised-learning.html#cb248-4"></a>df &lt;-<span class="st"> </span><span class="kw">rbind</span>(df_A, df_B, df_C)</span></code></pre></div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<div class="sourceCode" id="cb249"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb249-1"><a href="unsupervised-learning.html#cb249-1"></a>pca &lt;-<span class="st"> </span><span class="kw">prcomp</span>(df)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex10bi"></span>
+<img src="09-unsupervised_files/figure-html/ex10bi-1.png" alt="Observations into the first principal plan" width="480" />
+<p class="caption">
+Figure 10.9: Observations into the first principal plan
+</p>
+</div>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="unsupervised-learning.html#cb250-1"></a>clus &lt;-<span class="st"> </span><span class="kw">kmeans</span>(df, <span class="dv">3</span>)</span>
+<span id="cb250-2"><a href="unsupervised-learning.html#cb250-2"></a><span class="kw">kable</span>(<span class="kw">table</span>(df_plot<span class="op">$</span>group, clus<span class="op">$</span>cluster))</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+1
+</th>
+<th style="text-align:right;">
+2
+</th>
+<th style="text-align:right;">
+3
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p>The results are perfect.</p>
+<ul>
+<li><em>Question (d)</em></li>
+</ul>
+<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb251-1"><a href="unsupervised-learning.html#cb251-1"></a>clus &lt;-<span class="st"> </span><span class="kw">kmeans</span>(df, <span class="dv">2</span>)</span>
+<span id="cb251-2"><a href="unsupervised-learning.html#cb251-2"></a><span class="kw">kable</span>(<span class="kw">table</span>(df_plot<span class="op">$</span>group, clus<span class="op">$</span>cluster))</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+1
+</th>
+<th style="text-align:right;">
+2
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p>Two of the classes almost fuse.</p>
+<ul>
+<li><em>Question (e)</em></li>
+</ul>
+<div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb252-1"><a href="unsupervised-learning.html#cb252-1"></a>clus &lt;-<span class="st"> </span><span class="kw">kmeans</span>(df, <span class="dv">4</span>)</span>
+<span id="cb252-2"><a href="unsupervised-learning.html#cb252-2"></a><span class="kw">kable</span>(<span class="kw">table</span>(df_plot<span class="op">$</span>group, clus<span class="op">$</span>cluster))</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+1
+</th>
+<th style="text-align:right;">
+2
+</th>
+<th style="text-align:right;">
+3
+</th>
+<th style="text-align:right;">
+4
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p>One of the true classe is splitted in two.</p>
+<ul>
+<li><em>Question (f)</em></li>
+</ul>
+<div class="sourceCode" id="cb253"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb253-1"><a href="unsupervised-learning.html#cb253-1"></a>clus &lt;-<span class="st"> </span><span class="kw">kmeans</span>(pca<span class="op">$</span>x[,<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>], <span class="dv">3</span>)</span>
+<span id="cb253-2"><a href="unsupervised-learning.html#cb253-2"></a><span class="kw">kable</span>(<span class="kw">table</span>(df_plot<span class="op">$</span>group, clus<span class="op">$</span>cluster))</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+1
+</th>
+<th style="text-align:right;">
+2
+</th>
+<th style="text-align:right;">
+3
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p>Once again, we found a perfect match!</p>
+<ul>
+<li><em>Question (g)</em></li>
+</ul>
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="unsupervised-learning.html#cb254-1"></a>clus &lt;-<span class="st"> </span><span class="kw">kmeans</span>(<span class="kw">scale</span>(df), <span class="dv">3</span>)</span>
+<span id="cb254-2"><a href="unsupervised-learning.html#cb254-2"></a><span class="kw">kable</span>(<span class="kw">table</span>(df_plot<span class="op">$</span>group, clus<span class="op">$</span>cluster))</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+1
+</th>
+<th style="text-align:right;">
+2
+</th>
+<th style="text-align:right;">
+3
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p>The results can be good of not depending on the initialization scheme.</p>
+</div>
+<div id="exercise-11.-5" class="section level3" number="10.2.5">
+<h3><span class="header-section-number">10.2.5</span> Exercise 11.</h3>
+<p>We will the data <code>Ch10Ex11.csv</code> from the book website. This dataset consists of <span class="math inline">\(40\)</span> tissue samples with measurements on <span class="math inline">\(1000\)</span> genes. The first <span class="math inline">\(20\)</span> samples are from healthy patients, while the second <span class="math inline">\(20\)</span> are from a diseased group.</p>
+<ul>
+<li><em>Question (a)</em></li>
+</ul>
+<div class="sourceCode" id="cb255"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="unsupervised-learning.html#cb255-1"></a>df &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&#39;data/Ch10Ex11.csv&#39;</span>, <span class="dt">col_names =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
+<ul>
+<li><em>Question (b)</em></li>
+</ul>
+<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb256-1"><a href="unsupervised-learning.html#cb256-1"></a>cor_dist &lt;-<span class="st"> </span><span class="kw">as.dist</span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">cor</span>(df))</span>
+<span id="cb256-2"><a href="unsupervised-learning.html#cb256-2"></a>hclust_complete &lt;-<span class="st"> </span><span class="kw">hclust</span>(cor_dist, <span class="dt">method =</span> <span class="st">&#39;complete&#39;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex11bi"></span>
+<img src="09-unsupervised_files/figure-html/ex11bi-1.png" alt="Dendrogram using complete linkage." width="1440" />
+<p class="caption">
+Figure 8.9: Dendrogram using complete linkage.
+</p>
+</div>
+<div class="sourceCode" id="cb257"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb257-1"><a href="unsupervised-learning.html#cb257-1"></a>cor_dist &lt;-<span class="st"> </span><span class="kw">as.dist</span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">cor</span>(df))</span>
+<span id="cb257-2"><a href="unsupervised-learning.html#cb257-2"></a>hclust_single &lt;-<span class="st"> </span><span class="kw">hclust</span>(cor_dist, <span class="dt">method =</span> <span class="st">&#39;single&#39;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex11biii"></span>
+<img src="09-unsupervised_files/figure-html/ex11biii-1.png" alt="Dendrogram using single linkage." width="1440" />
+<p class="caption">
+Figure 10.10: Dendrogram using single linkage.
+</p>
+</div>
+<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="unsupervised-learning.html#cb258-1"></a>cor_dist &lt;-<span class="st"> </span><span class="kw">as.dist</span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">cor</span>(df))</span>
+<span id="cb258-2"><a href="unsupervised-learning.html#cb258-2"></a>hclust_average &lt;-<span class="st"> </span><span class="kw">hclust</span>(cor_dist, <span class="dt">method =</span> <span class="st">&#39;average&#39;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span id="fig:ex11bv"></span>
+<img src="09-unsupervised_files/figure-html/ex11bv-1.png" alt="Dendrogram using average linkage." width="1440" />
+<p class="caption">
+Figure 10.11: Dendrogram using average linkage.
+</p>
+</div>
+<p>Depending on the linkage, the genes are splitted between two or three groups.</p>
+<ul>
+<li><em>Question (c)</em></li>
+</ul>
+<p>In order to find the genes that differ the most across the two groups, we can run a <span class="math inline">\(K\)</span>-means (with <span class="math inline">\(K = 2\)</span>) in order to split the two groups and then perform a two samples <span class="math inline">\(t\)</span>-test to find the genes that have significative difference between the groups.</p>
+<div class="sourceCode" id="cb259"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb259-1"><a href="unsupervised-learning.html#cb259-1"></a>clus &lt;-<span class="st"> </span><span class="kw">kmeans</span>(<span class="kw">t</span>(df), <span class="dv">2</span>)</span>
+<span id="cb259-2"><a href="unsupervised-learning.html#cb259-2"></a>df_clus &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(<span class="kw">t</span>(df)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">add_column</span>(<span class="dt">group =</span> clus<span class="op">$</span>cluster, <span class="dt">.before =</span> <span class="dv">1</span>)</span>
+<span id="cb259-3"><a href="unsupervised-learning.html#cb259-3"></a>test &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="kw">select</span>(df_clus, <span class="kw">starts_with</span>(<span class="st">&#39;V&#39;</span>)), </span>
+<span id="cb259-4"><a href="unsupervised-learning.html#cb259-4"></a>                 <span class="cf">function</span>(x) <span class="kw">t.test</span>(x <span class="op">~</span><span class="st"> </span>df_clus<span class="op">$</span>group))</span></code></pre></div>
+<p>Over the <span class="math inline">\(1000\)</span> genes, we found that 158 have a significative difference between the mean in the healthy and the diseased group. These genes are the following: V11, V12, V13, V14, V15, V16, V17, V18, V19, V20, V135, V156, V501, V502, V503, V504, V505, V506, V507, V508, V509, V510, V511, V512, V513, V514, V515, V516, V517, V518, V519, V520, V521, V522, V523, V524, V525, V526, V527, V528, V529, V530, V531, V532, V533, V534, V535, V536, V537, V538, V539, V540, V541, V542, V543, V544, V545, V546, V547, V548, V549, V550, V551, V552, V553, V554, V555, V556, V557, V558, V559, V560, V561, V562, V563, V564, V565, V566, V567, V568, V569, V570, V571, V572, V573, V574, V575, V576, V577, V578, V579, V580, V581, V582, V583, V584, V585, V586, V587, V588, V589, V590, V591, V592, V593, V594, V595, V596, V597, V598, V599, V600.</p>
 
+</div>
 </div>
 </div>
             </section>

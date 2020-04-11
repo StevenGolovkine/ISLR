@@ -111,3 +111,557 @@ split_tree <- function(object, pretty = NULL){
 ```
 
 ## Conceptual exercises
+
+### Exercise 1.
+
+This problem involves the $K$-means clustering algorithm.
+
+* *Question (a)*
+
+We want to prove that 
+$$\frac{1}{\lvert C_k \rvert}\sum_{i, i^\prime \in C_k} \sum_{j=1}^p (x_{ij} - x_{i^\prime j})^2 = 2 \sum_{i \in C_k}\sum_{j = 1}^p(x_{ij} - \bar{x}_{kj})^2 \quad\text{where}\quad \bar{x}_{kj} = \frac{1}{\lvert C_k \rvert}\sum_{i \in C_k} x_{ij}.$$
+
+\begin{align*}
+\frac{1}{\lvert C_k \rvert}\sum_{i, i^\prime \in C_k} \sum_{j=1}^p (x_{ij} - x_{i^\prime j})^2 
+  &= \frac{1}{\lvert C_k \rvert}\sum_{i, i^\prime \in C_k} \sum_{j=1}^p (x_{ij} - \bar{x}_{kj} + \bar{x}_{kj} - x_{i^\prime j})^2 \\
+  &= \frac{1}{\lvert C_k \rvert}\sum_{i, i^\prime \in C_k} \sum_{j=1}^p \left((x_{ij} - \bar{x}_{kj})^2 + (x_{i^\prime j} - \bar{x}_{kj})^2 - 2(x_{ij} - \bar{x}_{kj})(x_{i^\prime j} - \bar{x}_{kj})\right) \\
+  &= \frac{1}{\lvert C_k \rvert} \sum_{j=1}^p \left(2\lvert C_k \rvert \sum_{i \in C_k}(x_{ij} - \bar{x}_{kj})^2 - 2\sum_{i, i^\prime \in C_k}(x_{ij} - \bar{x}_{kj})(x_{i^\prime j} - \bar{x}_{kj})\right) \\
+  &=  2 \sum_{i \in C_k}\sum_{j = 1}^p(x_{ij} - \bar{x}_{kj})^2 - \frac{2}{\lvert C_k \rvert}\sum_{j = 1}^p \sum_{i, i^\prime \in C_k}(x_{ij} - \bar{x}_{kj})(x_{i^\prime j} - \bar{x}_{kj})
+\end{align*}
+
+Moreover, 
+$$\sum_{j = 1}^p \sum_{i, i^\prime \in C_k}(x_{ij} - \bar{x}_{kj})(x_{i^\prime j} - \bar{x}_{kj}) = 0 \quad\text{because}\quad \sum_{i \in C_k}(x_{ij} - \bar{x}_{kj}) = 0$$
+
+So, the equality is proved.
+
+* *Question (b)*
+
+The previous equation show that minimizing the total within-cluster variation is equivalent to minimize the sum of the Euclideans square distance for each cluster. And thus, assigning each observation to the cluster whise centroid is closest will decrease the objective (10.11).
+
+### Exercise 2.
+
+Suppose that we have four observations, for which we compute a dissimilarity matrix given by
+$$\begin{pmatrix}
+    & 0.3 & 0.4 & 0.7 \\
+0.3 &     & 0.5 & 0.8 \\
+0.4 & 0.5 &     & 0.45 \\
+0.7 & 0.8 & 0.45 &  \\
+\end{pmatrix}.$$
+
+```{r ex2}
+D <- as.dist(matrix(c(0, 0.3, 0.4, 0.7,
+                      0.3, 0, 0.5, 0.8,
+                      0.4, 0.5, 0, 0.45,
+                      0.7, 0.8, 0.45, 0), nrow = 4))
+```
+
+
+* *Question (a)*
+
+```{r ex2a, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Dendrogram using complete linkage.', fig.align='center'}
+clust_comp <- hclust(D, method = 'complete')
+
+t_data <- dendro_data(clust_comp, type = 'rectangle')
+t_data$labels <-  t_data$labels %>% mutate(label_tex = paste0('$', label, '$'))
+
+ggplot(t_data$segments) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_text(data = t_data$labels, aes(x, y, label = label_tex),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  ylab('Height') +
+  theme_custom() +
+  theme(axis.text.x = element_blank(),
+        axis.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = 'none')
+```
+
+* *Question (b)*
+
+```{r ex2b, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Dendrogram using single linkage.', fig.align='center'}
+clust_single <- hclust(D, method = 'single')
+
+t_data <- dendro_data(clust_single, type = 'rectangle')
+t_data$labels <-  t_data$labels %>% mutate(label_tex = paste0('$', label, '$'))
+
+ggplot(t_data$segments) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_text(data = t_data$labels, aes(x, y, label = label_tex),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  ylab('Height') +
+  theme_custom() +
+  theme(axis.text.x = element_blank(),
+        axis.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = 'none')
+```
+
+* *Question (c)*
+
+If we cut the dendrogram obtained in question (a) such that two clusters results, we will have one cluster with $1$ and $2$ and the other one will have $3$ and $4$.
+
+* *Question (d)*
+
+If we cut the dendrogram obtained in question (b) such that two clusters results, we will have one cluster with $1$, $2$ and $3$ and the other one will only contain $4$.
+
+* *Question (e)*
+
+```{r ex2e, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(10, 5), fig.cap='Dendrogram using complete linkage.', fig.align='center'}
+clust_comp <- hclust(D, method = 'complete')
+
+t_data <- dendro_data(clust_comp, type = 'rectangle')
+t_data$labels <-  t_data$labels %>% add_column(label_tex = paste0('$', c('2', '1', '4', '3'), '$'))
+
+ggplot(t_data$segments) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_text(data = t_data$labels, aes(x, y, label = label_tex),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  ylab('Height') +
+  theme_custom() +
+  theme(axis.text.x = element_blank(),
+        axis.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = 'none')
+```
+
+### Exercise 3.
+
+In this problem, we will perform $K$-means clustering manually, with $K = 2$, on a small example with $n = 6$ observations and $p = 2$ features. 
+
+
+| Obs | $X_1$ | $X_2$ |
+| :---: | :---: | :---: |
+| 1 | 1 | 4|
+| 2 | 1 | 3|
+| 3 | 0 | 4|
+| 4 | 5 | 1|
+| 5 | 6 | 2|
+| 6 | 4 | 0|
+
+```{r ex3data, warning=FALSE, message=FALSE}
+df <- as_tibble(matrix(c(1, 4, 1, 3, 0, 4, 5, 1, 6, 2, 4, 0), ncol = 2, byrow = TRUE))
+```
+
+* *Question (a)*
+
+```{r ex3a, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(5, 5), fig.cap='Observations.', fig.align='center'}
+ggplot(df) + 
+  geom_point(aes(x = V1, y = V2), size = 5) +
+  xlab('$X_1$') +
+  ylab('$X_2$') +
+  theme_custom()
+```
+
+* *Question (b)*
+
+```{r ex3b, message=FALSE, warning=FALSE}
+set.seed(42)
+labels <- sample(c(0, 1), nrow(df), replace = TRUE)
+df <- df %>% add_column(label = as.factor(labels))
+```
+
+```{r ex3bi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(5, 5), fig.cap='Observation with random cluster labels.', fig.align='center'}
+ggplot(df) + 
+  geom_point(aes(x = V1, y = V2, col = label), size = 5) +
+  xlab('$X_1$') +
+  ylab('$X_2$') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* *Question (c)*
+
+```{r}
+df_centroid <- group_by(df, label) %>% summarise(V1 = mean(V1), V2 = mean(V2))
+```
+
+```{r ex3c, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(5, 5), fig.cap='Observation with random cluster labels and centroid.', fig.align='center'}
+ggplot(df) + 
+  geom_point(aes(x = V1, y = V2, col = label), size = 5) +
+  geom_point(aes(x = V1, y = V2, col = label), data = df_centroid, size = 5, shape = 4) +
+  xlab('$X_1$') +
+  ylab('$X_2$') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* *Question (d)*
+
+We reassign the observations to their closest centroid.
+
+```{r ex3d, message=FALSE, warning=FALSE}
+dist_mat <- df %>% bind_rows(df_centroid) %>% dist() %>% as.matrix()
+df$label2 <- 1 * (dist_mat[7, 1:6] > dist_mat[8, 1:6])
+```
+
+```{r ex3di, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(5, 5), fig.cap='Observation with cluster labels.', fig.align='center'}
+ggplot(df) + 
+  geom_point(aes(x = V1, y = V2, col = as.factor(label2)), size = 5) +
+  geom_point(aes(x = V1, y = V2, col = label), data = df_centroid, size = 5, shape = 4) +
+  xlab('$X_1$') +
+  ylab('$X_2$') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* *Question (e) and (f)*
+
+Finally, we recompute the centroid.
+
+```{r}
+df_centroid <- group_by(df, label2) %>% summarise(V1 = mean(V1), V2 = mean(V2))
+```
+
+```{r ex3e, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(5, 5), fig.cap='Observation with random cluster labels and centroid.', fig.align='center'}
+ggplot(df) + 
+  geom_point(aes(x = V1, y = V2, col = as.factor(label2)), size = 5) +
+  geom_point(aes(x = V1, y = V2, col = as.factor(label2)), data = df_centroid, size = 5, shape = 4) +
+  xlab('$X_1$') +
+  ylab('$X_2$') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+### Exercise 4.
+
+* *Question (a)*
+
+There is not enough information to tell because maximal intercluster dissimilarity could be equal to the mimimal intercluster dissimilarity. However, this case will be very unlikel to happened. Most of the time, the single linkage will fused at a lower height than the complete linkage.
+
+* *Question (b)*
+
+They will fuse at the same height because there is only one observation in each of the cluster.
+
+### Exercise 5.
+
+First, let's consider the case of number of item purchases. The number of computers sold is 0 or 1, and thus will have no impact on the results of $K$-means clustering with Euclidean distance. The two classes will result on the clustering of the number of socks sold. The orange seller will be alone in his cluster and the remaining ones are the other cluster.
+
+When we scales each variable by its standard deviation, the $K$-means clustering result in a clustering computer purchase / no computer purchase because the Euclidean distance in the computer dimension in greater than the one in the socks dimension.
+
+The last scalling give all the weight to the computer, so it will result in a clustering computer purchase / no computer purchase.
+
+### Exercise 6.
+
+* *Question (a)*
+
+The first principal component explains $10\%$ of the variance means that by projecting the data onto the first principal components, the information contains within this projected data corresponds to $10\%$ of the total variation presents in the raw data. We can also say that $90\%$ of the variance is lost by projeting the data onto the first principal component. The first component mostly carries the information of the machine used to perform the test.
+
+* *Question (b)*
+
+We can try to guess why the researcher decides to replace the $(j,i)$th element of $X$ with $x_{ji} - \phi_{j1}z_{i1}$. We would say that we want to remove the information of the machine used for the test from the data. However, ${x_{ij}} - {z_{i1}}{\phi _{j1}}$ corresponds to the remaning information after projecting observations onto the first principal and the remaining information without the machine used.
+
+For the analysis of the PCA, it is suggested to firstly plot a scree plot w.r.t. number of principal components used, find the elbow point at which the number of principal components are preferred, say it is $T$. Then, we can replace the $i$ th original observation $x_i$ in predictor space of dimension $p = 100$ with $z_i$ in reduced predictor space of dimention $T$ which contains sufficient information (whether it is good approximating original observations using such an elbow point depends on the data set). Afterwards, instead of analyzing on a $1000 \times 100$ matrix, we are now able to reduce its size to $1000 \times T$ where $T \ll 100$. 
+
+But, here, analyzing the components of the PCA with two samples $t$-test in not feasible because the information of conditions is lost. 
+
+For the analysis, it may be better to split the dataframe considering the machine used (maybe, perform a $K$-means clustering to retrieve the group). And, then perform the two samples $t$-test on the two group separately.
+
+* *Question (c)*
+
+We will the data `Ch10Ex11.csv` from the book website with some small modification in order to show our method. This dataset consists of $40$ tissue samples with measurements on $1000$ genes. The first $20$ samples are from healthy patients, while the second $20$ are from a diseased group. So, we can consider the first $20$ as the control group and the other $20$ as the treatment group.
+
+```{r ex6c, message=FALSE, warning=FALSE}
+df <- read_csv('data/Ch10Ex11.csv', col_names = FALSE)
+df <- t(df) %>% as_tibble()
+df <- df %>% 
+  add_column(group = c(rep('C', 20), rep('T', 20)), .before = 1) %>% # Add group
+  sample_frac(1, replace = FALSE) %>% # Random the group
+  add_column(machine = c(sample(c(0, 10), 20, replace = TRUE, prob = c(0.8, 0.2)),
+                         sample(c(0, 10), 20, replace = TRUE, prob = c(0.2, 0.8))), 
+             .before = 1) %>% # Add the machine used
+  mutate_at(vars(starts_with('V')), # Shift the mean for one machine
+            funs(case_when(machine == 10 ~ . + 1, machine == 0 ~ .)))
+```
+
+- Method from the researcher
+
+```{r ex6ci, message=FALSE, warning=FALSE}
+pca <- prcomp(select(df, starts_with('V'))) # Perform the PCA
+X <- select(df, starts_with('V')) - matrix(pca$x[,1], nrow = 40) %*% pca$rotation[,1]
+X <- X %>% add_column(group = df$group, .before = 1)
+test <- lapply(select(X, starts_with('V')), function(x) t.test(x ~ X$group))
+```
+
+The variance explained by the first components is `r round(100 * pca$sdev[1]**2 / sum(pca$sdev**2), 2)`%. Over the $1000$ genes, we found that `r sum(map_dbl(test, "p.value") < 0.05)` have a significative difference between the mean in the Control group and the Treatment group.
+
+- Our method
+
+```{r ex6cii, message=FALSE, warning=FALSE}
+pca_our <- prcomp(select(df, -group))
+test_A <- lapply(select(filter(df, machine == 0), starts_with('V')), 
+                 function(x) t.test(x ~ filter(df, machine == 0)$group))
+test_B <- lapply(select(filter(df, machine == 10), starts_with('V')), 
+                 function(x) t.test(x ~ filter(df, machine == 10)$group))
+```
+
+The variance explained by the first components is `r round(100 * pca_our$sdev[1]**2 / sum(pca_our$sdev**2), 2)`% which is an improvement over the PCA without the feature `Machine`.
+
+Over the $1000$ genes, we found that `r sum(map_dbl(test_A, "p.value") < 0.05)` have a significative difference between the mean in the Control group and the Treatment group for the machine A and `r sum(map_dbl(test_B, "p.value") < 0.05)` for the machine B. And they have `r sum((map_dbl(test_A, "p.value") < 0.05) & (map_dbl(test_B, "p.value") < 0.05))` significative genes in common. This much less than the one wihtout the splitting in two groups, and probably more accurate.
+
+## Applied exercises
+
+### Exercise 7.
+
+```{r ex7, message=FALSE, warning=FALSE}
+df <- as_tibble(USArrests)
+euclid_dist <- dist(scale(df))^2 # Compute Euclidean distance
+cor_dist <- as.dist(1 - cor(t(scale(df)))) # Compute the correlation distance
+```
+
+```{r ex7i, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(7, 3), fig.cap='Boxplot of Euclidean / Correlation', fig.align='center'}
+ggplot(tibble(X = cor_dist / euclid_dist)) +
+  geom_boxplot(aes(x = X)) +
+  xlab('$(1 - r_{ij}) / E_{ij}^2$') +
+  theme_custom() +
+  theme(axis.text.y = element_blank())
+```
+
+### Exercise 8.
+
+```{r ex8, message=FALSE, warning=FALSE}
+df <- as_tibble(USArrests)
+df_scaled <- scale(df, center = TRUE, scale = TRUE)
+```
+
+* *Question (a)*
+
+```{r ex8a, message=FALSE, warning=FALSE}
+pca <- prcomp(df_scaled, center = FALSE, scale. = FALSE)
+PVE_a <- pca$sdev**2 / sum(pca$sdev**2); PVE_a 
+```
+
+* *Question (b)*
+
+```{r ex8b, message=FALSE, warning=FALSE}
+PVE_b <- apply((df_scaled %*% pca$rotation)**2, 2, sum) / sum(df_scaled**2); PVE_b
+```
+
+### Exercise 9.
+
+```{r ex9, message=FALSE, warning=FALSE}
+df <- USArrests
+```
+
+* *Question (a)*
+
+```{r ex9a, message=FALSE, warning=FALSE}
+hclust_complete <- hclust(dist(df), method = 'complete')
+```
+
+```{r ex9ai, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 10), fig.cap='Dendrogram using complete linkage.', fig.align='center'}
+t_data <- dendro_data(hclust_complete, type = 'rectangle')
+t_data$labels <-  t_data$labels %>% mutate(label_tex = substr(label, 1, 2))
+
+ggplot(t_data$segments) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_text(data = t_data$labels, aes(x, y, label = label_tex),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  ylab('Height') +
+  theme_custom() +
+  theme(axis.text.x = element_blank(),
+        axis.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = 'none')
+```
+
+* *Question (b)*
+
+```{r ex9b, message=FALSE, warning=FALSE}
+cut <-  cutree(hclust_complete, 3)
+```
+
+The state in the first group: `r rownames(df)[cut == 1]`. The state in the second group: `r rownames(df)[cut == 2]`. And the state in the third group: `r rownames(df)[cut == 3]`.
+
+* *Question (c)*
+
+```{r ex9c, message=FALSE, warning=FALSE}
+hclust_complete <- hclust(dist(scale(df)), method = 'complete')
+```
+
+```{r ex9ci, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 10), fig.cap='Dendrogram using complete linkage.', fig.align='center'}
+t_data <- dendro_data(hclust_complete, type = 'rectangle')
+t_data$labels <-  t_data$labels %>% mutate(label_tex = substr(label, 1, 2))
+
+ggplot(t_data$segments) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_text(data = t_data$labels, aes(x, y, label = label_tex),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  ylab('Height') +
+  theme_custom() +
+  theme(axis.text.x = element_blank(),
+        axis.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = 'none')
+```
+
+* *Question (d)*
+
+After scaling the variables, measure of dissimilarities at which the fusion occured decreased. Moreover, it is clear that the data should be split in two or four groups, but not in three. The variables should probably be scaled before the inter-observation dissimilarities are computed because the variance is quite different between the variables (different units).
+
+### Exercise 10.
+
+Here, we will generate simulated data, and then perform PCA and $K$-means clustering on the data.
+
+* *Question (a)*
+
+```{r ex10a, message=FALSE, warning=FALSE}
+df_A <- matrix(rnorm(20 * 50, 0, 1.5), ncol = 50)
+df_B <- matrix(rnorm(20 * 50, 1, 0.8), ncol = 50)
+df_C <- matrix(rnorm(20 * 50, 2, 1.2), ncol = 50)
+df <- rbind(df_A, df_B, df_C)
+```
+
+* *Question (b)*
+
+```{r ex10b, message=FALSE, warning=FALSE}
+pca <- prcomp(df)
+```
+
+```{r ex10bi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(5, 5), fig.cap='Observations into the first principal plan', fig.align='center'}
+df_plot <- as_tibble(pca$x) %>% add_column(group = c(rep('A', 20), rep('B', 20), rep('C', 20)))
+ggplot(df_plot) + 
+  geom_point(aes(x = PC1, y = PC2, col = group))+
+  xlab('PC1') +
+  ylab('PC2') +
+  theme_custom() +
+  theme(legend.position = 'none')
+```
+
+* *Question (c)*
+
+```{r ex10c, message=FALSE, warning=FALSE, results='asis'}
+clus <- kmeans(df, 3)
+kable(table(df_plot$group, clus$cluster))
+```
+
+The results are perfect.
+
+* *Question (d)*
+
+```{r ex10d, message=FALSE, warning=FALSE, results='asis'}
+clus <- kmeans(df, 2)
+kable(table(df_plot$group, clus$cluster))
+```
+
+Two of the classes almost fuse.
+
+* *Question (e)*
+```{r ex10e, message=FALSE, warning=FALSE, results='asis'}
+clus <- kmeans(df, 4)
+kable(table(df_plot$group, clus$cluster))
+```
+
+One of the true classe is splitted in two.
+
+* *Question (f)*
+
+```{r ex10f, message=FALSE, warning=FALSE, results='asis'}
+clus <- kmeans(pca$x[,1:2], 3)
+kable(table(df_plot$group, clus$cluster))
+```
+
+Once again, we found a perfect match!
+
+* *Question (g)*
+
+```{r ex10g, message=FALSE, warning=FALSE, results='asis'}
+clus <- kmeans(scale(df), 3)
+kable(table(df_plot$group, clus$cluster))
+```
+
+The results can be good of not depending on the initialization scheme.
+
+### Exercise 11.
+
+We will the data `Ch10Ex11.csv` from the book website. This dataset consists of $40$ tissue samples with measurements on $1000$ genes. The first $20$ samples are from healthy patients, while the second $20$ are from a diseased group.
+
+* *Question (a)*
+
+```{r ex11a, warning=FALSE, message=FALSE}
+df <- read_csv('data/Ch10Ex11.csv', col_names = FALSE)
+```
+
+* *Question (b)*
+
+```{r ex11b, warning=FALSE, message=FALSE}
+cor_dist <- as.dist(1 - cor(df))
+hclust_complete <- hclust(cor_dist, method = 'complete')
+```
+
+```{r ex11bi, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 10), fig.cap='Dendrogram using complete linkage.', fig.align='center'}
+t_data <- dendro_data(hclust_complete, type = 'rectangle')
+
+ggplot(t_data$segments) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_text(data = t_data$labels, aes(x, y, label = label),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  ylab('Height') +
+  theme_custom() +
+  theme(axis.text.x = element_blank(),
+        axis.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = 'none')
+```
+
+```{r ex11bii, warning=FALSE, message=FALSE}
+cor_dist <- as.dist(1 - cor(df))
+hclust_single <- hclust(cor_dist, method = 'single')
+```
+
+```{r ex11biii, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 10), fig.cap='Dendrogram using single linkage.', fig.align='center'}
+t_data <- dendro_data(hclust_single, type = 'rectangle')
+
+ggplot(t_data$segments) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_text(data = t_data$labels, aes(x, y, label = label),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  ylab('Height') +
+  theme_custom() +
+  theme(axis.text.x = element_blank(),
+        axis.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = 'none')
+```
+
+```{r ex11biv, warning=FALSE, message=FALSE}
+cor_dist <- as.dist(1 - cor(df))
+hclust_average <- hclust(cor_dist, method = 'average')
+```
+
+```{r ex11bv, echo=FALSE, cache=TRUE, message=FALSE, warning=FALSE, dev='tikz', fig.dim=c(15, 10), fig.cap='Dendrogram using average linkage.', fig.align='center'}
+t_data <- dendro_data(hclust_average, type = 'rectangle')
+
+ggplot(t_data$segments) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_text(data = t_data$labels, aes(x, y, label = label),
+            hjust = 0.5, vjust = 1.3, angle = 0, size = 5) +
+  ylab('Height') +
+  theme_custom() +
+  theme(axis.text.x = element_blank(),
+        axis.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid = element_blank(),
+        legend.position = 'none')
+```
+
+Depending on the linkage, the genes are splitted between two or three groups.
+
+* *Question (c)*
+
+In order to find the genes that differ the most across the two groups, we can run a $K$-means (with $K = 2$) in order to split the two groups and then perform a two samples $t$-test to find the genes that have significative difference between the groups.
+
+```{r ex11c, message=FALSE, warning=FALSE}
+clus <- kmeans(t(df), 2)
+df_clus <- as_tibble(t(df)) %>% add_column(group = clus$cluster, .before = 1)
+test <- lapply(select(df_clus, starts_with('V')), 
+                 function(x) t.test(x ~ df_clus$group))
+```
+
+Over the $1000$ genes, we found that `r sum(map_dbl(test, "p.value") < 0.05)` have a significative difference between the mean in the healthy and the diseased group. These genes are the following: `r names(test[map_dbl(test, "p.value") < 0.001])`.
